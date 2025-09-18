@@ -13,10 +13,14 @@ echo "Assembling boot sector..."
 nasm -f elf32 $SRC_DIR/boot.asm -o $BUILD_DIR/boot.o
 
 echo "Compiling kernel..."
-$TARGET-gcc -c $SRC_DIR/kernel/kernel.c -o $BUILD_DIR/kernel.o -std=gnu99 -ffreestanding -O2 -Wall -Wextra
+$TARGET-gcc -c $SRC_DIR/kernel/kernel.c   -o $BUILD_DIR/kernel.o   -std=gnu99 -ffreestanding -O2 -Wall -Wextra
+$TARGET-gcc -c $SRC_DIR/kernel/vga.c      -o $BUILD_DIR/vga.o      -std=gnu99 -ffreestanding -O2 -Wall -Wextra
+$TARGET-gcc -c $SRC_DIR/kernel/keyboard.c -o $BUILD_DIR/keyboard.o -std=gnu99 -ffreestanding -O2 -Wall -Wextra
 
 echo "Linking kernel..."
-$TARGET-gcc -T $SRC_DIR/linker.ld -o $BUILD_DIR/kernel.bin -ffreestanding -O2 -nostdlib $BUILD_DIR/boot.o $BUILD_DIR/kernel.o -lgcc
+$TARGET-gcc -T $SRC_DIR/linker.ld -o $BUILD_DIR/kernel.bin \
+    -ffreestanding -O2 -nostdlib \
+    $BUILD_DIR/boot.o $BUILD_DIR/kernel.o $BUILD_DIR/vga.o $BUILD_DIR/keyboard.o -lgcc
 
 echo "Creating ISO image..."
 mkdir -p $BUILD_DIR/isodir/boot/grub
@@ -60,7 +64,8 @@ else
     if [ -n "$ELTORITO_IMG" ]; then
         echo "Found GRUB boot image: $ELTORITO_IMG"
         cp "$ELTORITO_IMG" $BUILD_DIR/
-        xorriso -as mkisofs -R -b eltorito.img -no-emul-boot -boot-load-size 4 -boot-info-table -o $BUILD_DIR/myos.iso $BUILD_DIR/isodir
+        xorriso -as mkisofs -R -b eltorito.img -no-emul-boot -boot-load-size 4 -boot-info-table \
+            -o $BUILD_DIR/myos.iso $BUILD_DIR/isodir
     else
         echo "Error: Could not find eltorito.img"
         echo "Searching for alternative GRUB boot images..."
@@ -72,10 +77,12 @@ else
             echo "Trying the first one..."
             FIRST_IMG=$(echo "$BOOT_IMAGES" | head -1)
             cp "$FIRST_IMG" $BUILD_DIR/eltorito.img
-            xorriso -as mkisofs -R -b eltorito.img -no-emul-boot -boot-load-size 4 -boot-info-table -o $BUILD_DIR/myos.iso $BUILD_DIR/isodir
+            xorriso -as mkisofs -R -b eltorito.img -no-emul-boot -boot-load-size 4 -boot-info-table \
+                -o $BUILD_DIR/myos.iso $BUILD_DIR/isodir
         else
             echo "No boot images found. Creating simple ISO without boot sector..."
-            genisoimage -R -b boot/grub/grub.cfg -no-emul-boot -boot-load-size 4 -boot-info-table -o $BUILD_DIR/myos.iso $BUILD_DIR/isodir
+            genisoimage -R -b boot/grub/grub.cfg -no-emul-boot -boot-load-size 4 -boot-info-table \
+                -o $BUILD_DIR/myos.iso $BUILD_DIR/isodir
         fi
     fi
 fi
