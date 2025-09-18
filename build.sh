@@ -10,7 +10,7 @@ SRC_DIR=src
 mkdir -p $BUILD_DIR
 
 echo "Assembling boot sector..."
-nasm -f elf32 $SRC_DIR/bootloader/boot.asm -o $BUILD_DIR/boot.o
+nasm -f elf32 $SRC_DIR/boot.asm -o $BUILD_DIR/boot.o
 
 echo "Compiling kernel..."
 $TARGET-gcc -c $SRC_DIR/kernel/kernel.c -o $BUILD_DIR/kernel.o -std=gnu99 -ffreestanding -O2 -Wall -Wextra
