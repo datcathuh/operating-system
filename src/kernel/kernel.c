@@ -3,7 +3,8 @@
 
 void kmain(void) {
     vga_clear();
-    vga_put_string("Hello from someos!\n");
+    vga_put_string("Hello from os!\n");
+    vga_put_string("t.me/x3ghx \n");
     vga_put_string("Type something:\n> ");
 
     while (1) {
