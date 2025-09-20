@@ -1,12 +1,9 @@
-#ifndef VGA_H
-#define VGA_H
-
 #include <stdint.h>
 
 #define VGA_WIDTH 80
 #define VGA_HEIGHT 25
 
-// VGA color constants
+// colors
 enum vga_color {
     VGA_COLOR_BLACK = 0,
     VGA_COLOR_BLUE = 1,
@@ -26,11 +23,9 @@ enum vga_color {
     VGA_COLOR_WHITE = 15,
 };
 
-// Function declarations
 void vga_clear(void);
 void vga_put_char(char c);
 void vga_put_string(const char *s);
 void vga_set_color(enum vga_color fg, enum vga_color bg);
 void vga_put_string_color(const char *s, enum vga_color fg, enum vga_color bg);
 
-#endif

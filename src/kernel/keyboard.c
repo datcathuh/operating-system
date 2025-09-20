@@ -30,7 +30,7 @@ char keyboard_get_key(void) {
 
         return 0;
     } else {
-        // track shift press
+        // look after shift press
         if (sc == 42 || sc == 54) {
             shift_pressed = true;
             return 0;
