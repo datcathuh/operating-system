@@ -2,6 +2,8 @@
 #include "io.h"
 #include <stdbool.h>
 
+static bool shift_pressed = false;
+
 static const char scancode_to_ascii[128] = {
     0, 27, '1','2','3','4','5','6','7','8','9','0','-','=','\b',
     '\t','q','w','e','r','t','y','u','i','o','p','[',']','\n', 0,
@@ -16,21 +18,20 @@ static const char scancode_to_ascii_shift[128] = {
     'Z','X','C','V','B','N','M','<','>','?', 0,'*',0,' ',
 };
 
-static bool shift_pressed = false;
 
 char keyboard_get_key(void) {
-    while ((inb(0x64) & 1) == 0); // wait until data ready
+    while ((inb(0x64) & 1) == 0); // wait till data ready
     unsigned char sc = inb(0x60);
 
     // Handle key release
     if (sc & 0x80) {
-        sc &= 0x7F; // remove release bit
+        sc &= 0x7F; 
 
         if (sc == 42 || sc == 54) shift_pressed = false;
 
         return 0;
     } else {
-        // look after shift press
+        // looks for shift presses
         if (sc == 42 || sc == 54) {
             shift_pressed = true;
             return 0;
