@@ -1,6 +1,26 @@
-# operating-system
-not the most clean code.. working on it :O
+# Introduction
+
+Having fun implementing my own OS.
+
+# Dependencies
+
+## Fedora
+
+Install the following:
+
+dnf install nasm gcc make qemu
+
+# Compiling and running
+
+Use the following:
+
+  ./build.sh
+  ./run.sh
 
 
 
-only build able on linux for now! will mainly be developing this under linux so u cant rlly use windows to build. download and install wsl if u wanna compile will add more building instructions later
+
+Some usefull links:
+
+https://dev.to/frosnerd/series/9585
+https://www.intel.com/content/www/us/en/developer/articles/technical/intel-sdm.html
