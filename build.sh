@@ -2,7 +2,6 @@
 set -e
 
 export PREFIX="$HOME/opt/cross"
-export TARGET=i686-elf
 export PATH="$PREFIX/bin:$PATH"
 
 BUILD_DIR=build
@@ -14,12 +13,12 @@ echo "Assembling boot sector..."
 nasm -f elf32 $SRC_DIR/boot.asm -o $BUILD_DIR/boot.o
 
 echo "Compiling kernel..."
-$TARGET-gcc -c $SRC_DIR/kernel/kernel.c   -o $BUILD_DIR/kernel.o   -std=gnu99 -ffreestanding -O2 -Wall -Wextra
-$TARGET-gcc -c $SRC_DIR/kernel/vga.c      -o $BUILD_DIR/vga.o      -std=gnu99 -ffreestanding -O2 -Wall -Wextra
-$TARGET-gcc -c $SRC_DIR/kernel/keyboard.c -o $BUILD_DIR/keyboard.o -std=gnu99 -ffreestanding -O2 -Wall -Wextra
+gcc -m32 -c $SRC_DIR/kernel/kernel.c   -o $BUILD_DIR/kernel.o   -std=gnu99 -ffreestanding -O2 -Wall -Wextra
+gcc -m32 -c $SRC_DIR/kernel/vga.c      -o $BUILD_DIR/vga.o      -std=gnu99 -ffreestanding -O2 -Wall -Wextra
+gcc -m32 -c $SRC_DIR/kernel/keyboard.c -o $BUILD_DIR/keyboard.o -std=gnu99 -ffreestanding -O2 -Wall -Wextra
 
 echo "Linking kernel..."
-$TARGET-gcc -T $SRC_DIR/linker.ld -o $BUILD_DIR/kernel.bin \
+gcc -m32 -T $SRC_DIR/linker.ld -o $BUILD_DIR/kernel.bin \
     -ffreestanding -O2 -nostdlib \
     $BUILD_DIR/boot.o $BUILD_DIR/kernel.o $BUILD_DIR/vga.o $BUILD_DIR/keyboard.o -lgcc
 
