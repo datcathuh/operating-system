@@ -14,6 +14,10 @@ start:
 
     call clear_screen
 
+	mov dh, 0
+	mov dl, 0
+	call cursor_pos_set
+
     mov si, msg_booting
     call print_string
     call new_line

@@ -1,3 +1,13 @@
+
+;; DH = row
+;; DL = column
+cursor_pos_set:
+	pusha
+	mov ah, 2       ;BH = page, DH = row, DL = column
+    int 10h
+	popa
+	ret
+
 ; Clear screen function
 clear_screen:
     pusha
