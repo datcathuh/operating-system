@@ -14,10 +14,7 @@ dnf install nasm gcc make qemu
 
 Use the following:
 
-  ./build.sh
-  ./run.sh
-
-
+  make rebuild run
 
 
 Some usefull links:

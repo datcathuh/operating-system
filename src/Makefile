@@ -10,8 +10,16 @@ clean:
 	$(MAKE) -C kernel $@
 	$(RM) hdd.img
 
-run: hdd.img
-	qemu-system-i386 -drive file=hdd.img,format=raw
+gdb:
+	gdb
 
-.PHONY: all clean run
+run: hdd.img
+	qemu-system-x86_64 -drive file=hdd.img,format=raw
+
+run_debug: hdd.img
+	# -S Start in paused state
+	# -s open GDB on port 1234
+	qemu-system-x86_64 -drive file=hdd.img,format=raw -S -s
+
+.PHONY: all clean run run_debug
 
