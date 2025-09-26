@@ -1,4 +1,5 @@
 #include "vga.h"
+#include "io.h"
 
 static volatile uint8_t *vidmem = (uint8_t*)0xb8000;
 static uint32_t cursor = 0;
@@ -6,6 +7,26 @@ static uint8_t current_color = 0x07;  // Default: light gray on black
 
 static inline uint8_t vga_color_entry(enum vga_color fg, enum vga_color bg) {
     return fg | (bg << 4);
+}
+
+void vga_cursor_pos_set(int x, int y) {
+    uint16_t pos = y * VGA_WIDTH + x;
+
+	// Low byte of cursor position
+    outb(0x3D4, 0x0F);
+    outb(0x3D5, (uint8_t)(pos & 0xFF));
+	// High byte of cursor position
+    outb(0x3D4, 0x0E);
+    outb(0x3D5, (uint8_t)((pos >> 8) & 0xFF));
+}
+
+void vga_output_pos_get(int *x, int *y) {
+	*y = cursor / (VGA_WIDTH * 2);
+	*x = (cursor % (VGA_WIDTH * 2)) / 2;
+}
+
+void vga_output_pos_set(int x, int y) {
+    cursor = x * 2 + VGA_WIDTH * y * 2;
 }
 
 void vga_set_color(enum vga_color fg, enum vga_color bg) {
@@ -18,7 +39,7 @@ static void vga_scroll(void) {
     }
     for (uint32_t i = (VGA_HEIGHT - 1) * VGA_WIDTH * 2; i < VGA_HEIGHT * VGA_WIDTH * 2; i += 2) {
         vidmem[i] = ' ';
-        vidmem[i+1] = current_color;  
+        vidmem[i+1] = current_color;
     }
     cursor = (VGA_HEIGHT - 1) * VGA_WIDTH * 2;
 }
@@ -26,7 +47,7 @@ static void vga_scroll(void) {
 void vga_clear(void) {
     for (uint32_t i = 0; i < VGA_WIDTH * VGA_HEIGHT * 2; i += 2) {
         vidmem[i] = ' ';
-        vidmem[i+1] = current_color;  
+        vidmem[i+1] = current_color;
     }
     cursor = 0;
 }
@@ -40,11 +61,11 @@ void vga_put_char(char c) {
     if (c == '\b') {
         if (cursor >= 2) cursor -= 2;
         vidmem[cursor] = ' ';
-        vidmem[cursor+1] = current_color;  
+        vidmem[cursor+1] = current_color;
         return;
     }
     vidmem[cursor] = c;
-    vidmem[cursor+1] = current_color;  
+    vidmem[cursor+1] = current_color;
     cursor += 2;
     if ((cursor / 2) % VGA_WIDTH == 0) {
         vga_put_char('\n');
@@ -61,5 +82,5 @@ void vga_put_string_color(const char *s, enum vga_color fg, enum vga_color bg) {
     uint8_t prev_color = current_color;
     vga_set_color(fg, bg);
     vga_put_string(s);
-    current_color = prev_color;  
+    current_color = prev_color;
 }
