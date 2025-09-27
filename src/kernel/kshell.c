@@ -1,10 +1,13 @@
 #include "keyboard.h"
 #include "kshell.h"
+#include "memory.h"
 #include "string.h"
 #include "vga.h"
 
 static const char* _prompt = " > ";
 static const int _prompt_length = sizeof(_prompt) - 1;
+#define _commands_size 10
+static struct kshell_command _commands[_commands_size];
 
 static void prompt() {
 	vga_output_pos_set(0, 24);
@@ -12,6 +15,28 @@ static void prompt() {
 	vga_cursor_pos_set(_prompt_length, 24);
 }
 
+void kshell_init() {
+	mem_set(_commands, 0, sizeof(_commands));
+}
+
+bool kshell_register_command(const struct kshell_command *cmd) {
+	for(int i=0;i < _commands_size;i++) {
+		if(str_length(_commands[i].name) == 0) {
+			mem_copy(&_commands[i], cmd, sizeof(struct kshell_command));
+			return true;
+		}
+	}
+	return false;
+}
+
+struct kshell_command* kshell_find_command(const char *name) {
+	for(int i=0;i < _commands_size;i++) {
+		if(str_compare(_commands[i].name, name) == 0) {
+			return &_commands[i];
+		}
+	}
+	return NULL;
+}
 
 void kshell() {
     vga_clear();
@@ -29,6 +54,19 @@ void kshell() {
         if (c) {
 			if(c == '\n') {
 				vga_clear();
+
+				if(str_length(command) > 0) {
+					struct kshell_command* cmd = kshell_find_command(command);
+					if(cmd) {
+						vga_output_pos_set(0, 0);
+						cmd->callback();
+					}
+					else {
+						vga_output_pos_set(0, 0);
+						vga_put_string_color("Invalid command", Red, Black);
+					}
+				}
+
 				command[0] = 0;
 				prompt();
 				continue;

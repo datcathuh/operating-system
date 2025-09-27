@@ -31,4 +31,3 @@ void vga_put_char(char c);
 void vga_put_string(const char *s);
 void vga_set_color(enum vga_color fg, enum vga_color bg);
 void vga_put_string_color(const char *s, enum vga_color fg, enum vga_color bg);
-
