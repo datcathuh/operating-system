@@ -1,9 +1,10 @@
-all: mbr.bin
+all: $(BUILD_DIR)/mbr/mbr.bin
 
-mbr.bin: main.asm
+$(BUILD_DIR)/mbr/mbr.bin: main.asm
+	mkdir -p $(dir $@)
 	nasm $< -f bin -o $@
 
 clean:
-	$(RM) -f *.o mbr.bin
+	$(RM) -f $(BUILD_DIR)/mbr/*.o $(BUILD_DIR)/mbr/mbr.bin
 
 .PHONY: all clean

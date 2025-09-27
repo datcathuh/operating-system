@@ -1,26 +1,30 @@
-OBJECTS+=keyboard.o
-OBJECTS+=kernel-entry.o
-OBJECTS+=kernel.o
-OBJECTS+=kshell.o
-OBJECTS+=kshell_help.o
-OBJECTS+=memory.o
-OBJECTS+=string.o
-OBJECTS+=vga.o
+OBJECTS+=$(BUILD_DIR)/kernel/keyboard.o
+OBJECTS+=$(BUILD_DIR)/kernel/kernel-entry.o
+OBJECTS+=$(BUILD_DIR)/kernel/kernel.o
+OBJECTS+=$(BUILD_DIR)/kernel/kshell.o
+OBJECTS+=$(BUILD_DIR)/kernel/kshell_help.o
+OBJECTS+=$(BUILD_DIR)/kernel/memory.o
+OBJECTS+=$(BUILD_DIR)/kernel/string.o
+OBJECTS+=$(BUILD_DIR)/kernel/vga.o
 
 CFLAGS=-std=c23 -pedantic -Wall -Wextra -m32 -ffreestanding -O2 -nostdlib
 
-all: kernel.bin
+$(BUILD_DIR)/kernel/%.o: %.c
+	@mkdir -p $(dir $@)
+	$(CC) $(CFLAGS) -c $< -o $@
 
-kernel-entry.o: kernel-entry.asm
+all: $(BUILD_DIR)/kernel/kernel.bin
+
+$(BUILD_DIR)/kernel/kernel-entry.o: kernel-entry.asm
 	nasm $< -f elf32 -o $@
 
-kernel.elf: $(OBJECTS)
+$(BUILD_DIR)/kernel/kernel.elf: $(OBJECTS)
 	ld -m elf_i386 -o $@ -T linker.ld $^
 
-kernel.bin: kernel.elf
-	objcopy -O binary kernel.elf kernel.bin
+$(BUILD_DIR)/kernel/kernel.bin: $(BUILD_DIR)/kernel/kernel.elf
+	objcopy -O binary $(BUILD_DIR)/kernel/kernel.elf $(BUILD_DIR)/kernel/kernel.bin
 
 clean:
-	$(RM) -f *.o kernel.bin kernel.elf
+	$(RM) -f $(BUILD_DIR)/kernel/*.o $(BUILD_DIR)/kernel/kernel.bin $(BUILD_DIR)/kernel/kernel.elf
 
 .PHONY: all clean

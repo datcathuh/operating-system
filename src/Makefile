@@ -1,25 +1,24 @@
-all: hdd.img
+all: $(BUILD_DIR)/hdd.img
 
-hdd.img:
+$(BUILD_DIR)/hdd.img:
 	$(MAKE) -C mbr
 	$(MAKE) -C kernel
-	cat mbr/mbr.bin kernel/kernel.bin > $@
+	cat $(BUILD_DIR)/mbr/mbr.bin $(BUILD_DIR)/kernel/kernel.bin > $@
 
 clean:
 	$(MAKE) -C mbr $@
 	$(MAKE) -C kernel $@
-	$(RM) hdd.img
+	$(RM) $(BUILD_DIR)/hdd.img
 
 gdb:
 	gdb
 
-run: hdd.img
-	qemu-system-x86_64 -drive file=hdd.img,format=raw
+run: $(BUILD_DIR)/hdd.img
+	qemu-system-x86_64 -drive file=$(BUILD_DIR)/hdd.img,format=raw
 
-run_debug: hdd.img
+run_debug: $(BUILD_DIR)/hdd.img
 	# -S Start in paused state
 	# -s open GDB on port 1234
-	qemu-system-x86_64 -drive file=hdd.img,format=raw -S -s
+	qemu-system-x86_64 -drive file=$(BUILD_DIR)/hdd.img,format=raw -S -s
 
 .PHONY: all clean run run_debug
-

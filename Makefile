@@ -1,3 +1,8 @@
+BUILD_DIR := $(CURDIR)/build
+KERNEL_DIR := src/kernel
+
+export BUILD_DIR
+
 all:
 	@echo "Make targets"
 	@echo " rebuild     Rebuild from scratch"

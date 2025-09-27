@@ -12,4 +12,4 @@ layout asm
 layout regs
 layout split
 
-symbol-file kernel/kernel.elf
+symbol-file ../build/kernel/kernel.elf
