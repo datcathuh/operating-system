@@ -1,6 +1,7 @@
 OBJECTS+=keyboard.o
 OBJECTS+=kernel-entry.o
 OBJECTS+=kernel.o
+OBJECTS+=kshell.o
 OBJECTS+=string.o
 OBJECTS+=vga.o
 
