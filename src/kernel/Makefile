@@ -1,9 +1,10 @@
 OBJECTS+=keyboard.o
 OBJECTS+=kernel-entry.o
 OBJECTS+=kernel.o
+OBJECTS+=string.o
 OBJECTS+=vga.o
 
-CFLAGS=-m32 -ffreestanding -O2 -nostdlib
+CFLAGS=-std=c23 -pedantic -Wall -Wextra -m32 -ffreestanding -O2 -nostdlib
 
 all: kernel.bin
 
