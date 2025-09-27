@@ -1,0 +1,2 @@
+void s2main() {
+}

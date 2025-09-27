@@ -9,11 +9,11 @@ OBJECTS+=$(BUILD_DIR)/kernel/vga.o
 
 CFLAGS=-std=c23 -pedantic -Wall -Wextra -m32 -ffreestanding -O2 -nostdlib
 
+all: $(BUILD_DIR)/kernel/kernel.bin
+
 $(BUILD_DIR)/kernel/%.o: %.c
 	@mkdir -p $(dir $@)
 	$(CC) $(CFLAGS) -c $< -o $@
-
-all: $(BUILD_DIR)/kernel/kernel.bin
 
 $(BUILD_DIR)/kernel/kernel-entry.o: kernel-entry.asm
 	nasm $< -f elf32 -o $@
