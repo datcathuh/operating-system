@@ -12,11 +12,8 @@ void kmain(void) {
     vga_put_string("Hello from os!\n");
     vga_put_string("t.me/x3ghx \n");
     vga_put_string_color("color support!\n", White, Magenta);
-    vga_put_string("Type something:\n> ");
 
-	vga_output_pos_set(0, 24);
-	vga_put_string(" > ");
-	vga_cursor_pos_set(3, 24);
+    prompt();
 
     while (1) {
         char c = keyboard_get_key();
