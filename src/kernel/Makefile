@@ -3,6 +3,7 @@ OBJECTS+=$(BUILD_DIR)/kernel/kernel-entry.o
 OBJECTS+=$(BUILD_DIR)/kernel/kernel.o
 OBJECTS+=$(BUILD_DIR)/kernel/kshell.o
 OBJECTS+=$(BUILD_DIR)/kernel/kshell_help.o
+OBJECTS+=$(BUILD_DIR)/kernel/kshell_mandelbrot.o
 OBJECTS+=$(BUILD_DIR)/kernel/memory.o
 OBJECTS+=$(BUILD_DIR)/kernel/string.o
 OBJECTS+=$(BUILD_DIR)/kernel/vga.o
