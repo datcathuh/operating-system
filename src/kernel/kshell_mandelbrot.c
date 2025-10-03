@@ -7,6 +7,7 @@
 
 #include "kshell.h"
 #include "kshell_mandelbrot.h"
+#include "serial.h"
 #include <stdint.h>
 
 /* ---- low-level I/O ---- */
@@ -17,19 +18,6 @@ static inline uint8_t inb(uint16_t port) {
     uint8_t val;
     __asm__ volatile ("inb %1, %0" : "=a"(val) : "Nd"(port));
     return val;
-}
-
-/* serial write for debugging */
-static inline void serial_outb(uint16_t port, uint8_t val) {
-    __asm__ volatile ("outb %0, %1" : : "a"(val), "Nd"(port));
-}
-
-static void serial_putc(char c) { serial_outb(0x3F8, (uint8_t)c); }
-
-static void serial_puts(const char *s) {
-	while (*s) {
-		serial_putc(*s++);
-	}
 }
 
 /* read indexed port (index->data pair) */
@@ -45,12 +33,6 @@ static uint8_t read_attr(uint8_t index) {
     (void)inb(0x3DA);             /* reset flip-flop */
     outb(0x3C0, index);
     return inb(0x3C1);
-}
-
-static void serial_put_hex8(uint8_t v) {
-    const char hex[] = "0123456789ABCDEF";
-    serial_putc(hex[v >> 4]);
-    serial_putc(hex[v & 0x0F]);
 }
 
 /* Dump a few critical registers to serial */
