@@ -10,9 +10,9 @@ static const int _prompt_length = sizeof(_prompt) - 1;
 static struct kshell_command _commands[_commands_size];
 
 static void prompt() {
-	vga_output_pos_set(0, 24);
+	vga_output_pos_set(0, vga_mode_current->height - 1);
 	vga_put_string(_prompt);
-	vga_cursor_pos_set(_prompt_length, 24);
+	vga_cursor_pos_set(_prompt_length, vga_mode_current->height - 1);
 }
 
 void kshell_init() {

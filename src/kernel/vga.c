@@ -6,7 +6,34 @@ static volatile uint8_t *vidmem = (uint8_t*)0xb8000;
 static uint32_t cursor = 0;
 static uint8_t current_color = 0x07;  // Default: light gray on black
 
-struct vga_mode vga_mode_320x200 = {
+struct vga_mode *vga_mode_current = 0;
+
+struct vga_mode vga_mode_text_80x25 = {
+	.name = "80x25 (text)",
+	.misc = 0x67,
+	.seq = {
+		0x03, 0x00, 0x03, 0x00, 0x02
+	},
+	.crtc = {
+		0x5F, 0x4F, 0x50, 0x82, 0x55, 0x81, 0xBF, 0x1F,
+		0x00, 0x4F, 0x0D, 0x0E, 0x00, 0x00, 0x00, 0x50,
+		0x9C, 0x0E, 0x8F, 0x28, 0x1F, 0x96, 0xB9, 0xA3,
+		0xFF
+	},
+	.gfx = {
+		0x00, 0x00, 0x00, 0x00, 0x00, 0x10, 0x0E, 0x00,
+		0xFF
+	},
+	.attr = {
+		0x00, 0x01, 0x02, 0x03, 0x04, 0x05, 0x14, 0x07,
+		0x38, 0x39, 0x3A, 0x3B, 0x3C, 0x3D, 0x3E, 0x3F,
+		0x0C, 0x00, 0x0F, 0x08, 0x00
+	},
+	.width = 80,
+	.height = 25
+};
+
+struct vga_mode vga_mode_320x200x256 = {
 	.name = "320x200",
 	.misc = 0x63,
 	.seq = {
@@ -14,15 +41,22 @@ struct vga_mode vga_mode_320x200 = {
 		0x01, /* 1: Clocking mode */
 		0x0F, /* 2: Map mask */
 		0x00, /* 3: Character map select */
-		0x06  /* 4: Memory mode */
+		0x0E  /* 4: Memory mode */
 	},
 	.crtc = {
-		0x5F,0x4F,0x50,0x82,0x54,0x80,0xBF,0x1F,0x00,0x41,
-		0x9C,0x8E,0x8F,0x28,0x00,0x96,0xB9,0xA3,0xFF,0xFF,
-		0xFF,0xFF,0xFF,0xFF,0xFF
+		0x5F, 0x4F, 0x50, 0x82, 0x54, 0x80, 0xBF, 0x1F,
+		0x00, 0x41, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00,
+		0x9C, 0x0E, 0x8F, 0x28,	0x40, 0x96, 0xB9, 0xA3,
+		0xFF
 	},
 	.gfx = {
-		0x00,0x00,0x00,0x00,0x00,0x40,0x05,0x0F,0xFF
+		0x00, 0x00, 0x00, 0x00, 0x00, 0x40, 0x05, 0x0F,
+		0xFF
+	},
+	.attr = {
+		0x00, 0x01, 0x02, 0x03, 0x04, 0x05, 0x06, 0x07,
+		0x08, 0x09, 0x0A, 0x0B, 0x0C, 0x0D, 0x0E, 0x0F,
+		0x41, 0x00, 0x0F, 0x00,	0x00
 	},
 	.width = 320,
 	.height = 200,
@@ -34,7 +68,7 @@ static inline uint8_t vga_color_entry(enum vga_color fg, enum vga_color bg) {
 }
 
 void vga_cursor_pos_set(int x, int y) {
-    uint16_t pos = y * VGA_WIDTH + x;
+    uint16_t pos = y * vga_mode_current->width + x;
 
 	// Low byte of cursor position
     io_outb(0x3D4, 0x0F);
@@ -45,12 +79,12 @@ void vga_cursor_pos_set(int x, int y) {
 }
 
 void vga_output_pos_get(int *x, int *y) {
-	*y = cursor / (VGA_WIDTH * 2);
-	*x = (cursor % (VGA_WIDTH * 2)) / 2;
+	*y = cursor / (vga_mode_current->width * 2);
+	*x = (cursor % (vga_mode_current->width * 2)) / 2;
 }
 
 void vga_output_pos_set(int x, int y) {
-    cursor = x * 2 + VGA_WIDTH * y * 2;
+    cursor = x * 2 + vga_mode_current->width * y * 2;
 }
 
 void vga_set_color(enum vga_color fg, enum vga_color bg) {
@@ -58,18 +92,18 @@ void vga_set_color(enum vga_color fg, enum vga_color bg) {
 }
 
 static void vga_scroll(void) {
-    for (uint32_t i = 0; i < (VGA_HEIGHT - 1) * VGA_WIDTH * 2; ++i) {
-        vidmem[i] = vidmem[i + VGA_WIDTH * 2];
+    for (uint32_t i = 0; i < (vga_mode_current->height - 1) * vga_mode_current->width * 2; ++i) {
+        vidmem[i] = vidmem[i + vga_mode_current->width * 2];
     }
-    for (uint32_t i = (VGA_HEIGHT - 1) * VGA_WIDTH * 2; i < VGA_HEIGHT * VGA_WIDTH * 2; i += 2) {
+    for (uint32_t i = (vga_mode_current->height - 1) * vga_mode_current->width * 2; i < vga_mode_current->height * vga_mode_current->width * 2; i += 2) {
         vidmem[i] = ' ';
         vidmem[i+1] = current_color;
     }
-    cursor = (VGA_HEIGHT - 1) * VGA_WIDTH * 2;
+    cursor = (vga_mode_current->height - 1) * vga_mode_current->width * 2;
 }
 
 void vga_clear(void) {
-    for (uint32_t i = 0; i < VGA_WIDTH * VGA_HEIGHT * 2; i += 2) {
+    for (uint32_t i = 0; i < vga_mode_current->width * vga_mode_current->height * 2; i += 2) {
         vidmem[i] = ' ';
         vidmem[i+1] = current_color;
     }
@@ -78,8 +112,8 @@ void vga_clear(void) {
 
 void vga_put_char(char c) {
     if (c == '\n') {
-        cursor = ((cursor / 2) / VGA_WIDTH + 1) * VGA_WIDTH * 2;
-        if ((cursor / 2) / VGA_WIDTH >= VGA_HEIGHT) vga_scroll();
+        cursor = ((cursor / 2) / vga_mode_current->width + 1) * vga_mode_current->width * 2;
+        if ((cursor / 2) / vga_mode_current->width >= vga_mode_current->height) vga_scroll();
         return;
     }
     if (c == '\b') {
@@ -91,7 +125,7 @@ void vga_put_char(char c) {
     vidmem[cursor] = c;
     vidmem[cursor+1] = current_color;
     cursor += 2;
-    if ((cursor / 2) % VGA_WIDTH == 0) {
+    if ((cursor / 2) % vga_mode_current->width == 0) {
         vga_put_char('\n');
     }
 }
@@ -176,14 +210,6 @@ static void vga_write_attr(uint8_t index, uint8_t value) {
     io_outb(0x3C0, value);
 }
 
-static const uint8_t attribute_vals[21] = {
-    /* palette indices 0..15 */
-    0x00,0x01,0x02,0x03,0x04,0x05,0x06,0x07,
-    0x08,0x09,0x0A,0x0B,0x0C,0x0D,0x0E,0x0F,
-    /* rest of attribute controller */
-    0x41,0x00,0x0F,0x00,0x00
-};
-
 // https://files.osdev.org/mirrors/geezer/osd/graphics/modes.c
 
 void vga_mode_set(struct vga_mode *mode) {
@@ -212,7 +238,7 @@ void vga_mode_set(struct vga_mode *mode) {
 
     /* Attribute controller 0..20 */
     for (int i = 0; i < 21; ++i) {
-		vga_write_attr((uint8_t)i, attribute_vals[i]);
+		vga_write_attr((uint8_t)i, mode->attr[i]);
 	}
 
 	(void)io_inb(0x3DA);     // reset flip-flop
@@ -221,8 +247,10 @@ void vga_mode_set(struct vga_mode *mode) {
     /* Clear VGA memory at 0xA0000 (320*200 bytes) */
     volatile uint8_t *vga = (uint8_t*)0xA0000;
     for (int i = 0; i < mode->width*mode->height; ++i) {
-		vga[i] = 0xf0;
+		vga[i] = 0x00;
 	}
 
     vga_display_enable();
+
+	vga_mode_current = mode;
 }

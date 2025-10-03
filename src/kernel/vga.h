@@ -1,9 +1,5 @@
 #include <stdint.h>
 
-#define VGA_WIDTH 80
-#define VGA_HEIGHT 25
-
-// colors
 enum vga_color {
     Black = 0,
     Blue = 1,
@@ -38,6 +34,7 @@ struct vga_mode {
 	uint8_t seq[5];
 	uint8_t crtc[25];
 	uint8_t gfx[9];
+	uint8_t attr[21];
 
 	int width, height;
 };
@@ -48,4 +45,6 @@ void vga_display_enable(void);
 void vga_dac_greyscale_palette(void);
 void vga_mode_set(struct vga_mode *mode);
 
-extern struct vga_mode vga_mode_320x200;
+extern struct vga_mode vga_mode_text_80x25;
+extern struct vga_mode vga_mode_320x200x256;
+extern struct vga_mode *vga_mode_current;
