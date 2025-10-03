@@ -110,11 +110,7 @@ static void kshell_mandelbrot_cb(void) {
 
     vga_mode_set(&vga_mode_320x200x256);
     vga_dac_greyscale_palette();    /* optional: load greyscale palette so indices map to visible shades */
-    // draw_mandelbrot_mode13();
-
-	volatile uint8_t* vga = (uint8_t*)0xA0000;
-	for (int i = 0; i < 320*200; ++i)
-		vga[i] = 0xff; // i % 256; // fill with a simple gradient
+    draw_mandelbrot_mode13();
 
 	pit_wait_seconds(10);
 
