@@ -31,3 +31,21 @@ void vga_put_char(char c);
 void vga_put_string(const char *s);
 void vga_set_color(enum vga_color fg, enum vga_color bg);
 void vga_put_string_color(const char *s, enum vga_color fg, enum vga_color bg);
+
+struct vga_mode {
+	char name[32];
+	uint8_t misc;
+	uint8_t seq[5];
+	uint8_t crtc[25];
+	uint8_t gfx[9];
+
+	int width, height;
+};
+
+void vga_dump_regs(void);
+void vga_display_disable(void);
+void vga_display_enable(void);
+void vga_dac_greyscale_palette(void);
+void vga_mode_set(struct vga_mode *mode);
+
+extern struct vga_mode vga_mode_320x200;
