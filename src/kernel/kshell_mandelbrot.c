@@ -76,37 +76,32 @@ static void pit_wait_seconds(uint32_t seconds) {
     uint16_t divisor = (uint16_t)(PIT_FREQ / TARGET_HZ);
     if (divisor == 0) divisor = 1;
 
-    /* Command: channel 0, access lobyte/hibyte (3), mode 2 (rate gen), binary (0) */
+    /* Program PIT: channel 0, lobyte/hibyte, mode 2 (rate generator) */
     io_outb(0x43, 0x34);
-    io_outb(0x40, (uint8_t)(divisor & 0xFF));      /* low */
-    io_outb(0x40, (uint8_t)((divisor >> 8) & 0xFF)); /* high */
+    io_outb(0x40, divisor & 0xFF);
+    io_outb(0x40, divisor >> 8);
 
-    uint32_t target_ticks = seconds * TARGET_HZ;
+    uint32_t ticks_needed = seconds * TARGET_HZ;
     uint32_t ticks = 0;
 
-    /* initial_count == divisor, but we will compute elapsed by (initial - current) mod divisor */
-    uint16_t initial = divisor;
+    /* Read initial counter value */
+    io_outb(0x43, 0x00);  // latch count
+    uint16_t last = io_inb(0x40) | (io_inb(0x40) << 8);
 
-    while (ticks < target_ticks) {
-        /* Latch current count for channel 0: control word with latch (access=00) */
-        io_outb(0x43, 0x00); /* latch count for channel 0 */
-        uint8_t lo = io_inb(0x40);
-        uint8_t hi = io_inb(0x40);
-        uint16_t current = (uint16_t)((hi << 8) | lo);
-        /* In mode 2 the counter counts down; compute elapsed = (initial - current) mod 65536,
-           but since divisor < 65536, and initial==divisor, we can do a small modulo */
-        uint32_t elapsed;
-        if (initial >= current) elapsed = (uint32_t)(initial - current);
-        else elapsed = (uint32_t)(initial + (0x10000 - current));
+    while (ticks < ticks_needed) {
+        io_outb(0x43, 0x00);  // latch again
+        uint16_t now = io_inb(0x40) | (io_inb(0x40) << 8);
 
-        ticks = elapsed;
-        /* busy loop — we could optionally add a small NOP to reduce CPU usage */
+        if (now > last) {
+            /* Counter wrapped around once */
+            ticks++;
+        }
+        last = now;
     }
 }
 
 static void kshell_mandelbrot_cb(void) {
-    /* It's safer if caller already disabled interrupts, but we'll disable here too */
-    __asm__ volatile ("cli");
+    struct vga_mode *prev = vga_mode_current;
 
     vga_mode_set(&vga_mode_320x200x256);
     vga_dac_greyscale_palette();    /* optional: load greyscale palette so indices map to visible shades */
@@ -116,8 +111,7 @@ static void kshell_mandelbrot_cb(void) {
 
 	vga_dump_regs();
 
-    /* Optionally: return to text mode (if you want). Here we simply hang. */
-    for (;;) __asm__ volatile ("hlt");
+    vga_mode_set(prev);
 }
 
 void kshell_mandelbrot_register() {
