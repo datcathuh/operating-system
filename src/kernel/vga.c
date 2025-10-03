@@ -13,11 +13,11 @@ void vga_cursor_pos_set(int x, int y) {
     uint16_t pos = y * VGA_WIDTH + x;
 
 	// Low byte of cursor position
-    outb(0x3D4, 0x0F);
-    outb(0x3D5, (uint8_t)(pos & 0xFF));
+    io_outb(0x3D4, 0x0F);
+    io_outb(0x3D5, (uint8_t)(pos & 0xFF));
 	// High byte of cursor position
-    outb(0x3D4, 0x0E);
-    outb(0x3D5, (uint8_t)((pos >> 8) & 0xFF));
+    io_outb(0x3D4, 0x0E);
+    io_outb(0x3D5, (uint8_t)((pos >> 8) & 0xFF));
 }
 
 void vga_output_pos_get(int *x, int *y) {

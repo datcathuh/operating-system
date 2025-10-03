@@ -5,41 +5,24 @@
    - Waits 10 seconds using PIT polling
 */
 
+#include "io.h"
 #include "kshell.h"
 #include "kshell_mandelbrot.h"
 #include "serial.h"
 #include <stdint.h>
 
-/* ---- low-level I/O ---- */
-static inline void outb(uint16_t port, uint8_t val) {
-    __asm__ volatile ("outb %0, %1" : : "a"(val), "Nd"(port));
-}
-static inline uint8_t inb(uint16_t port) {
-    uint8_t val;
-    __asm__ volatile ("inb %1, %0" : "=a"(val) : "Nd"(port));
-    return val;
-}
-
-/* read indexed port (index->data pair) */
-static inline uint8_t read_indexed(uint16_t idx_port, uint16_t data_port, uint8_t idx) {
-    __asm__ volatile ("outb %0, %1" : : "a"(idx), "Nd"(idx_port));
-    uint8_t v;
-    __asm__ volatile ("inb %1, %0" : "=a"(v) : "Nd"(data_port));
-    return v;
-}
-
 /* read attribute register (special flip-flop) */
 static uint8_t read_attr(uint8_t index) {
-    (void)inb(0x3DA);             /* reset flip-flop */
-    outb(0x3C0, index);
-    return inb(0x3C1);
+    (void)io_inb(0x3DA);             /* reset flip-flop */
+    io_outb(0x3C0, index);
+    return io_inb(0x3C1);
 }
 
 /* Dump a few critical registers to serial */
 void dump_vga_regs(void) {
     char buf[64];
     serial_puts("MISC: ");
-    uint8_t m = inb(0x3CC); // read-back misc
+    uint8_t m = io_inb(0x3CC); // read-back misc
 	serial_puts("0x");
     serial_put_hex8(m); /* print hex nibble helper omitted for brevity */
     /* print as decimal for quick check */
@@ -47,18 +30,18 @@ void dump_vga_regs(void) {
     /* Sequencer 0..4 */
     serial_puts("\nSEQ: 0x");
     for (int i=0;i<5;++i) {
-        uint8_t v = read_indexed(0x3C4, 0x3C5, (uint8_t)i);
+        uint8_t v = io_read_indexed(0x3C4, 0x3C5, (uint8_t)i);
         serial_put_hex8(v);
     }
     serial_puts("\nCRTC0-4:");
     for (int i=0;i<5;++i) {
-        uint8_t v = read_indexed(0x3D4, 0x3D5, (uint8_t)i);
+        uint8_t v = io_read_indexed(0x3D4, 0x3D5, (uint8_t)i);
         serial_putc(' ');
         serial_put_hex8(v);
     }
     serial_puts("\nGFX:");
     for (int i=0;i<9;++i) {
-        uint8_t v = read_indexed(0x3CE, 0x3CF, (uint8_t)i);
+        uint8_t v = io_read_indexed(0x3CE, 0x3CF, (uint8_t)i);
         serial_putc(' ');
         serial_put_hex8(v);
     }
@@ -68,15 +51,15 @@ void dump_vga_regs(void) {
 
 /* write indexed register helper for ports with index/data pairs */
 static inline void write_indexed(uint16_t idx_port, uint16_t data_port, uint8_t idx, uint8_t val) {
-    outb(idx_port, idx);
-    outb(data_port, val);
+    io_outb(idx_port, idx);
+    io_outb(data_port, val);
 }
 
 /* Attribute controller write (must read 0x3DA to unlock flip-flop) */
 static void write_attr(uint8_t index, uint8_t value) {
-    (void)inb(0x3DA);         /* reset attribute controller flip-flop */
-    outb(0x3C0, index);
-    outb(0x3C0, value);
+    (void)io_inb(0x3DA);         /* reset attribute controller flip-flop */
+    io_outb(0x3C0, index);
+    io_outb(0x3C0, value);
 }
 
 /* ---- VGA Mode 13 register tables (canonical) ----
@@ -114,19 +97,19 @@ static const uint8_t attribute_vals[21] = {
 /* ---- Helper: disable/enable sequencer display while updating ---- */
 static void disable_display(void) {
     /* Sequencer index 0 = Reset. Writing 0x01 puts in reset */
-    outb(0x3C4, 0x00);
-    outb(0x3C5, 0x01);
+    io_outb(0x3C4, 0x00);
+    io_outb(0x3C5, 0x01);
 }
 static void enable_display(void) {
     /* Sequencer index 0 = Reset. Writing 0x03 brings out of reset/run */
-    outb(0x3C4, 0x00);
-    outb(0x3C5, 0x03);
+    io_outb(0x3C4, 0x00);
+    io_outb(0x3C5, 0x03);
 }
 
 /* Unlock CRTC registers (clear protect bit in index 0x11) */
 static void unlock_crtc(void) {
-	outb(0x3D4, 0x11);
-	outb(0x3D5, inb(0x3D5) & ~0x80);
+	io_outb(0x3D4, 0x11);
+	io_outb(0x3D5, io_inb(0x3D5) & ~0x80);
 }
 
 // https://files.osdev.org/mirrors/geezer/osd/graphics/modes.c
@@ -137,7 +120,7 @@ void set_mode13_by_registers(void) {
     disable_display();
 
     /* Misc output */
-    outb(0x3C2, misc_output);
+    io_outb(0x3C2, misc_output);
 
     /* Sequencer registers (0..4) */
     for (int i = 0; i < 5; ++i) {
@@ -160,8 +143,8 @@ void set_mode13_by_registers(void) {
 		write_attr((uint8_t)i, attribute_vals[i]);
 	}
 
-	(void)inb(0x3DA);     // reset flip-flop
-	outb(0x3C0, 0x20); 
+	(void)io_inb(0x3DA);     // reset flip-flop
+	io_outb(0x3C0, 0x20); 
 
     /* Clear VGA memory at 0xA0000 (320*200 bytes) */
     volatile uint8_t *vga = (uint8_t*)0xA0000;
@@ -174,10 +157,10 @@ void set_mode13_by_registers(void) {
 
 /* ---- Palette (DAC) helper: set single palette entry (each component 0..63) ---- */
 static void set_dac_entry(uint8_t index, uint8_t r, uint8_t g, uint8_t b) {
-    outb(0x3C8, index); /* start index */
-    outb(0x3C9, r);
-    outb(0x3C9, g);
-    outb(0x3C9, b);
+    io_outb(0x3C8, index); /* start index */
+    io_outb(0x3C9, r);
+    io_outb(0x3C9, g);
+    io_outb(0x3C9, b);
 }
 
 /* Load a simple greyscale palette (optional) */
@@ -253,9 +236,9 @@ static void pit_wait_seconds(uint32_t seconds) {
     if (divisor == 0) divisor = 1;
 
     /* Command: channel 0, access lobyte/hibyte (3), mode 2 (rate gen), binary (0) */
-    outb(0x43, 0x34);
-    outb(0x40, (uint8_t)(divisor & 0xFF));      /* low */
-    outb(0x40, (uint8_t)((divisor >> 8) & 0xFF)); /* high */
+    io_outb(0x43, 0x34);
+    io_outb(0x40, (uint8_t)(divisor & 0xFF));      /* low */
+    io_outb(0x40, (uint8_t)((divisor >> 8) & 0xFF)); /* high */
 
     uint32_t target_ticks = seconds * TARGET_HZ;
     uint32_t ticks = 0;
@@ -265,9 +248,9 @@ static void pit_wait_seconds(uint32_t seconds) {
 
     while (ticks < target_ticks) {
         /* Latch current count for channel 0: control word with latch (access=00) */
-        outb(0x43, 0x00); /* latch count for channel 0 */
-        uint8_t lo = inb(0x40);
-        uint8_t hi = inb(0x40);
+        io_outb(0x43, 0x00); /* latch count for channel 0 */
+        uint8_t lo = io_inb(0x40);
+        uint8_t hi = io_inb(0x40);
         uint16_t current = (uint16_t)((hi << 8) | lo);
         /* In mode 2 the counter counts down; compute elapsed = (initial - current) mod 65536,
            but since divisor < 65536, and initial==divisor, we can do a small modulo */

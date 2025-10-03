@@ -20,8 +20,8 @@ static const char scancode_to_ascii_shift[128] = {
 
 
 char keyboard_get_key(void) {
-    while ((inb(0x64) & 1) == 0); // wait till data ready
-    unsigned char sc = inb(0x60);
+    while ((io_inb(0x64) & 1) == 0); // wait till data ready
+    unsigned char sc = io_inb(0x60);
 
     // Handle key release
     if (sc & 0x80) {
