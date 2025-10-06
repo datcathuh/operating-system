@@ -30,7 +30,8 @@ struct vga_mode vga_mode_text_80x25 = {
 		0x0C, 0x00, 0x0F, 0x08, 0x00
 	},
 	.width = 80,
-	.height = 25
+	.height = 25,
+	.flags = vga_mode_text,
 };
 
 struct vga_mode vga_mode_320x200x256 = {
@@ -60,6 +61,7 @@ struct vga_mode vga_mode_320x200x256 = {
 	},
 	.width = 320,
 	.height = 200,
+	.flags = vga_mode_gfx,
 };
 
 

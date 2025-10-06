@@ -28,6 +28,11 @@ void vga_put_string(const char *s);
 void vga_set_color(enum vga_color fg, enum vga_color bg);
 void vga_put_string_color(const char *s, enum vga_color fg, enum vga_color bg);
 
+enum vga_mode_flags {
+	vga_mode_text,
+	vga_mode_gfx,
+};
+
 struct vga_mode {
 	char name[32];
 	uint8_t misc;
@@ -37,6 +42,7 @@ struct vga_mode {
 	uint8_t attr[21];
 
 	uint32_t width, height;
+	enum vga_mode_flags flags;
 };
 
 void vga_dump_regs(void);
