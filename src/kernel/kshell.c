@@ -5,14 +5,13 @@
 #include "vga.h"
 
 static const char* _prompt = " > ";
-static const int _prompt_length = sizeof(_prompt) - 1;
 #define _commands_size 10
 static struct kshell_command _commands[_commands_size];
 
 static void prompt() {
 	vga_output_pos_set(0, vga_mode_current->height - 1);
 	vga_put_string(_prompt);
-	vga_cursor_pos_set(_prompt_length, vga_mode_current->height - 1);
+	vga_cursor_pos_set(str_length(_prompt), vga_mode_current->height - 1);
 }
 
 void kshell_init() {
@@ -74,7 +73,7 @@ void kshell() {
 			if(c == '\b') {
 				int x,y;
 				vga_output_pos_get(&x, &y);
-				if(x <= _prompt_length) {
+				if(x <= str_length(_prompt)) {
 					continue;
 				}
 				command[str_length(command) - 1] = 0;
