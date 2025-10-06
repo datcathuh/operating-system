@@ -1,6 +1,7 @@
 #include "kshell.h"
 #include "kshell_help.h"
 #include "kshell_mandelbrot.h"
+#include "kshell_shutdown.h"
 #include "vga.h"
 
 void kmain(void) {
@@ -9,5 +10,6 @@ void kmain(void) {
 	kshell_init();
 	kshell_help_register();
 	kshell_mandelbrot_register();
+	kshell_shutdown_register();
 	kshell();
 }

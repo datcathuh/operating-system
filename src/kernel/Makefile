@@ -1,9 +1,11 @@
+OBJECTS+=$(BUILD_DIR)/kernel/apm.o
 OBJECTS+=$(BUILD_DIR)/kernel/keyboard.o
 OBJECTS+=$(BUILD_DIR)/kernel/kernel-entry.o
 OBJECTS+=$(BUILD_DIR)/kernel/kernel.o
 OBJECTS+=$(BUILD_DIR)/kernel/kshell.o
 OBJECTS+=$(BUILD_DIR)/kernel/kshell_help.o
 OBJECTS+=$(BUILD_DIR)/kernel/kshell_mandelbrot.o
+OBJECTS+=$(BUILD_DIR)/kernel/kshell_shutdown.o
 OBJECTS+=$(BUILD_DIR)/kernel/memory.o
 OBJECTS+=$(BUILD_DIR)/kernel/pit.o
 OBJECTS+=$(BUILD_DIR)/kernel/serial.o

@@ -12,6 +12,10 @@ static inline void io_outb(uint16_t port, uint8_t val) {
     __asm__ volatile ("outb %0, %1" : : "a"(val), "Nd"(port));
 }
 
+static inline void io_outw(uint16_t port, uint16_t val) {
+    __asm__ volatile ("outw %0, %1" : : "a"(val), "Nd"(port));
+}
+
 /* read indexed port (index->data pair) */
 static inline uint8_t io_read_indexed(uint16_t idx_port, uint16_t data_port, uint8_t idx) {
     __asm__ volatile ("outb %0, %1" : : "a"(idx), "Nd"(idx_port));
