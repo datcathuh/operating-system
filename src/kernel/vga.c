@@ -246,7 +246,7 @@ void vga_mode_set(struct vga_mode *mode) {
 
     /* Clear VGA memory at 0xA0000 (320*200 bytes) */
     volatile uint8_t *vga = (uint8_t*)0xA0000;
-    for (int i = 0; i < mode->width*mode->height; ++i) {
+    for (uint32_t i = 0; i < mode->width*mode->height; ++i) {
 		vga[i] = 0x00;
 	}
 

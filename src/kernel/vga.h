@@ -36,7 +36,7 @@ struct vga_mode {
 	uint8_t gfx[9];
 	uint8_t attr[21];
 
-	int width, height;
+	uint32_t width, height;
 };
 
 void vga_dump_regs(void);
