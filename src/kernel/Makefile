@@ -5,6 +5,7 @@ OBJECTS+=$(BUILD_DIR)/kernel/kshell.o
 OBJECTS+=$(BUILD_DIR)/kernel/kshell_help.o
 OBJECTS+=$(BUILD_DIR)/kernel/kshell_mandelbrot.o
 OBJECTS+=$(BUILD_DIR)/kernel/memory.o
+OBJECTS+=$(BUILD_DIR)/kernel/pit.o
 OBJECTS+=$(BUILD_DIR)/kernel/serial.o
 OBJECTS+=$(BUILD_DIR)/kernel/string.o
 OBJECTS+=$(BUILD_DIR)/kernel/vga.o

@@ -1,16 +1,7 @@
-/* vga_mode13_mandelbrot.c
-   Freestanding kernel code (protected mode, ring 0).
-   - Programs VGA registers for Mode 13h
-   - Draws Mandelbrot to 0xA0000 using fixed-point arithmetic (Q16.16)
-   - Waits 10 seconds using PIT polling
-*/
-
-#include "io.h"
 #include "kshell.h"
 #include "kshell_mandelbrot.h"
-#include "serial.h"
+#include "pit.h"
 #include "vga.h"
-#include <stdint.h>
 
 /* ---- Mandelbrot using Q16.16 fixed point arithmetic ----
    - x0,y0 are Q16.16
@@ -61,42 +52,6 @@ static void draw_mandelbrot_mode13(void) {
             uint8_t color = (iteration == max_iteration) ? 0 : (uint8_t)((iteration * 5) & 0xFF);
             frame[py * width + px] = color;
         }
-    }
-}
-
-/* ---- PIT-based polling wait (no IRQs): program PIT channel 0 to ~100Hz and poll its counter.
-   Explanation:
-   - We program PIT channel 0, access mode lobyte/hibyte, mode 2 (rate generator)
-   - Divisor chosen to produce ~100 Hz (1193182 / 11932 ~= 100)
-   - We then repeatedly latch and read the current counter and compute elapsed ticks.
-*/
-static void pit_wait_seconds(uint32_t seconds) {
-    const uint32_t PIT_FREQ = 1193182U;
-    const uint32_t TARGET_HZ = 100; /* 100 ticks per second */
-    uint16_t divisor = (uint16_t)(PIT_FREQ / TARGET_HZ);
-    if (divisor == 0) divisor = 1;
-
-    /* Program PIT: channel 0, lobyte/hibyte, mode 2 (rate generator) */
-    io_outb(0x43, 0x34);
-    io_outb(0x40, divisor & 0xFF);
-    io_outb(0x40, divisor >> 8);
-
-    uint32_t ticks_needed = seconds * TARGET_HZ;
-    uint32_t ticks = 0;
-
-    /* Read initial counter value */
-    io_outb(0x43, 0x00);  // latch count
-    uint16_t last = io_inb(0x40) | (io_inb(0x40) << 8);
-
-    while (ticks < ticks_needed) {
-        io_outb(0x43, 0x00);  // latch again
-        uint16_t now = io_inb(0x40) | (io_inb(0x40) << 8);
-
-        if (now > last) {
-            /* Counter wrapped around once */
-            ticks++;
-        }
-        last = now;
     }
 }
 
