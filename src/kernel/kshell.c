@@ -28,6 +28,10 @@ bool kshell_register_command(const struct kshell_command *cmd) {
 	return false;
 }
 
+const struct kshell_command* kshell_commands_get() {
+	return _commands;
+}
+
 struct kshell_command* kshell_find_command(const char *name) {
 	for(int i=0;i < _commands_size;i++) {
 		if(str_compare(_commands[i].name, name) == 0) {

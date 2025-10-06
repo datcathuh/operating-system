@@ -1,9 +1,18 @@
 #include "kshell.h"
 #include "kshell_help.h"
+#include "string.h"
 #include "vga.h"
 
 static void kshell_help_cb() {
-	vga_put_string("Hello from this application!");
+	vga_put_string("Welcome to Hugo OS!\n\n");
+	vga_put_string("The following commands are available:\n\n");
+
+	const struct kshell_command* commands = kshell_commands_get();
+	for(int i=0;str_length(commands[i].name) > 0;i++) {
+		vga_put_string("  ");
+		vga_put_string(commands[i].name);
+		vga_put_string("\n");
+	}
 }
 
 void kshell_help_register() {
