@@ -1,6 +1,6 @@
 #include "keyboard.h"
-#include "io.h"
-#include <stdbool.h>
+#include "irq_keyboard.h"
+#include <stdint.h>
 
 static bool shift_pressed = false;
 
@@ -18,29 +18,35 @@ static const char scancode_to_ascii_shift[128] = {
     'Z','X','C','V','B','N','M','<','>','?', 0,'*',0,' ',
 };
 
-
 char keyboard_get_key(void) {
-    while ((io_inb(0x64) & 1) == 0); // wait till data ready
-    unsigned char sc = io_inb(0x60);
+	uint8_t sc;
+	bool key_fetched = false;
+	while(!key_fetched) {
+		__asm__ volatile("hlt");
+		key_fetched = irq_keyboard_consume_key(&sc);
+		if(key_fetched) {
+			// Handle key release
+			if (sc & 0x80) {
+				sc &= 0x7F;
 
-    // Handle key release
-    if (sc & 0x80) {
-        sc &= 0x7F; 
+				if (sc == 42 || sc == 54) {
+					shift_pressed = false;
+				}
 
-        if (sc == 42 || sc == 54) shift_pressed = false;
+				return 0;
+			} else {
+				// looks for shift presses
+				if (sc == 42 || sc == 54) {
+					shift_pressed = true;
+					return 0;
+				}
 
-        return 0;
-    } else {
-        // looks for shift presses
-        if (sc == 42 || sc == 54) {
-            shift_pressed = true;
-            return 0;
-        }
-
-        if (sc < 128) {
-            return shift_pressed ? scancode_to_ascii_shift[sc] : scancode_to_ascii[sc];
-        }
-
-        return 0;
-    }
+				if (sc < 128) {
+					return shift_pressed ? scancode_to_ascii_shift[sc] : scancode_to_ascii[sc];
+				}
+				return 0;
+			}
+		}
+	}
+	return 0;
 }
