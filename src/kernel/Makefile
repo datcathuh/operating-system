@@ -28,6 +28,8 @@ $(BUILD_DIR)/kernel/kernel.elf: $(OBJECTS)
 
 $(BUILD_DIR)/kernel/kernel.bin: $(BUILD_DIR)/kernel/kernel.elf
 	objcopy -O binary $(BUILD_DIR)/kernel/kernel.elf $(BUILD_DIR)/kernel/kernel.bin
+	@echo -n "Kernel sector count: "
+	@./kernel-sector-count
 
 clean:
 	$(RM) -f $(BUILD_DIR)/kernel/*.o $(BUILD_DIR)/kernel/kernel.bin $(BUILD_DIR)/kernel/kernel.elf
