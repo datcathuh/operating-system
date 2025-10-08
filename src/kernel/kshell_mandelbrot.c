@@ -1,7 +1,6 @@
 #include "kshell.h"
 #include "kshell_mandelbrot.h"
 #include "pit.h"
-#include "serial.h"
 #include "vga.h"
 
 /* ---- Mandelbrot using Q16.16 fixed point arithmetic ----

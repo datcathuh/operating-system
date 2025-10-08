@@ -1,5 +1,7 @@
 #pragma once
 
+#include <stdbool.h>
+
 struct kshell_command {
 	char name[20];
 	void (*callback)();
