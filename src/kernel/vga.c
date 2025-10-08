@@ -276,8 +276,23 @@ static void vga_write_attr(uint8_t index, uint8_t value) {
 // https://files.osdev.org/mirrors/geezer/osd/graphics/modes.c
 // https://wiki.osdev.org/VGA_Hardware
 
-#define pokeb(seg, off, val) (*(uint8_t*)( ((seg)<<4) + (off) ) = (val))
-#define pokew(seg, off, val) (*(uint16_t*)( ((seg)<<4) + (off) ) = (val))
+#include <stdint.h>
+
+static inline void pokeb(uint16_t seg, uint16_t off, uint8_t val) {
+#pragma GCC diagnostic push
+#pragma GCC diagnostic ignored "-Warray-bounds"
+	volatile uint8_t *p = (volatile uint8_t *)(uintptr_t)((seg << 4) + off);
+    *p = val;
+#pragma GCC diagnostic pop
+}
+
+static inline void pokew(uint16_t seg, uint16_t off, uint16_t val) {
+#pragma GCC diagnostic push
+#pragma GCC diagnostic ignored "-Warray-bounds"
+	volatile uint16_t *p = (volatile uint16_t *)(uintptr_t)((seg << 4) + off);
+    *p = val;
+#pragma GCC diagnostic pop
+}
 
 // Restore the standard BIOS 16-color palette for text mode
 void vga_restore_default_text_colors(void) {
