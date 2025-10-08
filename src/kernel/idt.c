@@ -14,7 +14,7 @@ struct IDTPtr {
     uint32_t base;
 } __attribute__((packed));
 
-struct IDTEntry idt[256];
+struct IDTEntry idt[256] = { 0 };
 struct IDTPtr idtp;
 
 void idt_gate_set(int n, uint32_t handler) {

@@ -1,5 +1,9 @@
 OBJECTS+=$(BUILD_DIR)/kernel/apm.o
 OBJECTS+=$(BUILD_DIR)/kernel/idt.o
+OBJECTS+=$(BUILD_DIR)/kernel/irq_keyboard_asm.o
+OBJECTS+=$(BUILD_DIR)/kernel/irq_keyboard_c.o
+OBJECTS+=$(BUILD_DIR)/kernel/irq_timer_asm.o
+OBJECTS+=$(BUILD_DIR)/kernel/irq_timer_c.o
 OBJECTS+=$(BUILD_DIR)/kernel/keyboard.o
 OBJECTS+=$(BUILD_DIR)/kernel/kernel-entry.o
 OBJECTS+=$(BUILD_DIR)/kernel/kernel.o
@@ -23,7 +27,7 @@ $(BUILD_DIR)/kernel/%.o: %.c
 	@mkdir -p $(dir $@)
 	$(CC) $(CFLAGS) -c $< -o $@
 
-$(BUILD_DIR)/kernel/kernel-entry.o: kernel-entry.asm
+$(BUILD_DIR)/kernel/%.o: %.asm
 	nasm $< -f elf32 -o $@
 
 $(BUILD_DIR)/kernel/kernel.elf: $(OBJECTS)
