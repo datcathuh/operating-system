@@ -147,23 +147,23 @@ void vga_put_string_color(const char *s, enum vga_color fg, enum vga_color bg) {
 
 void vga_dump_regs(void) {
     serial_puts("MISC: ");
-    uint8_t m = io_inb(0x3CC); // read-back misc
-	serial_puts("0x");
-    serial_put_hex8(m); /* print hex nibble helper omitted for brevity */
-    /* print as decimal for quick check */
-    serial_puts(" ");
-    /* Sequencer 0..4 */
-    serial_puts("\nSEQ: 0x");
+    uint8_t m = io_inb(0x3CC);
+    serial_put_hex8(m);
+
+    serial_puts("\nSEQ:");
     for (int i=0;i<5;++i) {
         uint8_t v = io_read_indexed(0x3C4, 0x3C5, (uint8_t)i);
+        serial_putc(' ');
         serial_put_hex8(v);
     }
-    serial_puts("\nCRTC0-4:");
-    for (int i=0;i<5;++i) {
+
+    serial_puts("\nCRTC0-24:");
+    for (int i=0;i<25;++i) {
         uint8_t v = io_read_indexed(0x3D4, 0x3D5, (uint8_t)i);
         serial_putc(' ');
         serial_put_hex8(v);
     }
+
     serial_puts("\nGFX:");
     for (int i=0;i<9;++i) {
         uint8_t v = io_read_indexed(0x3CE, 0x3CF, (uint8_t)i);
