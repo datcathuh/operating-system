@@ -1,6 +1,6 @@
 #include "kshell.h"
 #include "kshell_julia.h"
-#include "pit.h"
+#include "keyboard.h"
 #include "vga.h"
 
 #define SCREEN_WIDTH 320
@@ -73,7 +73,7 @@ static void kshell_julia_cb(void) {
         ymax = ycenter + yhalf;
 	}
 
-	pit_wait_seconds(10);
+	while(keyboard_get_key() == 0){}
 
     vga_mode_set(prev);
 }

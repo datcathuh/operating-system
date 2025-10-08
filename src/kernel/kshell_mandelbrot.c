@@ -1,6 +1,6 @@
 #include "kshell.h"
 #include "kshell_mandelbrot.h"
-#include "pit.h"
+#include "keyboard.h"
 #include "vga.h"
 
 /* ---- Mandelbrot using Q16.16 fixed point arithmetic ----
@@ -62,7 +62,7 @@ static void kshell_mandelbrot_cb(void) {
     vga_dac_greyscale_palette();    /* optional: load greyscale palette so indices map to visible shades */
     draw_mandelbrot_mode13();
 
-	pit_wait_seconds(10);
+	while(keyboard_get_key() == 0){}
 
     vga_mode_set(prev);
 }
