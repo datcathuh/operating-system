@@ -1,11 +1,16 @@
+#include "idt.h"
 #include "kshell.h"
 #include "kshell_help.h"
 #include "kshell_julia.h"
 #include "kshell_mandelbrot.h"
 #include "kshell_shutdown.h"
+#include "pic.h"
 #include "vga.h"
 
 void kmain(void) {
+	pic_remap();
+	idt_install();
+
 	vga_init();
 	vga_mode_set(&vga_mode_text_80x25);
 
