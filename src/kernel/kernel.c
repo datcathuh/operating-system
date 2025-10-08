@@ -2,6 +2,7 @@
 #include "irq_keyboard.h"
 #include "irq_timer.h"
 #include "kshell.h"
+#include "kshell_bga.h"
 #include "kshell_help.h"
 #include "kshell_julia.h"
 #include "kshell_mandelbrot.h"
@@ -21,6 +22,7 @@ void kmain(void) {
 	vga_mode_set(&vga_mode_text_80x25);
 
 	kshell_init();
+	kshell_bga_register();
 	kshell_help_register();
 	kshell_julia_register();
 	kshell_mandelbrot_register();

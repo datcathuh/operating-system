@@ -8,6 +8,7 @@ OBJECTS+=$(BUILD_DIR)/kernel/keyboard.o
 OBJECTS+=$(BUILD_DIR)/kernel/kernel-entry.o
 OBJECTS+=$(BUILD_DIR)/kernel/kernel.o
 OBJECTS+=$(BUILD_DIR)/kernel/kshell.o
+OBJECTS+=$(BUILD_DIR)/kernel/kshell_bga.o
 OBJECTS+=$(BUILD_DIR)/kernel/kshell_help.o
 OBJECTS+=$(BUILD_DIR)/kernel/kshell_julia.o
 OBJECTS+=$(BUILD_DIR)/kernel/kshell_mandelbrot.o
