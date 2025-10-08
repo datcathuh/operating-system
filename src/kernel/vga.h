@@ -19,6 +19,9 @@ enum vga_color {
     White = 15,
 };
 
+void vga_init(void);
+void vga_font_save(uint8_t *buffer);
+void vga_font_restore(uint8_t *buffer);
 void vga_cursor_pos_set(int x, int y);
 void vga_output_pos_get(int *x, int *y);
 void vga_output_pos_set(int x, int y);

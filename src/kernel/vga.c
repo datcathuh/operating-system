@@ -4,24 +4,24 @@
 
 static volatile uint8_t *vidmem = (uint8_t*)0xb8000;
 static uint32_t cursor = 0;
-static uint8_t current_color = 0x07;  // Default: light gray on black
+static uint8_t current_color = 0x07; // Default: light gray on black
+#define VGA_FONT_SIZE 4096
+static uint8_t vga_font[VGA_FONT_SIZE];
 
 struct vga_mode *vga_mode_current = 0;
 
 struct vga_mode vga_mode_text_80x25 = {
 	.name = "80x25 (text)",
 	.misc = 0x67,
-	.seq = {
-		0x03, 0x00, 0x03, 0x00, 0x02
-	},
+	.seq = {0x03, 0x00, 0x03, 0x00, 0x02},
 	.crtc = {
 		0x5F, 0x4F, 0x50, 0x82, 0x55, 0x81, 0xBF, 0x1F,
-		0x00, 0x4F, 0x0D, 0x0E, 0x00, 0x00, 0x00, 0x50,
-		0x9C, 0x0E, 0x8F, 0x28, 0x1F, 0x96, 0xB9, 0xA3,
+		0x00, 0x4F, 0x0D, 0x0E, 0x00, 0x00, 0x00, 0xF0,
+		0x9C, 0x8E, 0x8F, 0x28, 0x1F, 0x96, 0xB9, 0xA3,
 		0xFF
 	},
 	.gfx = {
-		0x00, 0x00, 0x00, 0x00, 0x00, 0x10, 0x0E, 0x00,
+		0x00, 0x00, 0x00, 0x00, 0x00, 0x10, 0x0E, 0x0F,
 		0xFF
 	},
 	.attr = {
@@ -64,6 +64,67 @@ struct vga_mode vga_mode_320x200x256 = {
 	.flags = vga_mode_gfx,
 };
 
+void vga_init(void) {
+	vga_font_save(vga_font);
+}
+
+void vga_font_save(uint8_t *buffer) {
+	io_outb(0x3C4, 0x02); io_outb(0x3C5, 0x04); // Write plane 2
+    io_outb(0x3C4, 0x04); io_outb(0x3C5, 0x07); // Disable chain-4, odd/even
+
+    io_outb(0x3CE, 0x04); io_outb(0x3CF, 0x02); // Read plane 2
+    io_outb(0x3CE, 0x05); io_outb(0x3CF, 0x00); // Disable odd/even
+    io_outb(0x3CE, 0x06); io_outb(0x3CF, 0x00); // Map A0000h
+
+    volatile uint8_t *vga = (uint8_t *)0xA0000;
+    for (int i = 0; i < 256; i++) {
+        for (int y = 0; y < 16; y++) {
+            buffer[i * 16 + y] = vga[i * 32 + y];
+
+            // Debug: dump each byte as binary
+			/*
+            uint8_t value = buffer[i * 16 + y];
+            for (int b = 7; b >= 0; b--) {
+                serial_putc((value & (1 << b)) ? '1' : '0');
+            }
+            serial_putc('\n');
+			*/
+        }
+    }
+
+	io_outb(0x3C4, 0x02); io_outb(0x3C5, 0x03); // Planes 0+1
+    io_outb(0x3C4, 0x04); io_outb(0x3C5, 0x03); // Enable odd/even
+
+    io_outb(0x3CE, 0x04); io_outb(0x3CF, 0x00); // Read plane 0
+    io_outb(0x3CE, 0x05); io_outb(0x3CF, 0x10); // Enable odd/even
+    io_outb(0x3CE, 0x06); io_outb(0x3CF, 0x0E); // Map B8000h (text)
+}
+
+void vga_font_restore(uint8_t *font) {
+    io_outw(0x3C4, 0x0100);  // reset sequencer
+    io_outw(0x3C4, 0x0300);  // end reset
+
+    io_outb(0x3C4, 0x02); io_outb(0x3C5, 0x04);   // map mask: plane 2
+    io_outb(0x3C4, 0x04); io_outb(0x3C5, 0x07);   // disable chain-4 and odd/even
+
+    io_outb(0x3CE, 0x04); io_outb(0x3CF, 0x02);   // read plane 2
+    io_outb(0x3CE, 0x05); io_outb(0x3CF, 0x00);   // disable odd/even + shift
+    io_outb(0x3CE, 0x06); io_outb(0x3CF, 0x00);   // map A0000-AFFFF
+
+    volatile uint8_t *vga = (uint8_t *)0xA0000;
+    for (int i = 0; i < 256; i++) {
+        for (int y = 0; y < 16; y++)
+            vga[i * 32 + y] = font[i * 16 + y];
+    }
+
+    io_outb(0x3C4, 0x02); io_outb(0x3C5, 0x03);   // planes 0+1
+    io_outb(0x3C4, 0x04); io_outb(0x3C5, 0x03);   // re-enable chain 4
+    io_outb(0x3CE, 0x04); io_outb(0x3CF, 0x00);   // read plane 0
+    io_outb(0x3CE, 0x05); io_outb(0x3CF, 0x10);   // enable odd/even
+    io_outb(0x3CE, 0x06); io_outb(0x3CF, 0x0E);   // map B8000-BFFFF
+
+    io_outb(0x3D4, 0x09); io_outb(0x3D5, 0x0F);   // 16 scanlines/char
+}
 
 static inline uint8_t vga_color_entry(enum vga_color fg, enum vga_color bg) {
     return fg | (bg << 4);
@@ -213,6 +274,43 @@ static void vga_write_attr(uint8_t index, uint8_t value) {
 }
 
 // https://files.osdev.org/mirrors/geezer/osd/graphics/modes.c
+// https://wiki.osdev.org/VGA_Hardware
+
+#define pokeb(seg, off, val) (*(uint8_t*)( ((seg)<<4) + (off) ) = (val))
+#define pokew(seg, off, val) (*(uint16_t*)( ((seg)<<4) + (off) ) = (val))
+
+// Restore the standard BIOS 16-color palette for text mode
+void vga_restore_default_text_colors(void) {
+    // Each color uses 6 bits per channel (0–63)
+    static const uint8_t vga_default_palette[16][3] = {
+        { 0,  0,  0},   // 0: black
+        { 0,  0, 42},   // 1: blue
+        { 0, 42,  0},   // 2: green
+        { 0, 42, 42},   // 3: cyan
+        {42,  0,  0},   // 4: red
+        {42,  0, 42},   // 5: magenta
+        {42, 21,  0},   // 6: brown
+        {42, 42, 42},   // 7: light gray
+        {21, 21, 21},   // 8: dark gray
+        {21, 21, 63},   // 9: light blue
+        {21, 63, 21},   // 10: light green
+        {21, 63, 63},   // 11: light cyan
+        {63, 21, 21},   // 12: light red
+        {63, 21, 63},   // 13: light magenta
+        {63, 63, 21},   // 14: yellow
+        {63, 63, 63},   // 15: white
+    };
+
+    // Tell VGA DAC we’re updating from index 0
+    io_outb(0x3C8, 0x00);
+
+    // Write RGB triplets for colors 0–15
+    for (int i = 0; i < 16; ++i) {
+        io_outb(0x3C9, vga_default_palette[i][0]);
+        io_outb(0x3C9, vga_default_palette[i][1]);
+        io_outb(0x3C9, vga_default_palette[i][2]);
+    }
+}
 
 void vga_mode_set(struct vga_mode *mode) {
     vga_display_disable();
@@ -247,12 +345,31 @@ void vga_mode_set(struct vga_mode *mode) {
 	io_outb(0x3C0, 0x20);
 
     /* Clear VGA memory at 0xA0000 (320*200 bytes) */
-    volatile uint8_t *vga = (uint8_t*)0xA0000;
-    for (uint32_t i = 0; i < mode->width*mode->height; ++i) {
-		vga[i] = 0x00;
+	if(mode->flags == vga_mode_gfx) {
+		volatile uint8_t *vga = (uint8_t*)0xA0000;
+		for (uint32_t i = 0; i < mode->width*mode->height; ++i) {
+			vga[i] = 0x00;
+		}
 	}
 
-    vga_display_enable();
+	if(mode->flags == vga_mode_text) {
+		vga_font_restore(vga_font);
 
+		vga_restore_default_text_colors();
+
+		uint8_t ht = 16;
+		pokew(0x40, 0x4A, mode->width);	/* columns on screen */
+		pokew(0x40, 0x4C, mode->width * mode->height * 2); /* framebuffer size */
+		pokew(0x40, 0x50, 0);		/* cursor pos'n */
+		pokeb(0x40, 0x60, ht - 1);	/* cursor shape */
+		pokeb(0x40, 0x61, ht - 2);
+		pokeb(0x40, 0x84, mode->height - 1);	/* rows on screen - 1 */
+		pokeb(0x40, 0x85, ht);		/* char height */
+		pokew(0x40, 0x4E, 0xB800);
+	}
 	vga_mode_current = mode;
+
+	vga_clear();
+
+    vga_display_enable();
 }

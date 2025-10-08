@@ -1,6 +1,7 @@
 #include "kshell.h"
 #include "kshell_mandelbrot.h"
 #include "pit.h"
+#include "serial.h"
 #include "vga.h"
 
 /* ---- Mandelbrot using Q16.16 fixed point arithmetic ----
@@ -63,8 +64,6 @@ static void kshell_mandelbrot_cb(void) {
     draw_mandelbrot_mode13();
 
 	pit_wait_seconds(10);
-
-	vga_dump_regs();
 
     vga_mode_set(prev);
 }
