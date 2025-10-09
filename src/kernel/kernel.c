@@ -7,11 +7,18 @@
 #include "kshell_julia.h"
 #include "kshell_mandelbrot.h"
 #include "kshell_shutdown.h"
+#include "pci.h"
 #include "pic.h"
+#include "serial.h"
 #include "vga.h"
+
+void pci_cb(struct pci_device *dev) {
+	serial_puts("Device found\n");
+}
 
 void kmain(void) {
 	__asm__ volatile("cli");
+	pci_enumerate(pci_cb);
 	pic_remap();
 	idt_install();
 	irq_keyboard_register();

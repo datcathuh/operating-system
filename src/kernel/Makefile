@@ -14,6 +14,7 @@ OBJECTS+=$(BUILD_DIR)/kernel/kshell_julia.o
 OBJECTS+=$(BUILD_DIR)/kernel/kshell_mandelbrot.o
 OBJECTS+=$(BUILD_DIR)/kernel/kshell_shutdown.o
 OBJECTS+=$(BUILD_DIR)/kernel/memory.o
+OBJECTS+=$(BUILD_DIR)/kernel/pci.o
 OBJECTS+=$(BUILD_DIR)/kernel/pic.o
 OBJECTS+=$(BUILD_DIR)/kernel/pit.o
 OBJECTS+=$(BUILD_DIR)/kernel/serial.o
