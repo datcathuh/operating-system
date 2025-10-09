@@ -4,6 +4,14 @@
 #include "string.h"
 #include "vga.h"
 
+static char *_welcome =
+	"  ___ ___                       ________    _________\n"
+	" /   |   \\ __ __  ____   ____   \\_____  \\  /   _____/\n"
+	"/    ~    \\  |  \\/ ___\\ /  _ \\   /   |   \\ \\_____  \\ \n"
+	"\\    Y    /  |  / /_/  >  <_> ) /    |    \\/        \\\n"
+	" \\___|_  /|____/\\___  / \\____/  \\_______  /_______  /\n"
+	"       \\/      /_____/                  \\/        \\/\n";
+
 static const char* _prompt = " > ";
 #define _commands_size 10
 static struct kshell_command _commands[_commands_size];
@@ -43,9 +51,8 @@ struct kshell_command* kshell_find_command(const char *name) {
 
 void kshell() {
     vga_clear();
-    vga_put_string("Hello from os!\n");
-    vga_put_string("t.me/x3ghx \n");
-    vga_put_string_color("color support!\n", White, Magenta);
+
+	vga_put_string(_welcome);
 
     prompt();
 
