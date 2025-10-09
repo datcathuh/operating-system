@@ -1,5 +1,6 @@
 #include <stdint.h>
 #include <stdbool.h>
+#include "io.h"
 #include "keyboard.h"
 #include "kshell.h"
 #include "vga.h"
@@ -22,31 +23,21 @@
 
 #define BGA_FRAMEBUFFER 0xfd000000
 
-static inline void outw(uint16_t port, uint16_t val) {
-    __asm__ volatile ("outw %0, %1" :: "a"(val), "Nd"(port));
-}
-static inline uint16_t inw(uint16_t port) {
-    uint16_t ret;
-    __asm__ volatile ("inw %1, %0" : "=a"(ret) : "Nd"(port));
-    return ret;
-}
-
-// BGA helpers
 static inline void bga_write(uint16_t index, uint16_t value) {
-    outw(VBE_DISPI_IOPORT_INDEX, index);
-    outw(VBE_DISPI_IOPORT_DATA, value);
+    io_outw(VBE_DISPI_IOPORT_INDEX, index);
+    io_outw(VBE_DISPI_IOPORT_DATA, value);
 }
 static inline uint16_t bga_read(uint16_t index) {
-    outw(VBE_DISPI_IOPORT_INDEX, index);
-    return inw(VBE_DISPI_IOPORT_DATA);
+    io_outw(VBE_DISPI_IOPORT_INDEX, index);
+    return io_inw(VBE_DISPI_IOPORT_DATA);
 }
 
-bool bga_is_available(void) {
+static bool bga_is_available(void) {
     uint16_t id = bga_read(VBE_DISPI_INDEX_ID);
     return (id >= 0xB0C0 && id <= 0xB0C5);
 }
 
-void bga_set_mode(uint16_t width, uint16_t height, uint16_t bpp) {
+static void bga_set_mode(uint16_t width, uint16_t height, uint16_t bpp) {
     bga_write(VBE_DISPI_INDEX_ENABLE, VBE_DISPI_DISABLED);
     bga_write(VBE_DISPI_INDEX_XRES, width);
     bga_write(VBE_DISPI_INDEX_YRES, height);
@@ -61,7 +52,6 @@ static void init_graphics(void) {
     }
 
     // Set 1024x768x32 mode
-
 	uint32_t width = 1024, height = 768;
     bga_set_mode(width, height, 32);
 
@@ -74,6 +64,12 @@ static void init_graphics(void) {
     }
 
 	while(keyboard_get_key() == 0){}
+
+	// Step 1: Disable Bochs/VBE extension
+	bga_write(VBE_DISPI_INDEX_ENABLE, VBE_DISPI_DISABLED);
+
+	// Step 2: Reinitialize VGA miscellaneous output register
+	io_outb(0x3C2, 0x63); // 25 MHz, enable color VGA, etc.
 
     vga_mode_set(vga_mode_current);
 }
