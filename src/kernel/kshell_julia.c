@@ -1,7 +1,7 @@
 #include "kshell.h"
 #include "kshell_julia.h"
 #include "keyboard.h"
-#include "vga.h"
+#include "video/vga.h"
 
 #define SCREEN_WIDTH 320
 #define SCREEN_HEIGHT 200

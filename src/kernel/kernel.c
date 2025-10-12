@@ -11,7 +11,7 @@
 #include "pic.h"
 #include "serial.h"
 #include "string.h"
-#include "vga.h"
+#include "video/vga.h"
 
 void pci_cb(struct pci_device *dev) {
 	char vendorid[10];

@@ -3,7 +3,7 @@
 #include "io.h"
 #include "keyboard.h"
 #include "kshell.h"
-#include "vga.h"
+#include "video/vga.h"
 
 // BGA I/O port definitions
 #define VBE_DISPI_IOPORT_INDEX 0x01CE

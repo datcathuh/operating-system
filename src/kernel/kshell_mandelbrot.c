@@ -1,7 +1,7 @@
 #include "kshell.h"
 #include "kshell_mandelbrot.h"
 #include "keyboard.h"
-#include "vga.h"
+#include "video/vga.h"
 
 /* ---- Mandelbrot using Q16.16 fixed point arithmetic ----
    - x0,y0 are Q16.16

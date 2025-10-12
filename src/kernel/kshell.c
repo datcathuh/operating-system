@@ -2,7 +2,7 @@
 #include "kshell.h"
 #include "memory.h"
 #include "string.h"
-#include "vga.h"
+#include "video/vga.h"
 
 static char *_welcome =
 	"  ___ ___                       ________    _________\n"

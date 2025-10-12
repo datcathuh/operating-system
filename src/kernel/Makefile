@@ -19,9 +19,9 @@ OBJECTS+=$(BUILD_DIR)/kernel/pic.o
 OBJECTS+=$(BUILD_DIR)/kernel/pit.o
 OBJECTS+=$(BUILD_DIR)/kernel/serial.o
 OBJECTS+=$(BUILD_DIR)/kernel/string.o
-OBJECTS+=$(BUILD_DIR)/kernel/vga.o
+OBJECTS+=$(BUILD_DIR)/kernel/video/vga.o
 
-CFLAGS=-std=c23 -pedantic -Wall -Wextra -m32 -ffreestanding -O2 -nostdlib
+CFLAGS=-std=c23 -pedantic -Wall -Wextra -m32 -ffreestanding -O2 -nostdlib -I.
 
 all: $(BUILD_DIR)/kernel/kernel.bin
 
@@ -41,6 +41,6 @@ $(BUILD_DIR)/kernel/kernel.bin: $(BUILD_DIR)/kernel/kernel.elf
 	@./kernel-sector-count
 
 clean:
-	$(RM) -f $(BUILD_DIR)/kernel/*.o $(BUILD_DIR)/kernel/kernel.bin $(BUILD_DIR)/kernel/kernel.elf
+	$(RM) -f $(BUILD_DIR)/kernel/*.o $(BUILD_DIR)/kernel/video/*.o $(BUILD_DIR)/kernel/kernel.bin $(BUILD_DIR)/kernel/kernel.elf
 
 .PHONY: all clean

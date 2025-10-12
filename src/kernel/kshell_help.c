@@ -1,7 +1,7 @@
 #include "kshell.h"
 #include "kshell_help.h"
 #include "string.h"
-#include "vga.h"
+#include "video/vga.h"
 
 static void kshell_help_cb() {
 	vga_put_string("Welcome to Hugo OS!\n\n");
