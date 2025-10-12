@@ -11,7 +11,7 @@
 #include "pic.h"
 #include "serial.h"
 #include "string.h"
-#include "video/vga.h"
+#include "video/video.h"
 
 void pci_cb(struct pci_device *dev) {
 	char vendorid[10];
@@ -34,8 +34,7 @@ void kmain(void) {
 	irq_timer_register();
 	__asm__ volatile("sti");
 
-	vga_init();
-	vga_mode_set(&vga_mode_text_80x25);
+	video_init();
 
 	kshell_init();
 	kshell_bga_register();

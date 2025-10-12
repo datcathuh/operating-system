@@ -1,4 +1,5 @@
 #include <stdint.h>
+#include "video.h"
 
 enum vga_color {
     Black = 0,
@@ -57,3 +58,5 @@ void vga_mode_set(struct vga_mode *mode);
 extern struct vga_mode vga_mode_text_80x25;
 extern struct vga_mode vga_mode_320x200x256;
 extern struct vga_mode *vga_mode_current;
+
+struct video_device *vga_device();

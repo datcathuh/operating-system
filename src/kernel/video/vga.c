@@ -388,3 +388,34 @@ void vga_mode_set(struct vga_mode *mode) {
 
     vga_display_enable();
 }
+
+bool vga_device_initialize(struct video_device*) {
+	return true;
+}
+
+bool vga_device_resolution_set(struct video_device* device, struct video_resolution *res) {
+	if(res->width == 80 && res->height == 24 && res->bpp == 4) {
+		vga_mode_set(&vga_mode_text_80x25);
+		return true;
+	}
+	if(res->width == 320 && res->height == 200 && res->bpp == 8) {
+		vga_mode_set(&vga_mode_320x200x256);
+		return true;
+	}
+	return false;
+}
+
+bool vga_device_cleanup(struct video_device*) {
+	return false;
+}
+
+struct video_device _vga_device = {
+	.resolution = 0,
+	.initialize = vga_device_initialize,
+	.resolution_set = vga_device_resolution_set,
+	.cleanup = vga_device_cleanup
+};
+
+struct video_device *vga_device() {
+	return &_vga_device;
+}

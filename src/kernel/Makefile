@@ -20,6 +20,7 @@ OBJECTS+=$(BUILD_DIR)/kernel/pit.o
 OBJECTS+=$(BUILD_DIR)/kernel/serial.o
 OBJECTS+=$(BUILD_DIR)/kernel/string.o
 OBJECTS+=$(BUILD_DIR)/kernel/video/vga.o
+OBJECTS+=$(BUILD_DIR)/kernel/video/video.o
 
 CFLAGS=-std=c23 -pedantic -Wall -Wextra -m32 -ffreestanding -O2 -nostdlib -I.
 
