@@ -10,10 +10,19 @@
 #include "pci.h"
 #include "pic.h"
 #include "serial.h"
+#include "string.h"
 #include "vga.h"
 
 void pci_cb(struct pci_device *dev) {
-	serial_puts("Device found\n");
+	char vendorid[10];
+	char devid[10];
+	str_hex_from_uint32(vendorid, 10, dev->vendor);
+	str_hex_from_uint32(devid, 10, dev->device);
+	serial_puts("PCI device found: ");
+	serial_puts(vendorid);
+	serial_puts(":");
+	serial_puts(devid);
+	serial_puts("\n");
 }
 
 void kmain(void) {
