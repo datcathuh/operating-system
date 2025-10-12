@@ -1,7 +1,8 @@
 #include "kshell.h"
 #include "kshell_julia.h"
 #include "keyboard.h"
-#include "video/vga.h"
+#include "memory.h"
+#include "video/video.h"
 
 #define SCREEN_WIDTH 320
 #define SCREEN_HEIGHT 200
@@ -48,10 +49,17 @@ static void draw_julia(double xmin, double xmax, double ymin, double ymax) {
 }
 
 static void kshell_julia_cb(void) {
-    struct vga_mode *prev = vga_mode_current;
+	struct video_device *device = video_current();
 
-    vga_mode_set(&vga_mode_320x200x256);
-    vga_dac_greyscale_palette();    /* optional: load greyscale palette so indices map to visible shades */
+	struct video_resolution prev;
+	mem_copy(&prev, device->resolution, sizeof(struct video_resolution));
+
+	struct video_resolution newres = {
+		.width = 320,
+		.height = 200,
+		.bpp = 8
+	};
+	device->resolution_set(device, &newres);
 
 	int xmin = -98304;  // -1.5
 	int xmax = 98304;   // 1.5
@@ -75,7 +83,7 @@ static void kshell_julia_cb(void) {
 
 	while(keyboard_get_key() == 0){}
 
-    vga_mode_set(prev);
+	device->resolution_set(device, &prev);
 }
 
 void kshell_julia_register() {

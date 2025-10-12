@@ -1,7 +1,8 @@
 #include "kshell.h"
 #include "kshell_mandelbrot.h"
 #include "keyboard.h"
-#include "video/vga.h"
+#include "memory.h"
+#include "video/video.h"
 
 /* ---- Mandelbrot using Q16.16 fixed point arithmetic ----
    - x0,y0 are Q16.16
@@ -56,15 +57,23 @@ static void draw_mandelbrot_mode13(void) {
 }
 
 static void kshell_mandelbrot_cb(void) {
-    struct vga_mode *prev = vga_mode_current;
+	struct video_device *device = video_current();
 
-    vga_mode_set(&vga_mode_320x200x256);
-    vga_dac_greyscale_palette();    /* optional: load greyscale palette so indices map to visible shades */
+	struct video_resolution prev;
+	mem_copy(&prev, device->resolution, sizeof(struct video_resolution));
+
+	struct video_resolution newres = {
+		.width = 320,
+		.height = 200,
+		.bpp = 8
+	};
+	device->resolution_set(device, &newres);
+
     draw_mandelbrot_mode13();
 
 	while(keyboard_get_key() == 0){}
 
-    vga_mode_set(prev);
+	device->resolution_set(device, &prev);
 }
 
 void kshell_mandelbrot_register() {

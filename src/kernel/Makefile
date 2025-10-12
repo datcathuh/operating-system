@@ -19,6 +19,7 @@ OBJECTS+=$(BUILD_DIR)/kernel/pic.o
 OBJECTS+=$(BUILD_DIR)/kernel/pit.o
 OBJECTS+=$(BUILD_DIR)/kernel/serial.o
 OBJECTS+=$(BUILD_DIR)/kernel/string.o
+OBJECTS+=$(BUILD_DIR)/kernel/video/bga.o
 OBJECTS+=$(BUILD_DIR)/kernel/video/vga.o
 OBJECTS+=$(BUILD_DIR)/kernel/video/video.o
 

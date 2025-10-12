@@ -1,4 +1,5 @@
 #include "io.h"
+#include "memory.h"
 #include "serial.h"
 #include "vga.h"
 
@@ -389,6 +390,8 @@ void vga_mode_set(struct vga_mode *mode) {
     vga_display_enable();
 }
 
+struct video_resolution _vga_resolution;
+
 bool vga_device_initialize(struct video_device*) {
 	return true;
 }
@@ -396,10 +399,15 @@ bool vga_device_initialize(struct video_device*) {
 bool vga_device_resolution_set(struct video_device* device, struct video_resolution *res) {
 	if(res->width == 80 && res->height == 24 && res->bpp == 4) {
 		vga_mode_set(&vga_mode_text_80x25);
+		mem_copy(&_vga_resolution, res, sizeof(struct video_resolution));
+		device->resolution = &_vga_resolution;
 		return true;
 	}
 	if(res->width == 320 && res->height == 200 && res->bpp == 8) {
 		vga_mode_set(&vga_mode_320x200x256);
+		vga_dac_greyscale_palette();    /* optional: load greyscale palette so indices map to visible shades */
+		mem_copy(&_vga_resolution, res, sizeof(struct video_resolution));
+		device->resolution = &_vga_resolution;
 		return true;
 	}
 	return false;

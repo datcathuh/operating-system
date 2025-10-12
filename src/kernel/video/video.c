@@ -23,5 +23,11 @@ struct video_device *video_current() {
 }
 
 bool video_set(struct video_device* device) {
-	return false;
+	if(_current) {
+		_current->cleanup(_current);
+		_current = 0;
+	}
+	_current = device;
+	_current->initialize(_current);
+	return true;
 }
