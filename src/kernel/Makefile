@@ -23,7 +23,7 @@ OBJECTS+=$(BUILD_DIR)/kernel/video/bga.o
 OBJECTS+=$(BUILD_DIR)/kernel/video/vga.o
 OBJECTS+=$(BUILD_DIR)/kernel/video/video.o
 
-CFLAGS=-std=c23 -pedantic -Wall -Wextra -m32 -ffreestanding -O2 -nostdlib -I.
+CFLAGS=-std=c23 -pedantic -Wall -Wextra -m32 -ffreestanding -O2 -nostdlib -nostdinc -I.
 
 all: $(BUILD_DIR)/kernel/kernel.bin
 

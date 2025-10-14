@@ -38,6 +38,10 @@ typedef int           intptr_t;
 #define INT64_MAX  9223372036854775807LL
 #define UINT64_MAX 18446744073709551615ULL
 
+# if !__has_builtin(__builtin_types_compatible_p)
+typedef unsigned char _Bool;
+#endif
+
 #define bool _Bool
 #define true 1
 #define false 0
