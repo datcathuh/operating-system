@@ -1,6 +1,6 @@
 #pragma once
 
-#include <stdint.h>
+#include "types.h"
 
 struct pci_device {
 	uint16_t bus;

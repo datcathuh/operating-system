@@ -1,6 +1,6 @@
 #pragma once
 
-#include <stdint.h>
+#include "types.h"
 
 static inline uint8_t io_inb(uint16_t port) {
     uint8_t value;

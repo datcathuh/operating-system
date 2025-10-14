@@ -1,9 +1,8 @@
-#include <stdint.h>
-#include <stdbool.h>
 #include "io.h"
 #include "keyboard.h"
 #include "kshell.h"
 #include "memory.h"
+#include "types.h"
 #include "video/bga.h"
 
 #define BGA_FRAMEBUFFER 0xfd000000

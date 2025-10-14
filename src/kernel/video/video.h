@@ -1,5 +1,6 @@
 #pragma once
 
+#include "types.h"
 #include "pci.h"
 
 struct video_resolution {

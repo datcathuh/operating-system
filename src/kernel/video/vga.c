@@ -277,8 +277,6 @@ static void vga_write_attr(uint8_t index, uint8_t value) {
 // https://files.osdev.org/mirrors/geezer/osd/graphics/modes.c
 // https://wiki.osdev.org/VGA_Hardware
 
-#include <stdint.h>
-
 static inline void pokeb(uint16_t seg, uint16_t off, uint8_t val) {
 #pragma GCC diagnostic push
 #pragma GCC diagnostic ignored "-Warray-bounds"

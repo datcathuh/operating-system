@@ -1,4 +1,4 @@
-#include <stdint.h>
+#include "types.h"
 #include "video.h"
 
 enum vga_color {

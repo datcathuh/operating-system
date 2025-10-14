@@ -1,6 +1,6 @@
 #pragma once
 
-#include <stdbool.h>
+#include "types.h"
 
 struct kshell_command {
 	char name[20];

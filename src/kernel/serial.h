@@ -1,6 +1,6 @@
 #pragma once
 
-#include <stdint.h>
+#include "types.h"
 
 void serial_put_hex8(uint8_t v);
 void serial_putc(char c);

@@ -1,5 +1,5 @@
 #include "idt.h"
-#include <stdint.h>
+#include "types.h"
 
 struct IDTEntry {
     uint16_t base_low;

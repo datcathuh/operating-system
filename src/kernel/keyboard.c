@@ -1,6 +1,6 @@
 #include "keyboard.h"
 #include "irq_keyboard.h"
-#include <stdint.h>
+#include "types.h"
 
 static bool shift_pressed = false;
 
