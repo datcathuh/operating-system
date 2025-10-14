@@ -3,5 +3,6 @@
 *.elf
 *.img
 .vscode
+compile_commands.json
 tools
 build
