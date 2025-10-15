@@ -1,6 +1,6 @@
-global irq_timer_asm
+global irq_double_fault_asm
 
-irq_timer_asm:
+irq_double_fault_asm:
 	pushad
 
 	push ds
@@ -14,8 +14,8 @@ irq_timer_asm:
     mov fs, ax
     mov gs, ax
 
-	extern irq_timer_c
-	;; call irq_timer_c
+	extern irq_double_fault_c
+	call irq_double_fault_c
 
 	pop gs
     pop fs

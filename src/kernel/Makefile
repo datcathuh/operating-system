@@ -1,6 +1,10 @@
 OBJECTS+=$(BUILD_DIR)/kernel/acpi.o
 OBJECTS+=$(BUILD_DIR)/kernel/apm.o
 OBJECTS+=$(BUILD_DIR)/kernel/idt.o
+OBJECTS+=$(BUILD_DIR)/kernel/irq_gp_asm.o
+OBJECTS+=$(BUILD_DIR)/kernel/irq_gp_c.o
+OBJECTS+=$(BUILD_DIR)/kernel/irq_double_fault_asm.o
+OBJECTS+=$(BUILD_DIR)/kernel/irq_double_fault_c.o
 OBJECTS+=$(BUILD_DIR)/kernel/irq_keyboard_asm.o
 OBJECTS+=$(BUILD_DIR)/kernel/irq_keyboard_c.o
 OBJECTS+=$(BUILD_DIR)/kernel/irq_timer_asm.o

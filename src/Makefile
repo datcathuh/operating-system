@@ -23,4 +23,7 @@ run_debug: $(BUILD_DIR)/hdd.img
 	# -s open GDB on port 1234
 	qemu-system-x86_64 -drive file=$(BUILD_DIR)/hdd.img,format=raw -S -s -serial stdio
 
+run_debug_extra: $(BUILD_DIR)/hdd.img
+	qemu-system-x86_64 -drive file=$(BUILD_DIR)/hdd.img,format=raw -S -s -serial stdio -no-reboot -d int,cpu_reset -no-shutdown
+
 .PHONY: all clean run run_debug

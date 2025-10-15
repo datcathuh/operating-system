@@ -1,6 +1,6 @@
-global irq_timer_asm
+global irq_gp_asm
 
-irq_timer_asm:
+irq_gp_asm:
 	pushad
 
 	push ds
@@ -14,8 +14,8 @@ irq_timer_asm:
     mov fs, ax
     mov gs, ax
 
-	extern irq_timer_c
-	;; call irq_timer_c
+	extern irq_gp_c
+	call irq_gp_c
 
 	pop gs
     pop fs

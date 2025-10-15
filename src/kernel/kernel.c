@@ -1,5 +1,7 @@
 #include "acpi.h"
 #include "idt.h"
+#include "irq_double_fault.h"
+#include "irq_gp.h"
 #include "irq_keyboard.h"
 #include "irq_timer.h"
 #include "kshell.h"
@@ -34,6 +36,8 @@ void kmain(void) {
 	pci_enumerate(pci_cb);
 	pic_remap();
 	idt_install();
+	irq_double_fault_register();
+	irq_gp_register();
 	irq_keyboard_register();
 	irq_timer_register();
 	__asm__ volatile("sti");
