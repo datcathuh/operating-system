@@ -1,3 +1,4 @@
+#include "acpi.h"
 #include "idt.h"
 #include "irq_keyboard.h"
 #include "irq_timer.h"
@@ -7,6 +8,7 @@
 #include "kshell_julia.h"
 #include "kshell_mandelbrot.h"
 #include "kshell_shutdown.h"
+#include "lapic.h"
 #include "pci.h"
 #include "pic.h"
 #include "serial.h"
@@ -27,6 +29,8 @@ void pci_cb(struct pci_device *dev) {
 
 void kmain(void) {
 	__asm__ volatile("cli");
+	//lapic_default_init();
+	// acpi_init();
 	pci_enumerate(pci_cb);
 	pic_remap();
 	idt_install();

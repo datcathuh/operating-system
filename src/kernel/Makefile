@@ -1,3 +1,4 @@
+OBJECTS+=$(BUILD_DIR)/kernel/acpi.o
 OBJECTS+=$(BUILD_DIR)/kernel/apm.o
 OBJECTS+=$(BUILD_DIR)/kernel/idt.o
 OBJECTS+=$(BUILD_DIR)/kernel/irq_keyboard_asm.o
@@ -13,6 +14,7 @@ OBJECTS+=$(BUILD_DIR)/kernel/kshell_help.o
 OBJECTS+=$(BUILD_DIR)/kernel/kshell_julia.o
 OBJECTS+=$(BUILD_DIR)/kernel/kshell_mandelbrot.o
 OBJECTS+=$(BUILD_DIR)/kernel/kshell_shutdown.o
+OBJECTS+=$(BUILD_DIR)/kernel/lapic.o
 OBJECTS+=$(BUILD_DIR)/kernel/memory.o
 OBJECTS+=$(BUILD_DIR)/kernel/pci.o
 OBJECTS+=$(BUILD_DIR)/kernel/pic.o

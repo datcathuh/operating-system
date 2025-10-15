@@ -12,6 +12,7 @@ struct video_resolution {
 
 struct video_device {
 	struct video_resolution *resolution;
+	struct pci_device *pci_device;
 
 	bool (*initialize)(struct video_device*);
 	bool (*resolution_set)(struct video_device*, struct video_resolution *);
