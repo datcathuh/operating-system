@@ -45,3 +45,6 @@ typedef unsigned char _Bool;
 #define bool _Bool
 #define true 1
 #define false 0
+
+#define NULL 0
+

@@ -1,5 +1,12 @@
+OBJECTS+=$(BUILD_DIR)/kernel/acpi.o
 OBJECTS+=$(BUILD_DIR)/kernel/apm.o
+OBJECTS+=$(BUILD_DIR)/kernel/gdt.o
+OBJECTS+=$(BUILD_DIR)/kernel/gdt_flush.o
 OBJECTS+=$(BUILD_DIR)/kernel/idt.o
+OBJECTS+=$(BUILD_DIR)/kernel/irq_gp_asm.o
+OBJECTS+=$(BUILD_DIR)/kernel/irq_gp_c.o
+OBJECTS+=$(BUILD_DIR)/kernel/irq_double_fault_asm.o
+OBJECTS+=$(BUILD_DIR)/kernel/irq_double_fault_c.o
 OBJECTS+=$(BUILD_DIR)/kernel/irq_keyboard_asm.o
 OBJECTS+=$(BUILD_DIR)/kernel/irq_keyboard_c.o
 OBJECTS+=$(BUILD_DIR)/kernel/irq_timer_asm.o
@@ -13,6 +20,7 @@ OBJECTS+=$(BUILD_DIR)/kernel/kshell_help.o
 OBJECTS+=$(BUILD_DIR)/kernel/kshell_julia.o
 OBJECTS+=$(BUILD_DIR)/kernel/kshell_mandelbrot.o
 OBJECTS+=$(BUILD_DIR)/kernel/kshell_shutdown.o
+OBJECTS+=$(BUILD_DIR)/kernel/lapic.o
 OBJECTS+=$(BUILD_DIR)/kernel/memory.o
 OBJECTS+=$(BUILD_DIR)/kernel/pci.o
 OBJECTS+=$(BUILD_DIR)/kernel/pic.o
@@ -23,7 +31,7 @@ OBJECTS+=$(BUILD_DIR)/kernel/video/bga.o
 OBJECTS+=$(BUILD_DIR)/kernel/video/vga.o
 OBJECTS+=$(BUILD_DIR)/kernel/video/video.o
 
-CFLAGS=-std=c23 -pedantic -Wall -Wextra -m32 -ffreestanding -O2 -nostdlib -nostdinc -I.
+CFLAGS=-g -std=c23 -pedantic -Wall -Wextra -m32 -ffreestanding -O2 -nostdlib -nostdinc -I.
 
 all: $(BUILD_DIR)/kernel/kernel.bin
 

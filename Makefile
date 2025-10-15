@@ -29,6 +29,9 @@ run:
 run_debug:
 	$(MAKE) -C src $@
 
+run_debug_extra:
+	$(MAKE) -C src $@
+
 # A target for generating a definition of all compile commands.
 # This is used if you have Emacs as code editor together with
 # lsp-mode and clangd for quick code navigation.

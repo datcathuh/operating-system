@@ -1,4 +1,8 @@
+#include "acpi.h"
+#include "gdt.h"
 #include "idt.h"
+#include "irq_double_fault.h"
+#include "irq_gp.h"
 #include "irq_keyboard.h"
 #include "irq_timer.h"
 #include "kshell.h"
@@ -7,6 +11,7 @@
 #include "kshell_julia.h"
 #include "kshell_mandelbrot.h"
 #include "kshell_shutdown.h"
+#include "lapic.h"
 #include "pci.h"
 #include "pic.h"
 #include "serial.h"
@@ -26,10 +31,15 @@ void pci_cb(struct pci_device *dev) {
 }
 
 void kmain(void) {
+	gdt_install();
 	__asm__ volatile("cli");
+	lapic_default_init();
+	acpi_init();
 	pci_enumerate(pci_cb);
 	pic_remap();
 	idt_install();
+	irq_double_fault_register();
+	irq_gp_register();
 	irq_keyboard_register();
 	irq_timer_register();
 	__asm__ volatile("sti");
@@ -42,6 +52,7 @@ void kmain(void) {
 	kshell_julia_register();
 	kshell_mandelbrot_register();
 	kshell_shutdown_register();
+
 
 	kshell();
 }
