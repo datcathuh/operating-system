@@ -1,2 +1,7 @@
 #!/bin/bash
-echo "$(( ($(stat -c%s ../../build/kernel/kernel.bin) + 511) / 512 ))"
+COUNT=$(( ($(stat -c%s ../../build/kernel/kernel.bin) + 511) / 512 ))
+
+cat <<-EOF > ../mbr/kernel_sector_count.asm
+KERNEL_SECTOR_COUNT  EQU  $COUNT
+EOF
+echo "$COUNT"

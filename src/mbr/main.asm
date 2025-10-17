@@ -38,14 +38,15 @@ start:
 
 %include "disk.asm"
 %include "gdt.asm"
+%include "kernel_sector_count.asm"
 %include "print.asm"
 %include "switch-to-32bit.asm"
 
 bits 16
 load_kernel:
-    mov bx, KERNEL_OFFSET ; bx -> destination
-    mov dh, 25            ; dh -> num sectors
-    mov dl, [BOOT_DRIVE]  ; dl -> disk
+    mov bx, KERNEL_OFFSET        ; bx -> destination
+    mov dh, KERNEL_SECTOR_COUNT  ; dh -> num sectors
+    mov dl, [BOOT_DRIVE]         ; dl -> disk
     call disk_load
     ret
 
