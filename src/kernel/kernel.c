@@ -38,7 +38,7 @@ void kmain(void) {
 	idt_install();
 	irq_double_fault_register();
 	irq_gp_register();
-	// irq_keyboard_register();
+	irq_keyboard_register();
 	irq_timer_register();
 	__asm__ volatile("sti");
 
