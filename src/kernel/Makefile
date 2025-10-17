@@ -14,12 +14,12 @@ OBJECTS+=$(BUILD_DIR)/kernel/irq_timer_c.o
 OBJECTS+=$(BUILD_DIR)/kernel/keyboard.o
 OBJECTS+=$(BUILD_DIR)/kernel/kernel-entry.o
 OBJECTS+=$(BUILD_DIR)/kernel/kernel.o
-OBJECTS+=$(BUILD_DIR)/kernel/kshell.o
-OBJECTS+=$(BUILD_DIR)/kernel/kshell_bga.o
-OBJECTS+=$(BUILD_DIR)/kernel/kshell_help.o
-OBJECTS+=$(BUILD_DIR)/kernel/kshell_julia.o
-OBJECTS+=$(BUILD_DIR)/kernel/kshell_mandelbrot.o
-OBJECTS+=$(BUILD_DIR)/kernel/kshell_shutdown.o
+OBJECTS+=$(BUILD_DIR)/kernel/kshell/kshell.o
+OBJECTS+=$(BUILD_DIR)/kernel/kshell/kshell_bga.o
+OBJECTS+=$(BUILD_DIR)/kernel/kshell/kshell_help.o
+OBJECTS+=$(BUILD_DIR)/kernel/kshell/kshell_julia.o
+OBJECTS+=$(BUILD_DIR)/kernel/kshell/kshell_mandelbrot.o
+OBJECTS+=$(BUILD_DIR)/kernel/kshell/kshell_shutdown.o
 OBJECTS+=$(BUILD_DIR)/kernel/lapic.o
 OBJECTS+=$(BUILD_DIR)/kernel/memory.o
 OBJECTS+=$(BUILD_DIR)/kernel/pci.o
@@ -51,6 +51,6 @@ $(BUILD_DIR)/kernel/kernel.bin: $(BUILD_DIR)/kernel/kernel.elf
 	@./kernel-sector-count
 
 clean:
-	$(RM) -f $(BUILD_DIR)/kernel/*.o $(BUILD_DIR)/kernel/video/*.o $(BUILD_DIR)/kernel/kernel.bin $(BUILD_DIR)/kernel/kernel.elf
+	$(RM) -f $(BUILD_DIR)/kernel/*.o $(BUILD_DIR)/kernel/video/*.o $(BUILD_DIR)/kernel/kshell/*.o $(BUILD_DIR)/kernel/kernel.bin $(BUILD_DIR)/kernel/kernel.elf
 
 .PHONY: all clean
