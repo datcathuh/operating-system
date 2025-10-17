@@ -19,6 +19,7 @@ static const char scancode_to_ascii_shift[128] = {
 };
 
 char keyboard_get_key(void) {
+  return 0;
 	uint8_t sc;
 	bool key_fetched = false;
 	while(!key_fetched) {
