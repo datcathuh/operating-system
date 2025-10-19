@@ -3,7 +3,6 @@
 #include "memory.h"
 #include "video.h"
 
-// BGA I/O port definitions
 #define VBE_DISPI_IOPORT_INDEX 0x01CE
 #define VBE_DISPI_IOPORT_DATA  0x01CF
 
@@ -18,8 +17,6 @@
 #define VBE_DISPI_LFB_ENABLED    0x40
 
 #define VBE_DISPI_ID5            0xB0C5
-
-#define BGA_FRAMEBUFFER 0xfd000000
 
 struct video_resolution _video_resolution;
 
@@ -49,6 +46,8 @@ static bool bga_device_resolution_set(struct video_device* device, struct video_
     bga_write(VBE_DISPI_INDEX_BPP, res->bpp);
     bga_write(VBE_DISPI_INDEX_ENABLE, VBE_DISPI_ENABLED | VBE_DISPI_LFB_ENABLED);
 	device->resolution = &_video_resolution;
+	/* TODO. Read this from PCI bar. */
+	device->vidmem = (uint8_t*)0xfd000000;
 	return true;
 }
 

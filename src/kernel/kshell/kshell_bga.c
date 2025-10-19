@@ -5,8 +5,6 @@
 #include "types.h"
 #include "video/bga.h"
 
-#define BGA_FRAMEBUFFER 0xfd000000
-
 static void kshell_bga_cb(void) {
 	struct video_device *prev_dev = video_current();
 	struct video_resolution prev_res;
@@ -22,7 +20,7 @@ static void kshell_bga_cb(void) {
 	new_dev->resolution_set(new_dev, &res);
 
     // Draw something
-    volatile uint32_t* fb = (volatile uint32_t*)BGA_FRAMEBUFFER;
+    volatile uint32_t* fb = (volatile uint32_t*)new_dev->vidmem;
     for (uint32_t y = 0; y < res.height; y++) {
         for (uint32_t x = 0; x < res.width; x++) {
             fb[y * res.width + x] = (x ^ y) | 0xFF000000; // pattern with alpha
