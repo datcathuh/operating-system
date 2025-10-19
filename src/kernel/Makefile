@@ -3,23 +3,29 @@ OBJECTS+=$(BUILD_DIR)/kernel/apm.o
 OBJECTS+=$(BUILD_DIR)/kernel/gdt.o
 OBJECTS+=$(BUILD_DIR)/kernel/gdt_flush.o
 OBJECTS+=$(BUILD_DIR)/kernel/idt.o
-OBJECTS+=$(BUILD_DIR)/kernel/irq_gp_asm.o
-OBJECTS+=$(BUILD_DIR)/kernel/irq_gp_c.o
-OBJECTS+=$(BUILD_DIR)/kernel/irq_double_fault_asm.o
-OBJECTS+=$(BUILD_DIR)/kernel/irq_double_fault_c.o
-OBJECTS+=$(BUILD_DIR)/kernel/irq_keyboard_asm.o
-OBJECTS+=$(BUILD_DIR)/kernel/irq_keyboard_c.o
-OBJECTS+=$(BUILD_DIR)/kernel/irq_timer_asm.o
-OBJECTS+=$(BUILD_DIR)/kernel/irq_timer_c.o
+
+# Interrupt service routines
+OBJECTS+=$(BUILD_DIR)/kernel/isr/irq_gp_asm.o
+OBJECTS+=$(BUILD_DIR)/kernel/isr/irq_gp_c.o
+OBJECTS+=$(BUILD_DIR)/kernel/isr/irq_double_fault_asm.o
+OBJECTS+=$(BUILD_DIR)/kernel/isr/irq_double_fault_c.o
+OBJECTS+=$(BUILD_DIR)/kernel/isr/irq_keyboard_asm.o
+OBJECTS+=$(BUILD_DIR)/kernel/isr/irq_keyboard_c.o
+OBJECTS+=$(BUILD_DIR)/kernel/isr/irq_timer_asm.o
+OBJECTS+=$(BUILD_DIR)/kernel/isr/irq_timer_c.o
+
 OBJECTS+=$(BUILD_DIR)/kernel/keyboard.o
 OBJECTS+=$(BUILD_DIR)/kernel/kernel-entry.o
 OBJECTS+=$(BUILD_DIR)/kernel/kernel.o
+
+# Kernel shell commands.
 OBJECTS+=$(BUILD_DIR)/kernel/kshell/kshell.o
 OBJECTS+=$(BUILD_DIR)/kernel/kshell/kshell_bga.o
 OBJECTS+=$(BUILD_DIR)/kernel/kshell/kshell_help.o
 OBJECTS+=$(BUILD_DIR)/kernel/kshell/kshell_julia.o
 OBJECTS+=$(BUILD_DIR)/kernel/kshell/kshell_mandelbrot.o
 OBJECTS+=$(BUILD_DIR)/kernel/kshell/kshell_shutdown.o
+
 OBJECTS+=$(BUILD_DIR)/kernel/lapic.o
 OBJECTS+=$(BUILD_DIR)/kernel/memory.o
 OBJECTS+=$(BUILD_DIR)/kernel/pci.o
@@ -27,6 +33,8 @@ OBJECTS+=$(BUILD_DIR)/kernel/pic.o
 OBJECTS+=$(BUILD_DIR)/kernel/pit.o
 OBJECTS+=$(BUILD_DIR)/kernel/serial.o
 OBJECTS+=$(BUILD_DIR)/kernel/string.o
+
+# Video drivers
 OBJECTS+=$(BUILD_DIR)/kernel/video/bga.o
 OBJECTS+=$(BUILD_DIR)/kernel/video/vga.o
 OBJECTS+=$(BUILD_DIR)/kernel/video/video.o
@@ -40,6 +48,11 @@ $(BUILD_DIR)/kernel/%.o: %.c
 	$(CC) $(CFLAGS) -c $< -o $@
 
 $(BUILD_DIR)/kernel/%.o: %.asm
+	@mkdir -p $(dir $@)
+	nasm $< -f elf32 -o $@
+
+$(BUILD_DIR)/kernel/isr/%.o: %.asm
+	@mkdir -p $(dir $@)
 	nasm $< -f elf32 -o $@
 
 $(BUILD_DIR)/kernel/kernel.elf: $(OBJECTS)
@@ -51,6 +64,6 @@ $(BUILD_DIR)/kernel/kernel.bin: $(BUILD_DIR)/kernel/kernel.elf
 	@./kernel-sector-count
 
 clean:
-	$(RM) -f $(BUILD_DIR)/kernel/*.o $(BUILD_DIR)/kernel/video/*.o $(BUILD_DIR)/kernel/kshell/*.o $(BUILD_DIR)/kernel/kernel.bin $(BUILD_DIR)/kernel/kernel.elf
+	$(RM) -f $(BUILD_DIR)/kernel/*.o $(BUILD_DIR)/kernel/isr/*.o $(BUILD_DIR)/kernel/video/*.o $(BUILD_DIR)/kernel/kshell/*.o $(BUILD_DIR)/kernel/kernel.bin $(BUILD_DIR)/kernel/kernel.elf
 
 .PHONY: all clean
