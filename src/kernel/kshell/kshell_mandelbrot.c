@@ -10,9 +10,10 @@
    - use 64-bit temporaries for products
 */
 static void draw_mandelbrot_mode13(void) {
+	struct video_device *device = video_current();
     const int width = 320;
     const int height = 200;
-    volatile uint8_t *frame = (uint8_t*)0xA0000;
+    volatile uint8_t *frame = device->vidmem;
 
     /* scaling factor: map pixels to [-2, +2] in X and Y */
     /* x0 = (px - width/2) * (4.0 / width) in Q16.16 */

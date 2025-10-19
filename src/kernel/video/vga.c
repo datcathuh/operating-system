@@ -3,7 +3,6 @@
 #include "serial.h"
 #include "vga.h"
 
-static volatile uint8_t *vidmem = (uint8_t*)0xb8000;
 static uint32_t cursor = 0;
 static uint8_t current_color = 0x07; // Default: light gray on black
 #define VGA_FONT_SIZE 4096
@@ -156,25 +155,28 @@ void vga_set_color(enum vga_color fg, enum vga_color bg) {
 }
 
 static void vga_scroll(void) {
+	struct video_device *device = video_current();
     for (uint32_t i = 0; i < (vga_mode_current->height - 1) * vga_mode_current->width * 2; ++i) {
-        vidmem[i] = vidmem[i + vga_mode_current->width * 2];
+        device->vidmem[i] = device->vidmem[i + vga_mode_current->width * 2];
     }
     for (uint32_t i = (vga_mode_current->height - 1) * vga_mode_current->width * 2; i < vga_mode_current->height * vga_mode_current->width * 2; i += 2) {
-        vidmem[i] = ' ';
-        vidmem[i+1] = current_color;
+        device->vidmem[i] = ' ';
+        device->vidmem[i+1] = current_color;
     }
     cursor = (vga_mode_current->height - 1) * vga_mode_current->width * 2;
 }
 
 void vga_clear(void) {
+	struct video_device *device = video_current();
     for (uint32_t i = 0; i < vga_mode_current->width * vga_mode_current->height * 2; i += 2) {
-        vidmem[i] = ' ';
-        vidmem[i+1] = current_color;
+        device->vidmem[i] = ' ';
+        device->vidmem[i+1] = current_color;
     }
     cursor = 0;
 }
 
 void vga_put_char(char c) {
+	struct video_device *device = video_current();
     if (c == '\n') {
         cursor = ((cursor / 2) / vga_mode_current->width + 1) * vga_mode_current->width * 2;
         if ((cursor / 2) / vga_mode_current->width >= vga_mode_current->height) vga_scroll();
@@ -182,12 +184,12 @@ void vga_put_char(char c) {
     }
     if (c == '\b') {
         if (cursor >= 2) cursor -= 2;
-        vidmem[cursor] = ' ';
-        vidmem[cursor+1] = current_color;
+        device->vidmem[cursor] = ' ';
+        device->vidmem[cursor+1] = current_color;
         return;
     }
-    vidmem[cursor] = c;
-    vidmem[cursor+1] = current_color;
+    device->vidmem[cursor] = c;
+    device->vidmem[cursor+1] = current_color;
     cursor += 2;
     if ((cursor / 2) % vga_mode_current->width == 0) {
         vga_put_char('\n');
@@ -399,13 +401,15 @@ bool vga_device_resolution_set(struct video_device* device, struct video_resolut
 		vga_mode_set(&vga_mode_text_80x25);
 		mem_copy(&_vga_resolution, res, sizeof(struct video_resolution));
 		device->resolution = &_vga_resolution;
+		device->vidmem = (uint8_t*)0xb8000;
 		return true;
 	}
 	if(res->width == 320 && res->height == 200 && res->bpp == 8) {
 		vga_mode_set(&vga_mode_320x200x256);
-		vga_dac_greyscale_palette();    /* optional: load greyscale palette so indices map to visible shades */
+		vga_dac_greyscale_palette();
 		mem_copy(&_vga_resolution, res, sizeof(struct video_resolution));
 		device->resolution = &_vga_resolution;
+		device->vidmem = (uint8_t*)0xA0000;
 		return true;
 	}
 	return false;
@@ -417,6 +421,8 @@ bool vga_device_cleanup(struct video_device*) {
 
 struct video_device _vga_device = {
 	.resolution = 0,
+	.pci_device = 0,
+	.vidmem = 0,
 	.initialize = vga_device_initialize,
 	.resolution_set = vga_device_resolution_set,
 	.cleanup = vga_device_cleanup

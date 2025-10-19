@@ -15,10 +15,11 @@ static int fmul(int a, int b) {
 }
 
 static void draw_julia(double xmin, double xmax, double ymin, double ymax) {
+	struct video_device *device = video_current();
 	int cx = -45862;    // -0.7 in 16.16 fixed point
 	int cy = 17722;     // 0.27 in 16.16 fixed point
 
-	volatile uint8_t *vga = (uint8_t*)0xA0000;
+	volatile uint8_t *vga = device->vidmem;
 	int x, y;
     int dx = (xmax - xmin) / SCREEN_WIDTH;
     int dy = (ymax - ymin) / SCREEN_HEIGHT;
