@@ -19,6 +19,30 @@
 #define VBE_DISPI_ID5            0xB0C5
 
 struct video_resolution _video_resolution;
+struct pci_identification bga_identification = {
+	.vendor = 0x1234,
+	.device = 0x1111
+};
+
+static bool bga_pci_driver_initialize(struct pci_device_driver *driver,
+                                      struct pci_device *device);
+static bool bga_pci_driver_unload(struct pci_device_driver *driver,
+								  struct pci_device *device);
+
+struct pci_device_driver bga_driver = {
+	.initialize = bga_pci_driver_initialize,
+	.unload = bga_pci_driver_unload
+};
+
+bool bga_pci_driver_initialize(struct pci_device_driver */*driver*/,
+                               struct pci_device */*device*/) {
+	return true;
+}
+
+bool bga_pci_driver_unload(struct pci_device_driver */*driver*/,
+                           struct pci_device */*device*/) {
+	return false;
+}
 
 static inline void bga_write(uint16_t index, uint16_t value) {
     io_outw(VBE_DISPI_IOPORT_INDEX, index);
