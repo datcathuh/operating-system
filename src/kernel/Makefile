@@ -6,6 +6,7 @@ OBJECTS+=$(BUILD_DIR)/kernel/idt.o
 
 # Devices
 OBJECTS+=$(BUILD_DIR)/kernel/devices/intel_440fx.o
+OBJECTS+=$(BUILD_DIR)/kernel/devices/intel_82371sb.o
 
 # Interrupt service routines
 OBJECTS+=$(BUILD_DIR)/kernel/isr/irq_gp_asm.o

@@ -1,5 +1,6 @@
 #include "types.h"
 #include "devices/intel_440fx.h"
+#include "devices/intel_82371sb.h"
 #include "io.h"
 #include "memory.h"
 #include "pci.h"
@@ -55,6 +56,9 @@ static void pci_device_create_cb(struct pci_device *device) {
 	} else if(device->identification.vendor == intel_440fx_identification.vendor &&
 			  device->identification.device == intel_440fx_identification.device) {
 		_devices[_device_count].driver = &intel_440fx_driver;
+	} else if(device->identification.vendor == intel_82371sb_identification.vendor &&
+			  device->identification.device == intel_82371sb_identification.device) {
+		_devices[_device_count].driver = &intel_82371sb_driver;
 	}
 	_device_count++;
 }
