@@ -3,12 +3,27 @@
 #include "serial.h"
 #include "vga.h"
 
+enum vga_mode_flags {
+	vga_mode_text,
+	vga_mode_gfx,
+};
+
+struct vga_mode {
+	char name[32];
+	uint8_t misc;
+	uint8_t seq[5];
+	uint8_t crtc[25];
+	uint8_t gfx[9];
+	uint8_t attr[21];
+
+	uint32_t width, height;
+	enum vga_mode_flags flags;
+};
+
 static uint32_t cursor = 0;
 static uint8_t current_color = 0x07; // Default: light gray on black
 #define VGA_FONT_SIZE 4096
 static uint8_t _vga_font[VGA_FONT_SIZE];
-
-struct vga_mode *vga_mode_current = 0;
 
 struct vga_mode vga_mode_text_80x25 = {
 	.name = "80x25 (text)",
@@ -70,7 +85,6 @@ uint8_t *vga_font() {
 	return _vga_font;
 }
 
-
 void vga_font_save(uint8_t *buffer) {
 	io_outb(0x3C4, 0x02); io_outb(0x3C5, 0x04); // Write plane 2
     io_outb(0x3C4, 0x04); io_outb(0x3C5, 0x07); // Disable chain-4, odd/even
@@ -129,12 +143,13 @@ void vga_font_restore(uint8_t *font) {
     io_outb(0x3D4, 0x09); io_outb(0x3D5, 0x0F);   // 16 scanlines/char
 }
 
-static inline uint8_t vga_color_entry(enum vga_color fg, enum vga_color bg) {
+static inline uint8_t vga_color_entry(enum terminal_color fg, enum terminal_color bg) {
     return fg | (bg << 4);
 }
 
 static void vga_pos_set(struct terminal *terminal, int x, int y) {
-    uint16_t pos = y * vga_mode_current->width + x;
+	struct video_device *device = terminal->data;
+    uint16_t pos = y * device->resolution->width + x;
 
 	// Low byte of cursor position
     io_outb(0x3D4, 0x0F);
@@ -143,38 +158,44 @@ static void vga_pos_set(struct terminal *terminal, int x, int y) {
     io_outb(0x3D4, 0x0E);
     io_outb(0x3D5, (uint8_t)((pos >> 8) & 0xFF));
 
-    cursor = x * 2 + vga_mode_current->width * y * 2;
+    cursor = x * 2 + device->resolution->width * y * 2;
+}
+
+static void vga_size(struct terminal *terminal, int *width, int *height) {
+	struct video_device *device = terminal->data;
+	*width = device->resolution->width;
+	*height = device->resolution->height;
 }
 
 static void vga_pos_get(struct terminal *terminal, int *x, int *y) {
-	*y = cursor / (vga_mode_current->width * 2);
-	*x = (cursor % (vga_mode_current->width * 2)) / 2;
+	struct video_device *device = terminal->data;
+	*y = cursor / (device->resolution->width * 2);
+	*x = (cursor % (device->resolution->width * 2)) / 2;
 }
 
-static void vga_color_get(struct terminal *terminal, enum terminal_color *fg, enum terminal_color *bg) {
+static void vga_color_get(struct terminal */*terminal*/, enum terminal_color *fg, enum terminal_color *bg) {
 	*fg = current_color & 0xf0;
 	*bg = current_color >> 4;
 }
 
-static void vga_color_set(struct terminal *terminal, enum terminal_color fg, enum terminal_color bg) {
+static void vga_color_set(struct terminal */*terminal*/, enum terminal_color fg, enum terminal_color bg) {
     current_color = vga_color_entry(fg, bg);
 }
 
-static void vga_scroll(void) {
-	struct video_device *device = video_current();
-    for (uint32_t i = 0; i < (vga_mode_current->height - 1) * vga_mode_current->width * 2; ++i) {
-        device->vidmem[i] = device->vidmem[i + vga_mode_current->width * 2];
+static void vga_scroll(struct video_device *device) {
+    for (uint32_t i = 0; i < ((uint32_t)device->resolution->height - 1) * (uint32_t)device->resolution->width * 2; ++i) {
+        device->vidmem[i] = device->vidmem[i + device->resolution->width * 2];
     }
-    for (uint32_t i = (vga_mode_current->height - 1) * vga_mode_current->width * 2; i < vga_mode_current->height * vga_mode_current->width * 2; i += 2) {
+    for (uint32_t i = (device->resolution->height - 1) * device->resolution->width * 2; i < device->resolution->height * device->resolution->width * 2; i += 2) {
         device->vidmem[i] = ' ';
         device->vidmem[i+1] = current_color;
     }
-    cursor = (vga_mode_current->height - 1) * vga_mode_current->width * 2;
+    cursor = (device->resolution->height - 1) * device->resolution->width * 2;
 }
 
 static void vga_clear(struct terminal *terminal) {
 	struct video_device *device = terminal->data;
-    for (uint32_t i = 0; i < vga_mode_current->width * vga_mode_current->height * 2; i += 2) {
+    for (uint32_t i = 0; i < device->resolution->width * device->resolution->height * 2; i += 2) {
         device->vidmem[i] = ' ';
         device->vidmem[i+1] = current_color;
     }
@@ -184,8 +205,8 @@ static void vga_clear(struct terminal *terminal) {
 static void vga_print_char(struct terminal *terminal, char c) {
 	struct video_device *device = terminal->data;
     if (c == '\n') {
-        cursor = ((cursor / 2) / vga_mode_current->width + 1) * vga_mode_current->width * 2;
-        if ((cursor / 2) / vga_mode_current->width >= vga_mode_current->height) vga_scroll();
+        cursor = ((cursor / 2) / device->resolution->width + 1) * device->resolution->width * 2;
+        if ((cursor / 2) / device->resolution->width >= device->resolution->height) vga_scroll(device);
         return;
     }
     if (c == '\b') {
@@ -197,7 +218,7 @@ static void vga_print_char(struct terminal *terminal, char c) {
     device->vidmem[cursor] = c;
     device->vidmem[cursor+1] = current_color;
     cursor += 2;
-    if ((cursor / 2) % vga_mode_current->width == 0) {
+    if ((cursor / 2) % device->resolution->width == 0) {
         terminal->print_char(terminal, '\n');
     }
 }
@@ -237,13 +258,13 @@ void vga_dump_regs(void) {
     serial_puts("\n");
 }
 
-void vga_display_disable(void) {
+static void vga_display_disable(void) {
     /* Sequencer index 0 = Reset. Writing 0x01 puts in reset */
     io_outb(0x3C4, 0x00);
     io_outb(0x3C5, 0x01);
 }
 
-void vga_display_enable(void) {
+static void vga_display_enable(void) {
     /* Sequencer index 0 = Reset. Writing 0x03 brings out of reset/run */
     io_outb(0x3C4, 0x00);
     io_outb(0x3C5, 0x03);
@@ -256,7 +277,7 @@ static void vga_dac_set_entry(uint8_t index, uint8_t r, uint8_t g, uint8_t b) {
     io_outb(0x3C9, b);
 }
 
-void vga_dac_greyscale_palette(void) {
+static void vga_dac_greyscale_palette(void) {
     for (int i = 0; i < 256; ++i) {
         uint8_t v = (uint8_t)((i * 63) / 255); /* scale 0..255 -> 0..63 */
         vga_dac_set_entry((uint8_t)i, v, v, v);
@@ -295,7 +316,7 @@ static inline void pokew(uint16_t seg, uint16_t off, uint16_t val) {
 }
 
 // Restore the standard BIOS 16-color palette for text mode
-void vga_restore_default_text_colors(void) {
+static void vga_restore_default_text_colors(void) {
     // Each color uses 6 bits per channel (0–63)
     static const uint8_t vga_default_palette[16][3] = {
         { 0,  0,  0},   // 0: black
@@ -327,7 +348,7 @@ void vga_restore_default_text_colors(void) {
     }
 }
 
-void vga_mode_set(struct vga_mode *mode) {
+static void vga_mode_set(struct vga_mode *mode) {
     vga_display_disable();
 
     /* Misc output */
@@ -382,13 +403,13 @@ void vga_mode_set(struct vga_mode *mode) {
 		pokeb(0x40, 0x85, ht);		/* char height */
 		pokew(0x40, 0x4E, 0xB800);
 	}
-	vga_mode_current = mode;
 
     vga_display_enable();
 }
 
 struct video_resolution _vga_resolution;
 struct terminal _terminal_vga = {
+	.size = vga_size,
 	.color_get = vga_color_get,
 	.color_set = vga_color_set,
 	.pos_get = vga_pos_get,
@@ -398,12 +419,12 @@ struct terminal _terminal_vga = {
 	.print_char = vga_print_char
 };
 
-bool vga_device_initialize(struct video_device*) {
+static bool vga_device_initialize(struct video_device*) {
 	return true;
 }
 
-bool vga_device_resolution_set(struct video_device* device, struct video_resolution *res) {
-	if(res->width == 80 && res->height == 24 && res->bpp == 4) {
+static bool vga_device_resolution_set(struct video_device* device, struct video_resolution *res) {
+	if(res->width == 80 && res->height == 25 && res->bpp == 4) {
 		vga_mode_set(&vga_mode_text_80x25);
 		mem_copy(&_vga_resolution, res, sizeof(struct video_resolution));
 		device->resolution = &_vga_resolution;
@@ -426,7 +447,7 @@ bool vga_device_resolution_set(struct video_device* device, struct video_resolut
 	return false;
 }
 
-bool vga_device_cleanup(struct video_device*) {
+static bool vga_device_cleanup(struct video_device*) {
 	return false;
 }
 

@@ -17,9 +17,11 @@ static const char* _prompt = " > ";
 static struct kshell_command _commands[_commands_size];
 
 static void prompt(struct terminal *terminal) {
-	terminal->pos_set(terminal, 0, vga_mode_current->height - 1);
+	int width, height;
+	terminal->size(terminal, &width, &height);
+	terminal->pos_set(terminal, 0, height - 1);
 	terminal->print(terminal, _prompt);
-	terminal->pos_set(terminal, str_length(_prompt), vga_mode_current->height - 1);
+	terminal->pos_set(terminal, str_length(_prompt), height - 1);
 }
 
 void kshell_init() {

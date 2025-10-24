@@ -12,7 +12,7 @@ void video_init() {
 	_current = vga_device();
 	struct video_resolution res = {
 		.width = 80,
-		.height = 24,
+		.height = 25,
 		.bpp = 4
 	};
 	_current->initialize(_current);

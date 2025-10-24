@@ -20,6 +20,7 @@ enum terminal_color {
 };
 
 struct terminal {
+	void (*size)(struct terminal *t, int *width, int *height);
 	void (*color_get)(struct terminal *t, enum terminal_color *fg, enum terminal_color *bg);
 	void (*color_set)(struct terminal *t, enum terminal_color fg, enum terminal_color bg);
 	void (*pos_set)(struct terminal *t, int x, int y);
