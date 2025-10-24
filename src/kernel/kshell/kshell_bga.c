@@ -36,6 +36,12 @@ static void kshell_bga_cb(void) {
 					  0xffffff,
 					  0x0,
 					  1);
+	video_draw_line(new_dev,
+					10, 10,
+					200, 200,
+					0xff0000);
+	video_draw_rect(new_dev, 250, 10, 400, 30, 0x00ff00);
+	video_draw_rect_filled(new_dev, 250, 50, 400, 90, 0x00ffff);
 
 	while(keyboard_get_key() == 0){}
 

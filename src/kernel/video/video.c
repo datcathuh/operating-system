@@ -1,3 +1,4 @@
+#include "math.h"
 #include "vga.h"
 #include "video.h"
 
@@ -165,5 +166,93 @@ void video_draw_string(struct video_device *device,
         if (x >= device->resolution->width) {
 			break;
 		}
+    }
+}
+
+void video_draw_line(struct video_device *device,
+					 int x0, int y0, int x1, int y1,
+					 uint32_t color) {
+    /* Clip trivially: skip if completely outside (optional, minimal check). */
+    if (
+		(x0 < 0 && x1 < 0) ||
+		(y0 < 0 && y1 < 0) ||
+        (x0 >= device->resolution->width && x1 >= device->resolution->width) ||
+        (y0 >= device->resolution->height && y1 >= device->resolution->height)) {
+        return;
+	}
+
+	int pitch = device->resolution->width * device->resolution->bpp / 8;
+	int dx = abs(x1 - x0);
+    int sx = x0 < x1 ? 1 : -1;
+    int dy = -abs(y1 - y0);
+    int sy = y0 < y1 ? 1 : -1;
+    int err = dx + dy;  /* error term */
+
+    while (1) {
+        /* Draw pixel if inside bounds */
+        if (x0 < device->resolution->width && y0 < device->resolution->height) {
+            video_set_pixel(device->vidmem, pitch,
+							device->resolution->bpp / 8,
+							x0, y0,
+							color);
+		}
+
+        if (x0 == x1 && y0 == y1)
+            break;
+
+        int e2 = 2 * err;
+        if (e2 >= dy) {
+			err += dy;
+			x0 += sx;
+		}
+        if (e2 <= dx) {
+			err += dx;
+			y0 += sy;
+		}
+    }
+}
+
+void video_draw_rect(struct video_device *device,
+					 int x, int y, int width, int height,
+					 uint32_t color)
+{
+    int x2 = x + width - 1;
+    int y2 = y + height - 1;
+
+    if (width <= 0 || height <= 0) return;
+
+    /* Top */
+    video_draw_line(device, x, y, x2, y, color);
+    /* Bottom */
+    video_draw_line(device, x, y2, x2, y2, color);
+    /* Left */
+    video_draw_line(device, x, y, x, y2, color);
+    /* Right */
+    video_draw_line(device, x2, y, x2, y2, color);
+}
+
+void video_draw_rect_filled(
+	struct video_device *device,
+	int x, int y, int width, int height,
+	uint32_t color)
+{
+    if (width <= 0 || height <= 0) return;
+
+    int x_end = x + width;
+    int y_end = y + height;
+
+    /* Clip against screen bounds */
+    if (x < 0) x = 0;
+    if (y < 0) y = 0;
+    if (x_end > device->resolution->width) x_end = device->resolution->width;
+    if (y_end > device->resolution->height) y_end = device->resolution->height;
+
+	int pitch = device->resolution->width * device->resolution->bpp / 8;
+	int bytes_per_pixel = device->resolution->bpp / 8;
+
+	for (int py = y; py < y_end; ++py) {
+        for (int px = x; px < x_end; ++px) {
+            video_set_pixel(device->vidmem, pitch, bytes_per_pixel, px, py, color);
+        }
     }
 }

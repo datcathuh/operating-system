@@ -31,3 +31,12 @@ void video_draw_string(struct video_device *device,
 					   uint32_t fg_color,
 					   uint32_t bg_color,
 					   int scale);
+void video_draw_line(struct video_device *device, int x0, int y0, int x1,
+                     int y1, uint32_t color);
+void video_draw_rect(struct video_device *device,
+					 int x, int y, int width, int height,
+					 uint32_t color);
+void video_draw_rect_filled(struct video_device *device,
+							int x, int y, int width, int height,
+							uint32_t color);
+
