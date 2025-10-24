@@ -1,7 +1,9 @@
 #include "types.h"
 #include "devices/intel_440fx.h"
+#include "devices/intel_82371sb_acpi.h"
 #include "devices/intel_82371sb_isa.h"
 #include "devices/intel_82371sb_ide.h"
+#include "devices/intel_82540em.h"
 #include "io.h"
 #include "memory.h"
 #include "pci.h"
@@ -63,6 +65,12 @@ static void pci_device_create_cb(struct pci_device *device) {
 	} else if(device->identification.vendor == intel_82371sb_ide_identification.vendor &&
 			  device->identification.device == intel_82371sb_ide_identification.device) {
 		_devices[_device_count].driver = &intel_82371sb_ide_driver;
+	} else if(device->identification.vendor == intel_82371sb_acpi_identification.vendor &&
+			  device->identification.device == intel_82371sb_acpi_identification.device) {
+		_devices[_device_count].driver = &intel_82371sb_acpi_driver;
+	} else if(device->identification.vendor == intel_82540em_identification.vendor &&
+			  device->identification.device == intel_82540em_identification.device) {
+		_devices[_device_count].driver = &intel_82540em_driver;
 	}
 	_device_count++;
 }
