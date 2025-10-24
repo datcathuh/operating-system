@@ -4,6 +4,9 @@ OBJECTS+=$(BUILD_DIR)/kernel/gdt.o
 OBJECTS+=$(BUILD_DIR)/kernel/gdt_flush.o
 OBJECTS+=$(BUILD_DIR)/kernel/idt.o
 
+# Devices
+OBJECTS+=$(BUILD_DIR)/kernel/devices/intel_440fx.o
+
 # Interrupt service routines
 OBJECTS+=$(BUILD_DIR)/kernel/isr/irq_gp_asm.o
 OBJECTS+=$(BUILD_DIR)/kernel/isr/irq_gp_c.o
@@ -64,6 +67,6 @@ $(BUILD_DIR)/kernel/kernel.bin: $(BUILD_DIR)/kernel/kernel.elf
 	@./kernel-sector-count
 
 clean:
-	$(RM) -f $(BUILD_DIR)/kernel/*.o $(BUILD_DIR)/kernel/isr/*.o $(BUILD_DIR)/kernel/video/*.o $(BUILD_DIR)/kernel/kshell/*.o $(BUILD_DIR)/kernel/kernel.bin $(BUILD_DIR)/kernel/kernel.elf
+	$(RM) -f $(BUILD_DIR)/kernel/*.o $(BUILD_DIR)/kernel/devices/*.o $(BUILD_DIR)/kernel/isr/*.o $(BUILD_DIR)/kernel/video/*.o $(BUILD_DIR)/kernel/kshell/*.o $(BUILD_DIR)/kernel/kernel.bin $(BUILD_DIR)/kernel/kernel.elf
 
 .PHONY: all clean
