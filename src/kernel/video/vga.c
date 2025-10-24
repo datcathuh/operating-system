@@ -6,7 +6,7 @@
 static uint32_t cursor = 0;
 static uint8_t current_color = 0x07; // Default: light gray on black
 #define VGA_FONT_SIZE 4096
-static uint8_t vga_font[VGA_FONT_SIZE];
+static uint8_t _vga_font[VGA_FONT_SIZE];
 
 struct vga_mode *vga_mode_current = 0;
 
@@ -64,9 +64,12 @@ struct vga_mode vga_mode_320x200x256 = {
 	.flags = vga_mode_gfx,
 };
 
-void vga_init(void) {
-	vga_font_save(vga_font);
+void vga_init(void) { vga_font_save(_vga_font); }
+
+uint8_t *vga_font() {
+	return _vga_font;
 }
+
 
 void vga_font_save(uint8_t *buffer) {
 	io_outb(0x3C4, 0x02); io_outb(0x3C5, 0x04); // Write plane 2
@@ -369,7 +372,7 @@ void vga_mode_set(struct vga_mode *mode) {
 	}
 
 	if(mode->flags == vga_mode_text) {
-		vga_font_restore(vga_font);
+		vga_font_restore(_vga_font);
 
 		vga_restore_default_text_colors();
 

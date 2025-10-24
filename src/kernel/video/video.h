@@ -23,3 +23,11 @@ struct video_device {
 void video_init();
 struct video_device *video_current();
 bool video_set(struct video_device* device);
+
+void video_draw_string(struct video_device *device,
+					   const uint8_t *font,
+					   int px, int py,
+					   const char *s,
+					   uint32_t fg_color,
+					   uint32_t bg_color,
+					   int scale);

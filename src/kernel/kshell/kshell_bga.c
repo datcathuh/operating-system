@@ -4,6 +4,7 @@
 #include "memory.h"
 #include "types.h"
 #include "video/bga.h"
+#include "video/vga.h"
 
 static void kshell_bga_cb(void) {
 	struct video_device *prev_dev = video_current();
@@ -26,6 +27,15 @@ static void kshell_bga_cb(void) {
             fb[y * res.width + x] = (x ^ y) | 0xFF000000; // pattern with alpha
         }
     }
+
+	video_draw_string(new_dev,
+					  vga_font(),
+					  100,
+					  100,
+					  "Hugo\nwas here!",
+					  0xffffff,
+					  0x0,
+					  1);
 
 	while(keyboard_get_key() == 0){}
 
