@@ -1,6 +1,7 @@
 #include "bga.h"
 #include "io.h"
 #include "memory.h"
+#include "string.h"
 #include "video.h"
 
 #define VBE_DISPI_IOPORT_INDEX 0x01CE
@@ -24,15 +25,27 @@ struct pci_identification bga_identification = {
 	.device = 0x1111
 };
 
+static void bga_pci_driver_description(struct pci_device_driver *driver,
+									   struct pci_device *device,
+									   char *buffer,
+									   uint16_t size);
 static bool bga_pci_driver_initialize(struct pci_device_driver *driver,
                                       struct pci_device *device);
 static bool bga_pci_driver_unload(struct pci_device_driver *driver,
 								  struct pci_device *device);
 
 struct pci_device_driver bga_driver = {
-	.initialize = bga_pci_driver_initialize,
-	.unload = bga_pci_driver_unload
+    .description = bga_pci_driver_description,
+    .initialize = bga_pci_driver_initialize,
+    .unload = bga_pci_driver_unload
 };
+
+void bga_pci_driver_description(struct pci_device_driver */*driver*/,
+								struct pci_device */*device*/,
+								char *buffer,
+								uint16_t size) {
+	str_copy(buffer, size, "Bochs VGA");
+}
 
 bool bga_pci_driver_initialize(struct pci_device_driver */*driver*/,
                                struct pci_device */*device*/) {

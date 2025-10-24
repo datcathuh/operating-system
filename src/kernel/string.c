@@ -71,3 +71,17 @@ bool str_hex_from_uint32(char *buf, int size, uint32_t value) {
 	buf[j] = 0;
 	return true;
 }
+
+bool str_copy(char *dst, int size, const char *src) {
+	if(str_length(src) + 1 > size) {
+		return false;
+	}
+
+	uint32_t i = 0;
+	while(src[i] != 0) {
+		dst[i] = src[i];
+		i++;
+	}
+	dst[i] = 0;
+	return true;
+}

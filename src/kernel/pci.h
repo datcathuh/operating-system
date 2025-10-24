@@ -23,6 +23,7 @@ struct pci_device {
 };
 
 struct pci_device_driver {
+	void (*description)(struct pci_device_driver* driver, struct pci_device *device, char *buffer, uint16_t size);
 	bool (*initialize)(struct pci_device_driver* driver, struct pci_device *device);
 	bool (*unload)(struct pci_device_driver* driver, struct pci_device *device);
 };
@@ -35,3 +36,4 @@ void pci_enumerate(pci_enumerate_cb cb);
 /* Scans the PCI bus and build a list of devices. */
 void pci_build_device_tree(void);
 void pci_device_tree(struct pci_device **devices, uint16_t *device_count);
+void pci_debug_dump(void);

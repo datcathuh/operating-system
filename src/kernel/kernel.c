@@ -14,29 +14,15 @@
 #include "lapic.h"
 #include "pci.h"
 #include "pic.h"
-#include "serial.h"
-#include "string.h"
 #include "video/video.h"
-
-void pci_cb(struct pci_device *dev) {
-	char vendorid[10];
-	char devid[10];
-	str_hex_from_uint32(vendorid, 10, dev->identification.vendor);
-	str_hex_from_uint32(devid, 10, dev->identification.device);
-	serial_puts("PCI device found: ");
-	serial_puts(vendorid);
-	serial_puts(":");
-	serial_puts(devid);
-	serial_puts("\n");
-}
 
 void kmain(void) {
 	gdt_install();
 	__asm__ volatile("cli");
 	lapic_default_init();
 	acpi_init();
-	pci_enumerate(pci_cb);
 	pci_build_device_tree();
+	pci_debug_dump();
 	pic_remap();
 	idt_install();
 	irq_double_fault_register();
@@ -53,7 +39,6 @@ void kmain(void) {
 	kshell_julia_register();
 	kshell_mandelbrot_register();
 	kshell_shutdown_register();
-
 
 	kshell();
 }
