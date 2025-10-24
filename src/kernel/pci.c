@@ -44,6 +44,7 @@ void pci_enumerate(pci_enumerate_cb cb) {
                     dev.bar[bar] = pci_config_read32(dev.bus, dev.slot, dev.func, 0x10 + bar * 4);
                 }
 
+				dev.driver = NULL;
 				cb(&dev);
             }
         }
