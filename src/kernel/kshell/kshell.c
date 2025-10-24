@@ -16,10 +16,10 @@ static const char* _prompt = " > ";
 #define _commands_size 10
 static struct kshell_command _commands[_commands_size];
 
-static void prompt() {
-	vga_output_pos_set(0, vga_mode_current->height - 1);
-	vga_put_string(_prompt);
-	vga_cursor_pos_set(str_length(_prompt), vga_mode_current->height - 1);
+static void prompt(struct terminal *terminal) {
+	terminal->pos_set(terminal, 0, vga_mode_current->height - 1);
+	terminal->print(terminal, _prompt);
+	terminal->pos_set(terminal, str_length(_prompt), vga_mode_current->height - 1);
 }
 
 void kshell_init() {
@@ -50,11 +50,13 @@ struct kshell_command* kshell_find_command(const char *name) {
 }
 
 void kshell() {
-    vga_clear();
+	struct video_device *device = video_current();
+	struct terminal *terminal = device->terminal;
 
-	vga_put_string(_welcome);
+    terminal->clear(terminal);
+	terminal->print(terminal, _welcome);
 
-    prompt();
+    prompt(terminal);
 
 	char command[70] = "";
 	const int command_size = sizeof(command);
@@ -63,42 +65,43 @@ void kshell() {
         char c = keyboard_get_key();
         if (c) {
 			if(c == '\n') {
-				vga_clear();
+				terminal->clear(terminal);
 
 				if(str_length(command) > 0) {
 					struct kshell_command* cmd = kshell_find_command(command);
 					if(cmd) {
-						vga_output_pos_set(0, 0);
+						terminal->pos_set(terminal, 0, 0);
 						cmd->callback();
 					}
 					else {
-						vga_output_pos_set(0, 0);
-						vga_put_string_color("Invalid command", Red, Black);
+						terminal->pos_set(terminal, 0, 0);
+						terminal->color_set(terminal, terminal_red, terminal_black);
+						terminal->print(terminal, "Invalid command");
+						terminal->color_set(terminal, terminal_white, terminal_black);
 					}
 				}
 
 				command[0] = 0;
-				prompt();
+				prompt(terminal);
 				continue;
 			}
 			if(c == '\b') {
 				int x,y;
-				vga_output_pos_get(&x, &y);
+				terminal->pos_get(terminal, &x, &y);
 				if(x <= str_length(_prompt)) {
 					continue;
 				}
 				command[str_length(command) - 1] = 0;
-				vga_put_char(c);
-				vga_output_pos_get(&x, &y);
-				vga_cursor_pos_set(x, y);
+				terminal->print_char(terminal, c);
+				terminal->pos_set(terminal, x-1, y);
 				continue;
 			}
 
 			if(str_append_char(command, c, command_size)) {
-				vga_put_char(c);
+				terminal->print_char(terminal, c);
 				int x,y;
-				vga_output_pos_get(&x, &y);
-				vga_cursor_pos_set(x, y);
+				terminal->pos_get(terminal, &x, &y);
+				terminal->pos_set(terminal, x, y);
 			}
         }
     }

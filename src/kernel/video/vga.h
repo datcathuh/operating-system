@@ -24,14 +24,6 @@ void vga_init(void);
 void vga_font_save(uint8_t *buffer);
 void vga_font_restore(uint8_t *buffer);
 uint8_t *vga_font();
-void vga_cursor_pos_set(int x, int y);
-void vga_output_pos_get(int *x, int *y);
-void vga_output_pos_set(int x, int y);
-void vga_clear(void);
-void vga_put_char(char c);
-void vga_put_string(const char *s);
-void vga_set_color(enum vga_color fg, enum vga_color bg);
-void vga_put_string_color(const char *s, enum vga_color fg, enum vga_color bg);
 
 enum vga_mode_flags {
 	vga_mode_text,
