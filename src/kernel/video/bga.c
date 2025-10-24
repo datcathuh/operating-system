@@ -2,6 +2,7 @@
 #include "io.h"
 #include "memory.h"
 #include "string.h"
+#include "terminal_gfx.h"
 #include "video.h"
 
 #define VBE_DISPI_IOPORT_INDEX 0x01CE
@@ -48,7 +49,18 @@ void bga_pci_driver_description(struct pci_device_driver */*driver*/,
 }
 
 bool bga_pci_driver_initialize(struct pci_device_driver */*driver*/,
-                               struct pci_device */*device*/) {
+                               struct pci_device *device) {
+	struct video_device *vd = bga_device();
+	vd->vidmem = (uint8_t*)device->bar[0];
+
+	struct video_resolution res = {
+		.width = 1024,
+		.height = 768,
+		.bpp = 32
+	};
+	video_set(vd);
+	vd->resolution_set(vd, &res);
+	vd->terminal = terminal_gfx(vd);
 	return true;
 }
 

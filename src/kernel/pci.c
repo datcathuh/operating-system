@@ -72,6 +72,9 @@ static void pci_device_create_cb(struct pci_device *device) {
 			  device->identification.device == intel_82540em_identification.device) {
 		_devices[_device_count].driver = &intel_82540em_driver;
 	}
+	if(_devices[_device_count].driver) {
+		_devices[_device_count].driver->initialize(_devices[_device_count].driver, &_devices[_device_count]);
+	}
 	_device_count++;
 }
 

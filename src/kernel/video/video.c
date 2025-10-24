@@ -148,6 +148,23 @@ void video_draw_string(struct video_device *device,
             s++;
             continue;
         }
+		if(*s == '\b') {
+			x-= FONT_WIDTH;
+			video_draw_char(
+				device->vidmem,
+				pitch,
+				device->resolution->bpp / 8,
+				device->resolution->width,
+				device->resolution->height,
+				font, ' ',
+				x,
+				y,
+				fg_color,
+				bg_color,
+				scale);
+            s++;
+			continue;
+		}
         video_draw_char(
 			device->vidmem,
 			pitch,

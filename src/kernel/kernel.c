@@ -19,6 +19,7 @@
 void kmain(void) {
 	gdt_install();
 	__asm__ volatile("cli");
+	video_init();
 	lapic_default_init();
 	acpi_init();
 	pci_build_device_tree();
@@ -30,8 +31,6 @@ void kmain(void) {
 	irq_keyboard_register();
 	irq_timer_register();
 	__asm__ volatile("sti");
-
-	video_init();
 
 	kshell_init();
 	kshell_bga_register();
