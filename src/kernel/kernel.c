@@ -12,6 +12,7 @@
 #include "kshell/kshell_julia.h"
 #include "kshell/kshell_mandelbrot.h"
 #include "kshell/kshell_shutdown.h"
+#include "kshell/kshell_tetris.h"
 #include "lapic.h"
 #include "pci.h"
 #include "pic.h"
@@ -41,6 +42,7 @@ void kmain(void) {
 	kshell_julia_register();
 	kshell_mandelbrot_register();
 	kshell_shutdown_register();
+	kshell_tetris_register();
 
 	kshell();
 }
