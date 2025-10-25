@@ -11,6 +11,7 @@ OBJECTS+=$(BUILD_DIR)/kernel/devices/intel_82371sb_acpi.o
 OBJECTS+=$(BUILD_DIR)/kernel/devices/intel_82371sb_isa.o
 OBJECTS+=$(BUILD_DIR)/kernel/devices/intel_82371sb_ide.o
 OBJECTS+=$(BUILD_DIR)/kernel/devices/intel_82540em.o
+OBJECTS+=$(BUILD_DIR)/kernel/devices/usb_xhci.o
 
 # Interrupt service routines
 OBJECTS+=$(BUILD_DIR)/kernel/isr/irq_gp_asm.o

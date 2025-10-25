@@ -4,6 +4,7 @@
 #include "devices/intel_82371sb_isa.h"
 #include "devices/intel_82371sb_ide.h"
 #include "devices/intel_82540em.h"
+#include "devices/usb_xhci.h"
 #include "io.h"
 #include "memory.h"
 #include "pci.h"
@@ -72,6 +73,9 @@ static void pci_device_create_cb(struct pci_device *device) {
 	} else if(device->identification.vendor == intel_82540em_identification.vendor &&
 			  device->identification.device == intel_82540em_identification.device) {
 		_devices[_device_count].driver = &intel_82540em_driver;
+	} else if(device->identification.vendor == usb_xhci_identification.vendor &&
+			  device->identification.device == usb_xhci_identification.device) {
+		_devices[_device_count].driver = &usb_xhci_driver;
 	}
 	if(_devices[_device_count].driver) {
 		_devices[_device_count].driver->initialize(_devices[_device_count].driver, &_devices[_device_count]);
