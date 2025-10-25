@@ -16,14 +16,14 @@ gdb:
 	gdb
 
 run: $(BUILD_DIR)/hdd.img
-	qemu-system-x86_64 -device qemu-xhci -drive file=$(BUILD_DIR)/hdd.img,format=raw -serial stdio
+	qemu-system-x86_64 -smp cpus=2 -device qemu-xhci -drive file=$(BUILD_DIR)/hdd.img,format=raw -serial stdio
 
 run_debug: $(BUILD_DIR)/hdd.img
 	# -S Start in paused state
 	# -s open GDB on port 1234
-	qemu-system-x86_64 -device qemu-xhci -drive file=$(BUILD_DIR)/hdd.img,format=raw -S -s -serial stdio
+	qemu-system-x86_64 -smp cpus=2 -device qemu-xhci -drive file=$(BUILD_DIR)/hdd.img,format=raw -S -s -serial stdio
 
 run_debug_extra: $(BUILD_DIR)/hdd.img
-	qemu-system-x86_64 -device qemu-xhci -drive file=$(BUILD_DIR)/hdd.img,format=raw -S -s -serial stdio -no-reboot -d int,cpu_reset -no-shutdown
+	qemu-system-x86_64 -smp cpus=2 -device qemu-xhci -drive file=$(BUILD_DIR)/hdd.img,format=raw -S -s -serial stdio -no-reboot -d int,cpu_reset -no-shutdown
 
 .PHONY: all clean run run_debug
