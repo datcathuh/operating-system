@@ -1,4 +1,5 @@
 #include "acpi.h"
+#include "diagnostics.h"
 #include "gdt.h"
 #include "idt.h"
 #include "isr/irq_double_fault.h"
@@ -31,6 +32,8 @@ void kmain(void) {
 	irq_keyboard_register();
 	irq_timer_register();
 	__asm__ volatile("sti");
+
+	print_diagnostics();
 
 	kshell_init();
 	kshell_bga_register();

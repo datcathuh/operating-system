@@ -1,5 +1,6 @@
 OBJECTS+=$(BUILD_DIR)/kernel/acpi.o
 OBJECTS+=$(BUILD_DIR)/kernel/apm.o
+OBJECTS+=$(BUILD_DIR)/kernel/diagnostics.o
 OBJECTS+=$(BUILD_DIR)/kernel/gdt.o
 OBJECTS+=$(BUILD_DIR)/kernel/gdt_flush.o
 OBJECTS+=$(BUILD_DIR)/kernel/idt.o
