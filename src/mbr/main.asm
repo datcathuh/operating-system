@@ -37,16 +37,11 @@ start:
 
 	call STAGE2_OFFSET
 
-    call switch_to_32bit
-
     jmp $
 
 %include "disk.asm"
-%include "gdt.asm"
-%include "kernel_sector_count.asm"
 %include "stage2_sector_count.asm"
 %include "print.asm"
-%include "switch-to-32bit.asm"
 
 bits 16
 load_stage2:
@@ -55,11 +50,6 @@ load_stage2:
     mov dl, [BOOT_DRIVE]         ; dl -> disk
     call disk_load
     ret
-
-bits 32
-BEGIN_32BIT:
-    call STAGE2_OFFSET ; give control to the kernel
-    jmp $ ; loop in case kernel returns
 
 ; boot drive variable
 BOOT_DRIVE db 0
