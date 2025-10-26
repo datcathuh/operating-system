@@ -22,15 +22,19 @@ start:
     call print_string
     call new_line
 
-    mov si, msg_loading_kernel
+    mov si, msg_loading_stage2
     call print_string
-    call new_line
 
     call load_kernel
 
-    mov si, msg_kernel_loaded
+    mov si, msg_stage2_loaded
     call print_string
     call new_line
+
+    mov si, msg_call_stage2
+    call print_string
+
+	call KERNEL_OFFSET
 
     call switch_to_32bit
 
@@ -59,9 +63,9 @@ BEGIN_32BIT:
 ; boot drive variable
 BOOT_DRIVE db 0
 msg_booting db 'Bootloader starting', 0
-msg_loading_kernel db 'Loading kernel', 0
-msg_kernel_loaded db 'Kernel loaded. Entering 32bit mode', 0
-msg_call_kernel db 'Calling kernel', 0
+msg_loading_stage2 db 'Loading stage2', 0
+msg_stage2_loaded db ' ... stage2 loaded', 0
+msg_call_stage2 db 'Calling stage2', 0
 
 ; padding
 times 510 - ($-$$) db 0

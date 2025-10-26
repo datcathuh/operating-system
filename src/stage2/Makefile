@@ -9,7 +9,7 @@ $(BUILD_DIR)/stage2/%.o: %.c
 	@mkdir -p $(dir $@)
 	$(CC) $(CFLAGS) -c $< -o $@
 
-$(BUILD_DIR)/stage2/stage2-entry.o: stage2-entry.asm
+$(BUILD_DIR)/stage2/%.o: %.asm
 	@mkdir -p $(dir $@)
 	nasm $< -f elf32 -o $@
 
