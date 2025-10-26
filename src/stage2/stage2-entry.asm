@@ -1,8 +1,11 @@
 [bits 16]
 global start
 
+extern disk_load
 extern print_string
 extern print_new_line
+
+KERNEL_OFFSET equ 0x1000
 
 %include "kernel_sector_count.asm"
 
@@ -10,6 +13,11 @@ start:
     mov si, msg_stage2_start
     call print_string
 	call print_new_line
+
+    mov bx, KERNEL_OFFSET        ; bx -> destination
+    mov dh, KERNEL_SECTOR_COUNT  ; dh -> num sectors
+    mov dl, [BOOT_DRIVE]         ; dl -> disk
+    call disk_load
 
 	;; Enable protected mode (32 bit)
     cli                      ; 1. disable interrupts

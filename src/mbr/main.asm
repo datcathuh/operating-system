@@ -27,6 +27,7 @@ start:
 
     mov bx, STAGE2_OFFSET        ; bx -> destination
     mov dh, STAGE2_SECTOR_COUNT  ; dh -> num sectors
+	mov cl, 0x02                 ; cl -> start from sector 2
     mov dl, [BOOT_DRIVE]         ; dl -> disk
     call disk_load
 
