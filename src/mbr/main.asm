@@ -1,8 +1,9 @@
 bits 16
 org 0x7c00
 
-; where to load the kernel to
-KERNEL_OFFSET equ 0x1000
+; where to load the stage2 to
+STAGE2_SEGMENT equ 0x0000
+STAGE2_OFFSET equ 0x1000
 
 start:
     ; BIOS sets boot drive in 'dl'; store for later use
@@ -22,46 +23,41 @@ start:
     call print_string
     call new_line
 
-    mov si, msg_loading_kernel
+    mov si, msg_loading_stage2
+    call print_string
+
+	mov ax, STAGE2_SEGMENT
+	mov es, ax
+    mov bx, STAGE2_OFFSET        ; bx -> destination
+    mov dh, STAGE2_SECTOR_COUNT  ; dh -> num sectors
+	mov cl, 0x02                 ; cl -> start from sector 2
+    mov dl, [BOOT_DRIVE]         ; dl -> disk
+    call disk_load
+
+    mov si, msg_stage2_loaded
     call print_string
     call new_line
 
-    call load_kernel
-
-    mov si, msg_kernel_loaded
+    mov si, msg_call_stage2
     call print_string
     call new_line
 
-    call switch_to_32bit
+	mov dh, STAGE2_SECTOR_COUNT
+    mov dl, [BOOT_DRIVE]         ; dl -> disk
+	call STAGE2_OFFSET
 
     jmp $
 
 %include "disk.asm"
-%include "gdt.asm"
-%include "kernel_sector_count.asm"
 %include "stage2_sector_count.asm"
 %include "print.asm"
-%include "switch-to-32bit.asm"
-
-bits 16
-load_kernel:
-    mov bx, KERNEL_OFFSET        ; bx -> destination
-    mov dh, KERNEL_SECTOR_COUNT  ; dh -> num sectors
-    mov dl, [BOOT_DRIVE]         ; dl -> disk
-    call disk_load
-    ret
-
-bits 32
-BEGIN_32BIT:
-    call KERNEL_OFFSET ; give control to the kernel
-    jmp $ ; loop in case kernel returns
 
 ; boot drive variable
 BOOT_DRIVE db 0
 msg_booting db 'Bootloader starting', 0
-msg_loading_kernel db 'Loading kernel', 0
-msg_kernel_loaded db 'Kernel loaded. Entering 32bit mode', 0
-msg_call_kernel db 'Calling kernel', 0
+msg_loading_stage2 db 'Loading stage2', 0
+msg_stage2_loaded db ' ... stage2 loaded', 0
+msg_call_stage2 db 'Calling stage2', 0
 
 ; padding
 times 510 - ($-$$) db 0
