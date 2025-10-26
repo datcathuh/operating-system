@@ -1,9 +1,9 @@
 all: $(BUILD_DIR)/hdd.img
 
 $(BUILD_DIR)/hdd.img:
+	$(MAKE) -C stage2
 	$(MAKE) -C kernel
 	$(MAKE) -C mbr
-	$(MAKE) -C stage2
 	cat $(BUILD_DIR)/mbr/mbr.bin $(BUILD_DIR)/kernel/kernel.bin > $@
 
 clean:

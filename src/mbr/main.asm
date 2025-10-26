@@ -39,6 +39,7 @@ start:
 %include "disk.asm"
 %include "gdt.asm"
 %include "kernel_sector_count.asm"
+%include "stage2_sector_count.asm"
 %include "print.asm"
 %include "switch-to-32bit.asm"
 

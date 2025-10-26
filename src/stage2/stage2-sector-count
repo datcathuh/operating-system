@@ -1,0 +1,7 @@
+#!/bin/bash
+COUNT=$(( ($(stat -c%s ../../build/stage2/stage2.bin) + 511) / 512 ))
+
+cat <<-EOF > ../mbr/stage2_sector_count.asm
+STAGE2_SECTOR_COUNT  EQU  $COUNT
+EOF
+echo "$COUNT"

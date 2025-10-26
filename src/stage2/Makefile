@@ -18,6 +18,8 @@ $(BUILD_DIR)/stage2/stage2.elf: $(OBJECTS)
 
 $(BUILD_DIR)/stage2/stage2.bin: $(BUILD_DIR)/stage2/stage2.elf
 	objcopy -O binary $(BUILD_DIR)/stage2/stage2.elf $(BUILD_DIR)/stage2/stage2.bin
+	@echo -n "Stage2 sector count: "
+	@./stage2-sector-count
 
 $(BUILD_DIR)/stage2/%.o: %.c
 	@mkdir -p $(dir $@)

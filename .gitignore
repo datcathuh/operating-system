@@ -7,3 +7,4 @@ compile_commands.json
 tools
 build
 kernel_sector_count.asm
+stage2_sector_count.asm
