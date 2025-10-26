@@ -15,14 +15,39 @@
 static struct pci_device _devices[256] = {0};
 static uint16_t _device_count = 0;
 
-static uint32_t pci_config_read32(uint8_t bus, uint8_t slot, uint8_t func, uint8_t offset) {
-    uint32_t address = (1U << 31)
-                     | ((uint32_t)bus << 16)
-                     | ((uint32_t)slot << 11)
-                     | ((uint32_t)func << 8)
-                     | (offset & 0xFC);
-    io_outl(0xCF8, address);
-    return io_inl(0xCFC);
+#define PCI_CONFIG_ADDRESS 0xCF8
+#define PCI_CONFIG_DATA    0xCFC
+
+static inline uint32_t pci_config_address(uint8_t bus, uint8_t slot, uint8_t func, uint8_t offset) {
+    return (uint32_t)(
+        (1U << 31)               |  /* enable bit */
+        ((uint32_t)bus    << 16) |
+        ((uint32_t)slot   << 11) |
+        ((uint32_t)func   << 8)  |
+        (offset & 0xFC)             /* align to dword */
+    );
+}
+
+uint8_t pci_cfg_read8(uint8_t bus, uint8_t slot, uint8_t func, uint8_t offset) {
+	uint32_t value = pci_config_read32(bus, slot, func, offset);
+	return (uint8_t)((value >> ((offset & 3) * 8)) & 0xFF);
+}
+
+uint16_t pci_cfg_read16(uint8_t bus, uint8_t slot, uint8_t func, uint8_t offset) {
+	uint32_t value = pci_config_read32(bus, slot, func, offset);
+	return (uint16_t)((value >> ((offset & 2) * 8)) & 0xFFFF);
+}
+
+uint32_t pci_config_read32(uint8_t bus, uint8_t slot, uint8_t func, uint8_t offset) {
+    uint32_t address = pci_config_address(bus, slot, func, offset);
+    io_outl(PCI_CONFIG_ADDRESS, address);
+    return io_inl(PCI_CONFIG_DATA);
+}
+
+void pci_cfg_write32(uint8_t bus, uint8_t slot, uint8_t func, uint8_t offset, uint32_t val) {
+    uint32_t address = pci_config_address(bus, slot, func, offset);
+    io_outl(PCI_CONFIG_ADDRESS, address);
+    io_outl(PCI_CONFIG_DATA, val);
 }
 
 void pci_enumerate(pci_enumerate_cb cb) {
