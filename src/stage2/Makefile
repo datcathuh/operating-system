@@ -1,4 +1,8 @@
+# Assembler 16 bit
+OBJECTS+=$(BUILD_DIR)/stage2/a20.o
+OBJECTS+=$(BUILD_DIR)/stage2/print.o
 OBJECTS+=$(BUILD_DIR)/stage2/stage2-entry.o
+
 OBJECTS+=$(BUILD_DIR)/stage2/main.o
 
 CFLAGS=-std=c23 -pedantic -Wall -Wextra -m32 -ffreestanding -O2 -nostdlib

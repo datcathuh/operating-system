@@ -2,7 +2,7 @@ bits 16
 org 0x7c00
 
 ; where to load the kernel to
-KERNEL_OFFSET equ 0x1000
+STAGE2_OFFSET equ 0x1000
 
 start:
     ; BIOS sets boot drive in 'dl'; store for later use
@@ -25,7 +25,7 @@ start:
     mov si, msg_loading_stage2
     call print_string
 
-    call load_kernel
+    call load_stage2
 
     mov si, msg_stage2_loaded
     call print_string
@@ -33,8 +33,9 @@ start:
 
     mov si, msg_call_stage2
     call print_string
+    call new_line
 
-	call KERNEL_OFFSET
+	call STAGE2_OFFSET
 
     call switch_to_32bit
 
@@ -48,8 +49,8 @@ start:
 %include "switch-to-32bit.asm"
 
 bits 16
-load_kernel:
-    mov bx, KERNEL_OFFSET        ; bx -> destination
+load_stage2:
+    mov bx, STAGE2_OFFSET        ; bx -> destination
     mov dh, STAGE2_SECTOR_COUNT  ; dh -> num sectors
     mov dl, [BOOT_DRIVE]         ; dl -> disk
     call disk_load
@@ -57,7 +58,7 @@ load_kernel:
 
 bits 32
 BEGIN_32BIT:
-    call KERNEL_OFFSET ; give control to the kernel
+    call STAGE2_OFFSET ; give control to the kernel
     jmp $ ; loop in case kernel returns
 
 ; boot drive variable

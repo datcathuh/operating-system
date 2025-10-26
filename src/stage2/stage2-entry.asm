@@ -1,23 +1,18 @@
 [bits 16]
 global _start
 
+extern print_string
+extern print_new_line
+
 _start:
+    mov si, msg_stage2_start
+    call print_string
+	call print_new_line
+
+	jmp $
+
 	extern s2main
 	call s2main
 	jmp $
 
-enable_a20:
-    in   al, 0x64         ; read status
-.wait1:
-    test al, 2            ; input buffer full?
-    jnz  .wait1
-    mov  al, 0xD1         ; command: write output port
-    out  0x64, al
-
-.wait2:
-    in   al, 0x64
-    test al, 2
-    jnz  .wait2
-    mov  al, 0xDF         ; set bit 1 (A20 enable)
-    out  0x60, al
-    ret
+msg_stage2_start db 'Stage2 starting', 0
