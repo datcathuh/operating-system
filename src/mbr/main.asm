@@ -25,7 +25,10 @@ start:
     mov si, msg_loading_stage2
     call print_string
 
-    call load_stage2
+    mov bx, STAGE2_OFFSET        ; bx -> destination
+    mov dh, STAGE2_SECTOR_COUNT  ; dh -> num sectors
+    mov dl, [BOOT_DRIVE]         ; dl -> disk
+    call disk_load
 
     mov si, msg_stage2_loaded
     call print_string
@@ -42,14 +45,6 @@ start:
 %include "disk.asm"
 %include "stage2_sector_count.asm"
 %include "print.asm"
-
-bits 16
-load_stage2:
-    mov bx, STAGE2_OFFSET        ; bx -> destination
-    mov dh, STAGE2_SECTOR_COUNT  ; dh -> num sectors
-    mov dl, [BOOT_DRIVE]         ; dl -> disk
-    call disk_load
-    ret
 
 ; boot drive variable
 BOOT_DRIVE db 0

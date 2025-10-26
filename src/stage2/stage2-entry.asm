@@ -4,6 +4,8 @@ global start
 extern print_string
 extern print_new_line
 
+%include "kernel_sector_count.asm"
+
 start:
     mov si, msg_stage2_start
     call print_string
