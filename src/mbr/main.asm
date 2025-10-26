@@ -46,7 +46,7 @@ start:
 bits 16
 load_kernel:
     mov bx, KERNEL_OFFSET        ; bx -> destination
-    mov dh, KERNEL_SECTOR_COUNT  ; dh -> num sectors
+    mov dh, STAGE2_SECTOR_COUNT  ; dh -> num sectors
     mov dl, [BOOT_DRIVE]         ; dl -> disk
     call disk_load
     ret
