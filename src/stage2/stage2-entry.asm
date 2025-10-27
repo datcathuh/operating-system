@@ -56,8 +56,20 @@ start_32bit:
 
 	mov esi, 0x00010000
     mov edi, 0x00100000
-    mov ecx, KERNEL_SECTOR_COUNT * 512   ; assuming KERNEL_SIZE_BYTES is divisible by 4
+    mov ecx, KERNEL_SECTOR_COUNT * 512
     rep movsd
+
+	;; Make sure that paging is disable for now.
+	mov eax, cr0
+	and eax, 0x7FFFFFFF     ; Clear bit 31 (PG)
+	mov cr0, eax
+
+	;; Enable PAE
+	mov eax, cr4
+	or eax, 1 << 5           ; Set PAE (bit 5)
+	mov cr4, eax
+
+
 
 	extern s2main
 	call s2main
