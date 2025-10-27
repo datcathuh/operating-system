@@ -1,7 +1,8 @@
 bits 16
 org 0x7c00
 
-; where to load the kernel to
+; where to load the stage2 to
+STAGE2_SEGMENT equ 0x0000
 STAGE2_OFFSET equ 0x1000
 
 start:
@@ -25,6 +26,8 @@ start:
     mov si, msg_loading_stage2
     call print_string
 
+	mov ax, STAGE2_SEGMENT
+	mov es, ax
     mov bx, STAGE2_OFFSET        ; bx -> destination
     mov dh, STAGE2_SECTOR_COUNT  ; dh -> num sectors
 	mov cl, 0x02                 ; cl -> start from sector 2
@@ -39,6 +42,8 @@ start:
     call print_string
     call new_line
 
+	mov dh, STAGE2_SECTOR_COUNT
+    mov dl, [BOOT_DRIVE]         ; dl -> disk
 	call STAGE2_OFFSET
 
     jmp $

@@ -23,6 +23,7 @@ $(BUILD_DIR)/stage2/stage2.elf: $(OBJECTS)
 
 $(BUILD_DIR)/stage2/stage2.bin: $(BUILD_DIR)/stage2/stage2.elf
 	objcopy -O binary $(BUILD_DIR)/stage2/stage2.elf $(BUILD_DIR)/stage2/stage2.bin
+	truncate -s $$(( ( $$(stat -c%s $@) + 511 ) / 512 * 512 )) $@
 	@echo -n "Stage2 sector count: "
 	@./stage2-sector-count
 

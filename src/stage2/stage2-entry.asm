@@ -5,16 +5,32 @@ extern disk_load
 extern print_string
 extern print_new_line
 
-KERNEL_OFFSET equ 0x1000
+KERNEL_16_SEGMENT equ 0x1000
+KERNEL_16_OFFSET  equ 0x0000
 
 %include "kernel_sector_count.asm"
 
 start:
+	mov [STAGE2_SIZE], dh
+    mov [BOOT_DRIVE], dl
+
     mov si, msg_stage2_start
     call print_string
 	call print_new_line
 
-    mov bx, KERNEL_OFFSET        ; bx -> destination
+	;; Calculate the position of the kernel and store it in
+	;; CL which is the start sector to read from.
+	mov al, 2
+	add al, [STAGE2_SIZE]
+	mov cl, al
+
+	;; Load kernel in a safe spot lower than 1MB. This means
+	;; that we must copy it to final destination of 0x100000
+	;; as soon as we reach 32 bit code.
+	mov ax, KERNEL_16_SEGMENT
+	mov es, ax
+    mov bx, KERNEL_16_OFFSET     ; bx -> destination
+	mov cl, 0x02                 ; cl -> start from sector
     mov dh, KERNEL_SECTOR_COUNT  ; dh -> num sectors
     mov dl, [BOOT_DRIVE]         ; dl -> disk
     call disk_load
@@ -39,8 +55,15 @@ start_32bit:
     mov ebp, 0x90000         ; 6. setup stack
     mov esp, ebp
 
+	mov esi, 0x00010000
+    mov edi, 0x00100000
+    mov ecx, KERNEL_SECTOR_COUNT * 512   ; assuming KERNEL_SIZE_BYTES is divisible by 4
+    rep movsd
+
 	extern s2main
 	call s2main
+
+	call 0x100000
 	jmp $
 
 msg_stage2_start db 'Stage2 starting', 0
@@ -75,6 +98,9 @@ gdt_end:
 gdt_descriptor:
     dw gdt_end - gdt_start - 1 ; size (16 bit)
     dd gdt_start ; address (32 bit)
+
+BOOT_DRIVE     db	0
+STAGE2_SIZE    db	0
 
 CODE_SEG equ 0x08
 DATA_SEG equ 0x10

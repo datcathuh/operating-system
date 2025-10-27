@@ -1,7 +1,7 @@
 ENTRY(_start)
 
 SECTIONS {
-    . = 0x1000;
+    . = 0x100000;
 
     .text BLOCK(4K) : ALIGN(4K) {
         *kernel-entry.o(.text)
