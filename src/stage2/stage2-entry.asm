@@ -14,14 +14,14 @@ start:
 	mov [STAGE2_SIZE], dh
     mov [BOOT_DRIVE], dl
 
-    mov si, msg_stage2_start
-    call print_string
-	call print_new_line
+    ;; mov si, msg_stage2_start
+    ;; call print_string
+	;; call print_new_line
 
 	;; Calculate the position of the kernel and store it in
 	;; CL which is the start sector to read from.
 	mov al, 2
-	add al, [STAGE2_SIZE]
+	add al, [byte STAGE2_SIZE]
 	mov cl, al
 
 	;; Load kernel in a safe spot lower than 1MB. This means
@@ -30,7 +30,6 @@ start:
 	mov ax, KERNEL_16_SEGMENT
 	mov es, ax
     mov bx, KERNEL_16_OFFSET     ; bx -> destination
-	mov cl, 0x02                 ; cl -> start from sector
     mov dh, KERNEL_SECTOR_COUNT  ; dh -> num sectors
     mov dl, [BOOT_DRIVE]         ; dl -> disk
     call disk_load
