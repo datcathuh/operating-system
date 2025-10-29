@@ -3,6 +3,7 @@
 #include "kshell_tetris.h"
 #include "memory.h"
 #include "pit.h"
+#include "string.h"
 #include "types.h"
 #include "video/vga.h"
 #include "video/video.h"
@@ -217,9 +218,13 @@ static void draw_hud(int score, int level, int next_type) {
     /* background */
     video_draw_rect_filled(vd, sx-8, sy-8, 200, 200, BG_COLOR);
     /* Score */
-    // snprintf(buf, sizeof(buf), "Score: %d", score);
+	str_copy(buf, 64, "Score: ");
+	// TODO: Set correct string length
+	str_from_uint32(buf + str_length(buf), 64, score);
     video_draw_string(vd, _font, sx, sy, buf, TEXT_COLOR, BG_COLOR, 1);
-    // snprintf(buf, sizeof(buf), "Level: %d", level);
+	str_copy(buf, 64, "Level: ");
+	// TODO: Set correct string length
+	str_from_uint32(buf + str_length(buf), 64, level);
     video_draw_string(vd, _font, sx, sy+18, buf, TEXT_COLOR, BG_COLOR, 1);
     video_draw_string(vd, _font, sx, sy+36, "Controls:", TEXT_COLOR, BG_COLOR, 1);
     video_draw_string(vd, _font, sx, sy+54, "a: left  d: right", TEXT_COLOR, BG_COLOR, 1);
