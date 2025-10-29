@@ -185,7 +185,7 @@ static void draw_board(void) {
             uint8_t v = board[y][x];
             if (v) draw_cell(x, y, tetro_colors[v]);
             else {
-                /* empty cell  draw slightly dark square */
+                /* empty cell draw slightly dark square */
                 draw_cell(x, y, BG_COLOR);
             }
         }
@@ -217,9 +217,13 @@ static bool piece_collides(const struct piece *p, const uint8_t test_board[PLAY_
             if (shape & (0x8000 >> (ry*4 + rx))) {
                 int bx = p->x + rx;
                 int by = p->y + ry;
-                if (bx < 0 || bx >= PLAY_WIDTH || by >= PLAY_HEIGHT) return true;
+                if (bx < 0 || bx >= PLAY_WIDTH || by >= PLAY_HEIGHT) {
+					return true;
+				}
                 if (by >= 0) { /* allow above board during spawn */
-                    if (test_board[by][bx]) return true;
+                    if (test_board[by][bx]) {
+						return true;
+					}
                 }
             }
         }
@@ -249,7 +253,10 @@ static int clear_lines(void) {
     for (int y = PLAY_HEIGHT-1; y >= 0; --y) {
         bool full = true;
         for (int x = 0; x < PLAY_WIDTH; ++x) {
-            if (!board[y][x]) { full = false; break; }
+            if (!board[y][x]) {
+				full = false;
+				break;
+			}
         }
         if (full) {
             /* move everything above down one */
@@ -257,7 +264,9 @@ static int clear_lines(void) {
                 mem_copy(board[yy], board[yy-1], PLAY_WIDTH);
             }
             /* clear top row */
-            for (int xx = 0; xx < PLAY_WIDTH; ++xx) board[0][xx] = 0;
+            for (int xx = 0; xx < PLAY_WIDTH; ++xx) {
+				board[0][xx] = 0;
+			}
             ++cleared;
             ++y; /* re-check same y because rows moved down */
         }
@@ -338,7 +347,6 @@ void kshell_tetris_cb(void) {
     int next_piece = rand_range(7);
 
     bool running = true;
-    bool just_spawned = true;
 
     /* initial draw */
     video_draw_rect_filled(vd, 0, 0, vd->resolution->width, vd->resolution->height, BG_COLOR);
@@ -385,7 +393,7 @@ void kshell_tetris_cb(void) {
                     draw_piece(&cur, false);
                 } else {
                     /* cannot move down => lock */
-                    lock_now = true;
+                    //lock_now = true;
                 }
             } else if (k == 'w') {
                 /* rotate clockwise */
@@ -427,8 +435,9 @@ void kshell_tetris_cb(void) {
 			key_pressed = keyboard_get_key_if_exists(&k);
         }
 
-        /* wait 1 second for gravity tick */
-        pit_wait_milliseconds(300);
+		if(running) {
+			pit_wait_milliseconds(300);
+		}
 
         /* gravity: move down 1 cell if possible, else lock */
         if (!lock_now) {
