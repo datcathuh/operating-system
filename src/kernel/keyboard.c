@@ -50,3 +50,36 @@ char keyboard_get_key(void) {
 	}
 	return 0;
 }
+
+bool keyboard_get_key_if_exists(char *key) {
+	uint8_t sc;
+	while(irq_keyboard_count()) {
+		bool key_fetched = irq_keyboard_consume_key(&sc);
+		if(key_fetched) {
+			// Handle key release
+			if (sc & 0x80) {
+				sc &= 0x7F;
+
+				if (sc == 42 || sc == 54) {
+					shift_pressed = false;
+				}
+
+				continue;
+			} else {
+				// looks for shift presses
+				if (sc == 42 || sc == 54) {
+					shift_pressed = true;
+					continue;
+				}
+
+				if (sc < 128) {
+					*key = shift_pressed ? scancode_to_ascii_shift[sc] : scancode_to_ascii[sc];
+					return true;
+				}
+				continue;
+			}
+		}
+		continue;
+	}
+	return false;
+}

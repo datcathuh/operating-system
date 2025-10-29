@@ -17,6 +17,10 @@ void irq_keyboard_c(void) {
 	irq_key_count++;
 }
 
+uint32_t irq_keyboard_count(void) {
+	return irq_key_count;
+}
+
 bool irq_keyboard_consume_key(uint8_t *sc) {
 	// TODO: Add locking
 	if (irq_key_count == 0) {

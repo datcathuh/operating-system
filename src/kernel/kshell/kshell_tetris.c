@@ -279,12 +279,12 @@ void kshell_tetris_cb(void) {
              - then wait 1 second for gravity tick
            If you later implement a millisecond tick, replace this behavior.
         */
-        bool piece_moved = false;
         bool lock_now = false;
 
         /* Input polling: check once before each gravity tick */
-        char k = keyboard_get_key();
-        if (k) {
+		char k;
+        bool key_pressed = keyboard_get_key_if_exists(&k);
+        while (key_pressed) {
             if (k == 'a') {
                 mem_copy(&test, &cur, sizeof(cur));
                 test.x -= 1;
@@ -292,7 +292,6 @@ void kshell_tetris_cb(void) {
                     draw_piece(&cur, true);
                     cur.x = test.x;
                     draw_piece(&cur, false);
-                    piece_moved = true;
                 }
             } else if (k == 'd') {
                 mem_copy(&test, &cur, sizeof(cur));
@@ -301,7 +300,6 @@ void kshell_tetris_cb(void) {
                     draw_piece(&cur, true);
                     cur.x = test.x;
                     draw_piece(&cur, false);
-                    piece_moved = true;
                 }
             } else if (k == 's') {
                 /* soft drop */
@@ -311,7 +309,6 @@ void kshell_tetris_cb(void) {
                     draw_piece(&cur, true);
                     cur.y = test.y;
                     draw_piece(&cur, false);
-                    piece_moved = true;
                 } else {
                     /* cannot move down => lock */
                     lock_now = true;
@@ -353,6 +350,7 @@ void kshell_tetris_cb(void) {
             }
             /* redraw HUD */
             draw_hud(score, level, next_piece);
+			key_pressed = keyboard_get_key_if_exists(&k);
         }
 
         /* wait 1 second for gravity tick */
