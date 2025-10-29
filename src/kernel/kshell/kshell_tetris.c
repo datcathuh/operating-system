@@ -354,7 +354,7 @@ void kshell_tetris_cb(void) {
         }
 
         /* wait 1 second for gravity tick */
-        pit_wait_seconds(1);
+        pit_wait_milliseconds(300);
 
         /* gravity: move down 1 cell if possible, else lock */
         if (!lock_now) {

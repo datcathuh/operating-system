@@ -7,9 +7,9 @@
    - Divisor chosen to produce ~100 Hz (1193182 / 11932 ~= 100)
    - We then repeatedly latch and read the current counter and compute elapsed ticks.
 */
-void pit_wait_seconds(uint32_t seconds) {
+void pit_wait_milliseconds(uint32_t milliseconds) {
     const uint32_t PIT_FREQ = 1193182U;
-    const uint32_t TARGET_HZ = 100; /* 100 ticks per second */
+    const uint32_t TARGET_HZ = 1000; /* 1000 ticks per second */
     uint16_t divisor = (uint16_t)(PIT_FREQ / TARGET_HZ);
     if (divisor == 0) divisor = 1;
 
@@ -18,7 +18,7 @@ void pit_wait_seconds(uint32_t seconds) {
     io_outb(0x40, divisor & 0xFF);
     io_outb(0x40, divisor >> 8);
 
-    uint32_t ticks_needed = seconds * TARGET_HZ;
+    uint32_t ticks_needed = milliseconds;
     uint32_t ticks = 0;
 
     /* Read initial counter value */
