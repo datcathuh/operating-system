@@ -34,6 +34,7 @@ OBJECTS+=$(BUILD_DIR)/kernel/kshell/kshell_help.o
 OBJECTS+=$(BUILD_DIR)/kernel/kshell/kshell_julia.o
 OBJECTS+=$(BUILD_DIR)/kernel/kshell/kshell_mandelbrot.o
 OBJECTS+=$(BUILD_DIR)/kernel/kshell/kshell_shutdown.o
+OBJECTS+=$(BUILD_DIR)/kernel/kshell/kshell_snake.o
 OBJECTS+=$(BUILD_DIR)/kernel/kshell/kshell_tetris.o
 
 OBJECTS+=$(BUILD_DIR)/kernel/lapic.o
