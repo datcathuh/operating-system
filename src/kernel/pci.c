@@ -67,7 +67,8 @@ void pci_enumerate(pci_enumerate_cb cb) {
 
                 // Read BARs (6 possible)
                 for (int bar = 0; bar < 6; bar++) {
-                    dev.bar[bar] = pci_config_read32(dev.bus, dev.slot, dev.func, 0x10 + bar * 4);
+					/* Mask of the lowest four bits since they are flags. */
+                    dev.bar[bar] = pci_config_read32(dev.bus, dev.slot, dev.func, 0x10 + bar * 4) & ~0xF;
                 }
 
 				dev.driver = NULL;
@@ -134,6 +135,20 @@ void pci_debug_dump(void) {
 			serial_puts(" ");
 			dev->driver->description(dev->driver, dev, description, 100);
 			serial_puts(description);
+		}
+
+		for(int i=0;i < 6; i++) {
+			if(dev->bar[i] == 0) {
+				continue;
+			}
+			serial_puts("\n");
+			serial_puts(" bar[");
+			char x[10];
+			str_hex_from_uint32(x, 10, i);
+			serial_puts(x);
+			serial_puts("]: ");
+			str_hex_from_uint32(x, 10, dev->bar[i]);
+			serial_puts(x);
 		}
 
 		serial_puts("\n");
