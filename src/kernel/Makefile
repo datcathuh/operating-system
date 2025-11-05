@@ -1,3 +1,4 @@
+OBJECTS+=$(BUILD_DIR)/kernel/arithmetics.o
 OBJECTS+=$(BUILD_DIR)/kernel/acpi.o
 OBJECTS+=$(BUILD_DIR)/kernel/apm.o
 OBJECTS+=$(BUILD_DIR)/kernel/diagnostics.o

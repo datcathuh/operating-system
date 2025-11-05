@@ -4,8 +4,6 @@
 #include "memory.h"
 #include "video/video.h"
 
-#define SCREEN_WIDTH 320
-#define SCREEN_HEIGHT 200
 #define MAX_ITER 128
 
 // Multiply 16.16 fixed numbers
@@ -21,12 +19,12 @@ static void draw_julia(double xmin, double xmax, double ymin, double ymax) {
 
 	volatile uint8_t *vga = device->buffer->memory;
 	int x, y;
-    int dx = (xmax - xmin) / SCREEN_WIDTH;
-    int dy = (ymax - ymin) / SCREEN_HEIGHT;
+    int dx = (xmax - xmin) / device->buffer->resolution.width;
+    int dy = (ymax - ymin) / device->buffer->resolution.height;
 
-    for(y = 0; y < SCREEN_HEIGHT; y++) {
+    for(y = 0; y < device->buffer->resolution.height; y++) {
         int zy = ymin + y * dy;
-        for(x = 0; x < SCREEN_WIDTH; x++) {
+        for(x = 0; x < device->buffer->resolution.width; x++) {
             int zx = xmin + x * dx;
             int i = 0;
 
@@ -44,7 +42,7 @@ static void draw_julia(double xmin, double xmax, double ymin, double ymax) {
 
                 i++;
             }
-            vga[y * SCREEN_WIDTH + x] = i % 256;
+            vga[y * device->buffer->resolution.width + x] = i % 256;
         }
     }
 }
