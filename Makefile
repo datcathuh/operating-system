@@ -32,10 +32,13 @@ run_debug:
 run_debug_extra:
 	$(MAKE) -C src $@
 
+format:
+	clang-format -i $(shell find -name "*.c" -or -name "*.h")
+
 # A target for generating a definition of all compile commands.
 # This is used if you have Emacs as code editor together with
 # lsp-mode and clangd for quick code navigation.
 compile_commands.json:
 	bear -- $(MAKE) rebuild
 
-.PHONY: all clean gdb run run_debug
+.PHONY: all clean gdb run run_debug run_debug_extra format
