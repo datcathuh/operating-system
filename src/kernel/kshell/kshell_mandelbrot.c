@@ -10,7 +10,7 @@
    - x,y are Q16.16
    - use 64-bit temporaries for products
 */
-static void draw_mandelbrot_mode13(void) {
+static void kshell_mandelbrot_cb(void) {
 	struct video_device *device = video_current();
     const int32_t width = device->buffer->resolution.width;
     const int32_t height = device->buffer->resolution.height;
@@ -56,10 +56,6 @@ static void draw_mandelbrot_mode13(void) {
 			video_draw_pixel(device->buffer, px, py, color);
         }
     }
-}
-
-static void kshell_mandelbrot_cb(void) {
-    draw_mandelbrot_mode13();
 
 	while(keyboard_get_key() == 0){}
 }
