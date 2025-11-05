@@ -19,7 +19,7 @@ static void draw_julia(double xmin, double xmax, double ymin, double ymax) {
 	int cx = -45862;    // -0.7 in 16.16 fixed point
 	int cy = 17722;     // 0.27 in 16.16 fixed point
 
-	volatile uint8_t *vga = device->vidmem;
+	volatile uint8_t *vga = device->buffer->memory;
 	int x, y;
     int dx = (xmax - xmin) / SCREEN_WIDTH;
     int dy = (ymax - ymin) / SCREEN_HEIGHT;

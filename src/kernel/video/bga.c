@@ -21,6 +21,7 @@
 #define VBE_DISPI_ID5            0xB0C5
 
 struct video_resolution _video_resolution;
+struct video_buffer _video_bga_buffer;
 struct pci_identification bga_identification = {
 	.vendor = 0x1234,
 	.device = 0x1111
@@ -51,7 +52,7 @@ void bga_pci_driver_description(struct pci_device_driver */*driver*/,
 bool bga_pci_driver_initialize(struct pci_device_driver */*driver*/,
                                struct pci_device *device) {
 	struct video_device *vd = bga_device();
-	vd->vidmem = (uint8_t*)device->bar[0];
+	vd->buffer->memory = (uint8_t*)device->bar[0];
 
 	struct video_resolution res = {
 		.width = 1024,
@@ -95,8 +96,7 @@ static bool bga_device_resolution_set(struct video_device* device, struct video_
     bga_write(VBE_DISPI_INDEX_BPP, res->bpp);
     bga_write(VBE_DISPI_INDEX_ENABLE, VBE_DISPI_ENABLED | VBE_DISPI_LFB_ENABLED);
 	device->resolution = &_video_resolution;
-	/* TODO. Read this from PCI bar. */
-	device->vidmem = (uint8_t*)0xfd000000;
+	mem_copy(&device->buffer->resolution, res, sizeof(struct video_resolution));
 	return true;
 }
 
@@ -111,6 +111,7 @@ static bool bga_device_cleanup(struct video_device*) {
 
 struct video_device _bga_device = {
 	.resolution = 0,
+	.buffer = &_video_bga_buffer,
 	.initialize = bga_device_initialize,
 	.resolution_set = bga_device_resolution_set,
 	.cleanup = bga_device_cleanup

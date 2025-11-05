@@ -21,14 +21,14 @@ static void kshell_bga_cb(void) {
 	new_dev->resolution_set(new_dev, &res);
 
     // Draw something
-    volatile uint32_t* fb = (volatile uint32_t*)new_dev->vidmem;
+    volatile uint32_t* fb = (volatile uint32_t*)new_dev->buffer->memory;
     for (uint32_t y = 0; y < res.height; y++) {
         for (uint32_t x = 0; x < res.width; x++) {
             fb[y * res.width + x] = (x ^ y) | 0xFF000000; // pattern with alpha
         }
     }
 
-	video_draw_string(new_dev,
+	video_draw_string(new_dev->buffer,
 					  vga_font(),
 					  100,
 					  100,
@@ -36,12 +36,12 @@ static void kshell_bga_cb(void) {
 					  0xffffff,
 					  0x0,
 					  1);
-	video_draw_line(new_dev,
+	video_draw_line(new_dev->buffer,
 					10, 10,
 					200, 200,
 					0xff0000);
-	video_draw_rect(new_dev, 250, 10, 400, 30, 0x00ff00);
-	video_draw_rect_filled(new_dev, 250, 50, 400, 90, 0x00ffff);
+	video_draw_rect(new_dev->buffer, 250, 10, 400, 30, 0x00ff00);
+	video_draw_rect_filled(new_dev->buffer, 250, 50, 400, 90, 0x00ffff);
 
 	while(keyboard_get_key() == 0){}
 

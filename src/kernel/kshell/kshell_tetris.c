@@ -169,16 +169,16 @@ static uint8_t *_font = NULL;
 static void draw_cell(int cx, int cy, uint32_t color) {
     int px = BOARD_X + cx * CELL_SIZE;
     int py = BOARD_Y + cy * CELL_SIZE;
-    video_draw_rect_filled(vd, px+1, py+1, CELL_SIZE-2, CELL_SIZE-2, color);
-    video_draw_rect(vd, px, py, CELL_SIZE, CELL_SIZE, GRID_COLOR);
+    video_draw_rect_filled(vd->buffer, px+1, py+1, CELL_SIZE-2, CELL_SIZE-2, color);
+    video_draw_rect(vd->buffer, px, py, CELL_SIZE, CELL_SIZE, GRID_COLOR);
 }
 
 static void draw_board(void) {
     /* background rectangle for board */
     int bw = PLAY_WIDTH * CELL_SIZE;
     int bh = PLAY_HEIGHT * CELL_SIZE;
-    video_draw_rect_filled(vd, BOARD_X-4, BOARD_Y-4, bw+8, bh+8, BG_COLOR);
-    video_draw_rect(vd, BOARD_X-4, BOARD_Y-4, bw+8, bh+8, BORDER_COLOR);
+    video_draw_rect_filled(vd->buffer, BOARD_X-4, BOARD_Y-4, bw+8, bh+8, BG_COLOR);
+    video_draw_rect(vd->buffer, BOARD_X-4, BOARD_Y-4, bw+8, bh+8, BORDER_COLOR);
 
     for (int y = 0; y < PLAY_HEIGHT; ++y) {
         for (int x = 0; x < PLAY_WIDTH; ++x) {
@@ -294,24 +294,24 @@ static void draw_hud(int score, int level, int next_type) {
     int sx = BOARD_X + PLAY_WIDTH * CELL_SIZE + 20;
     int sy = BOARD_Y;
     /* background */
-    video_draw_rect_filled(vd, sx-8, sy-8, 200, 200, BG_COLOR);
+    video_draw_rect_filled(vd->buffer, sx-8, sy-8, 200, 200, BG_COLOR);
     /* Score */
 	str_copy(buf, 64, "Score: ");
 	// TODO: Set correct string length
 	str_from_uint32(buf + str_length(buf), 64, score);
-    video_draw_string(vd, _font, sx, sy, buf, TEXT_COLOR, BG_COLOR, 1);
+    video_draw_string(vd->buffer, _font, sx, sy, buf, TEXT_COLOR, BG_COLOR, 1);
 	str_copy(buf, 64, "Level: ");
 	// TODO: Set correct string length
 	str_from_uint32(buf + str_length(buf), 64, level);
-    video_draw_string(vd, _font, sx, sy+18, buf, TEXT_COLOR, BG_COLOR, 1);
-    video_draw_string(vd, _font, sx, sy+36, "Controls:", TEXT_COLOR, BG_COLOR, 1);
-    video_draw_string(vd, _font, sx, sy+54, "a: left  d: right", TEXT_COLOR, BG_COLOR, 1);
-    video_draw_string(vd, _font, sx, sy+72, "s: down  w: rot", TEXT_COLOR, BG_COLOR, 1);
-    video_draw_string(vd, _font, sx, sy+90, "space: hard drop", TEXT_COLOR, BG_COLOR, 1);
-    video_draw_string(vd, _font, sx, sy+108, "q: quit", TEXT_COLOR, BG_COLOR, 1);
+    video_draw_string(vd->buffer, _font, sx, sy+18, buf, TEXT_COLOR, BG_COLOR, 1);
+    video_draw_string(vd->buffer, _font, sx, sy+36, "Controls:", TEXT_COLOR, BG_COLOR, 1);
+    video_draw_string(vd->buffer, _font, sx, sy+54, "a: left  d: right", TEXT_COLOR, BG_COLOR, 1);
+    video_draw_string(vd->buffer, _font, sx, sy+72, "s: down  w: rot", TEXT_COLOR, BG_COLOR, 1);
+    video_draw_string(vd->buffer, _font, sx, sy+90, "space: hard drop", TEXT_COLOR, BG_COLOR, 1);
+    video_draw_string(vd->buffer, _font, sx, sy+108, "q: quit", TEXT_COLOR, BG_COLOR, 1);
 
     /* next piece preview */
-    video_draw_string(vd, _font, sx, sy+130, "Next:", TEXT_COLOR, BG_COLOR, 1);
+    video_draw_string(vd->buffer, _font, sx, sy+130, "Next:", TEXT_COLOR, BG_COLOR, 1);
     /* draw next piece in a 4x4 block */
     int px = sx;
     int py = sy + 150;
@@ -320,9 +320,9 @@ static void draw_hud(int score, int level, int next_type) {
         for (int rx = 0; rx < 4; ++rx) {
             if (shape & (0x8000 >> (ry*4 + rx))) {
                 /* map to a small 8x8 cell box */
-                video_draw_rect_filled(vd, px + rx*8, py + ry*8, 7, 7, tetro_colors[next_type + 1]);
+                video_draw_rect_filled(vd->buffer, px + rx*8, py + ry*8, 7, 7, tetro_colors[next_type + 1]);
             } else {
-                video_draw_rect_filled(vd, px + rx*8, py + ry*8, 7, 7, BG_COLOR);
+                video_draw_rect_filled(vd->buffer, px + rx*8, py + ry*8, 7, 7, BG_COLOR);
             }
         }
     }
@@ -349,7 +349,7 @@ void kshell_tetris_cb(void) {
     bool running = true;
 
     /* initial draw */
-    video_draw_rect_filled(vd, 0, 0, vd->resolution->width, vd->resolution->height, BG_COLOR);
+    video_draw_rect_filled(vd->buffer, 0, 0, vd->buffer->resolution.width, vd->buffer->resolution.height, BG_COLOR);
     draw_board();
     draw_hud(score, level, next_piece);
     draw_piece(&cur, false);
@@ -483,7 +483,7 @@ void kshell_tetris_cb(void) {
                 const char *go = "GAME OVER (q to quit)";
                 int cx = BOARD_X + (PLAY_WIDTH * CELL_SIZE) / 2 - 80;
                 int cy = BOARD_Y + (PLAY_HEIGHT * CELL_SIZE) / 2 - 8;
-                video_draw_string(vd, _font, cx, cy, go, TEXT_COLOR, BG_COLOR, 1);
+                video_draw_string(vd->buffer, _font, cx, cy, go, TEXT_COLOR, BG_COLOR, 1);
                 /* wait for 'q' */
                 while (1) {
                     char k2 = keyboard_get_key();
@@ -499,7 +499,7 @@ void kshell_tetris_cb(void) {
     } /* main loop */
 
     /* exit: clear area and return control */
-    video_draw_rect_filled(vd, 0, 0, vd->resolution->width, vd->resolution->height, BG_COLOR);
+    video_draw_rect_filled(vd->buffer, 0, 0, vd->buffer->resolution.width, vd->buffer->resolution.height, BG_COLOR);
 }
 
 void kshell_tetris_register() {

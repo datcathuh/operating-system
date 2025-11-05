@@ -77,14 +77,14 @@ static void terminal_gfx_pos_get(struct terminal */*t*/, int *x, int *y) {
 
 static void terminal_gfx_clear(struct terminal *t) {
 	struct video_device *device = t->data;
-	mem_set(device->vidmem, 0, device->resolution->width * device->resolution->height * device->resolution->bpp / 8);
+	mem_set(device->buffer->memory, 0, device->resolution->width * device->resolution->height * device->resolution->bpp / 8);
 }
 
 static void terminal_gfx_print(struct terminal *t, const char *s) {
 	int x = _x * 8;
 	int y = _y * 16;
 	struct video_device *device = t->data;
-	video_draw_string(device, vga_font(), x, y, s, _col_fg, _col_bg, 1);
+	video_draw_string(device->buffer, vga_font(), x, y, s, _col_fg, _col_bg, 1);
 	for(int i=0;true; i++) {
 		if(s[i] == 0) {
 			break;

@@ -11,12 +11,11 @@
 #define COL_BORDER 0xffffff
 #define COL_BG     0x000000
 
-static struct video_device *vd = NULL;
 static uint8_t *_font = NULL;
 
 
 void kshell_snake_cb(void) {
-    vd = video_current();
+	struct video_device *vd = video_current();
     if (!vd) return;
 
 	_font = vga_font();
@@ -24,12 +23,14 @@ void kshell_snake_cb(void) {
 		return;
 	}
 
+	struct video_buffer *buffer = video_buffer_allocate (vd, vd->resolution);
+
 	while(true) {
 		/* video_draw_rect_filled(vd, px+1, py+1, CELL_SIZE-2, CELL_SIZE-2, color);
 		   video_draw_rect(vd, px, py, CELL_SIZE, CELL_SIZE, GRID_COLOR);*/
-		video_draw_rect_filled(vd, 0, 0, vd->resolution->width, vd->resolution->height, COL_BG);
-		video_draw_rect_filled(vd, 10, 10, vd->resolution->width - 20, vd->resolution->height - 20, COL_BORDER);
-		video_draw_rect_filled(vd, 15, 15, vd->resolution->width - 30, vd->resolution->height - 30, COL_BG);
+		video_draw_rect_filled(buffer, 0, 0, buffer->resolution.width, buffer->resolution.height, COL_BG);
+		video_draw_rect_filled(buffer, 10, 10, buffer->resolution.width - 20, buffer->resolution.height - 20, COL_BORDER);
+		video_draw_rect_filled(buffer, 15, 15, buffer->resolution.width - 30, buffer->resolution.height - 30, COL_BG);
 		char k;
 		bool key_pressed = keyboard_get_key_if_exists(&k);
 		if(key_pressed && k == 'q') {
@@ -39,7 +40,7 @@ void kshell_snake_cb(void) {
 		
 	}
 
-    video_draw_rect_filled(vd, 0, 0, vd->resolution->width, vd->resolution->height, COL_BG);
+    video_draw_rect_filled(buffer, 0, 0, buffer->resolution.width, buffer->resolution.height, COL_BG);
 }
 
 void kshell_snake_register() {

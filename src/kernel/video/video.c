@@ -1,4 +1,5 @@
 #include "math.h"
+#include "memory.h"
 #include "vga.h"
 #include "video.h"
 
@@ -131,14 +132,14 @@ void video_draw_char(void *framebuffer, int pitch, int bytes_per_pixel,
     }
 }
 
-void video_draw_string(struct video_device *device,
+void video_draw_string(struct video_buffer *buffer,
 					   const uint8_t *font,
 					   int px, int py,
 					   const char *s,
 					   uint32_t fg_color,
 					   uint32_t bg_color,
 					   int scale) {
-	int pitch = device->resolution->width * device->resolution->bpp / 8;
+	int pitch = buffer->resolution.width * buffer->resolution.bpp / 8;
     int x = px;
     int y = py;
     while (*s) {
@@ -151,11 +152,11 @@ void video_draw_string(struct video_device *device,
 		if(*s == '\b') {
 			x-= FONT_WIDTH;
 			video_draw_char(
-				device->vidmem,
+				buffer->memory,
 				pitch,
-				device->resolution->bpp / 8,
-				device->resolution->width,
-				device->resolution->height,
+				buffer->resolution.bpp / 8,
+				buffer->resolution.width,
+				buffer->resolution.height,
 				font, ' ',
 				x,
 				y,
@@ -166,11 +167,11 @@ void video_draw_string(struct video_device *device,
 			continue;
 		}
         video_draw_char(
-			device->vidmem,
+			buffer->memory,
 			pitch,
-			device->resolution->bpp / 8,
-			device->resolution->width,
-			device->resolution->height,
+			buffer->resolution.bpp / 8,
+			buffer->resolution.width,
+			buffer->resolution.height,
 			font, (unsigned char)*s,
 			x,
 			y,
@@ -180,25 +181,25 @@ void video_draw_string(struct video_device *device,
         x += FONT_WIDTH * scale;
         s++;
         /* simple clipping: stop if x off-screen by more than FONT_WIDTH */
-        if (x >= device->resolution->width) {
+        if (x >= buffer->resolution.width) {
 			break;
 		}
     }
 }
 
-void video_draw_line(struct video_device *device,
+void video_draw_line(struct video_buffer *buffer,
 					 int x0, int y0, int x1, int y1,
 					 uint32_t color) {
     /* Clip trivially: skip if completely outside (optional, minimal check). */
     if (
 		(x0 < 0 && x1 < 0) ||
 		(y0 < 0 && y1 < 0) ||
-        (x0 >= device->resolution->width && x1 >= device->resolution->width) ||
-        (y0 >= device->resolution->height && y1 >= device->resolution->height)) {
+        (x0 >= buffer->resolution.width && x1 >= buffer->resolution.width) ||
+        (y0 >= buffer->resolution.height && y1 >= buffer->resolution.height)) {
         return;
 	}
 
-	int pitch = device->resolution->width * device->resolution->bpp / 8;
+	int pitch = buffer->resolution.width * buffer->resolution.bpp / 8;
 	int dx = abs(x1 - x0);
     int sx = x0 < x1 ? 1 : -1;
     int dy = -abs(y1 - y0);
@@ -207,9 +208,9 @@ void video_draw_line(struct video_device *device,
 
     while (1) {
         /* Draw pixel if inside bounds */
-        if (x0 < device->resolution->width && y0 < device->resolution->height) {
-            video_set_pixel(device->vidmem, pitch,
-							device->resolution->bpp / 8,
+        if (x0 < buffer->resolution.width && y0 < buffer->resolution.height) {
+            video_set_pixel(buffer->memory, pitch,
+							buffer->resolution.bpp / 8,
 							x0, y0,
 							color);
 		}
@@ -229,7 +230,7 @@ void video_draw_line(struct video_device *device,
     }
 }
 
-void video_draw_rect(struct video_device *device,
+void video_draw_rect(struct video_buffer *buffer,
 					 int x, int y, int width, int height,
 					 uint32_t color)
 {
@@ -239,17 +240,17 @@ void video_draw_rect(struct video_device *device,
     if (width <= 0 || height <= 0) return;
 
     /* Top */
-    video_draw_line(device, x, y, x2, y, color);
+    video_draw_line(buffer, x, y, x2, y, color);
     /* Bottom */
-    video_draw_line(device, x, y2, x2, y2, color);
+    video_draw_line(buffer, x, y2, x2, y2, color);
     /* Left */
-    video_draw_line(device, x, y, x, y2, color);
+    video_draw_line(buffer, x, y, x, y2, color);
     /* Right */
-    video_draw_line(device, x2, y, x2, y2, color);
+    video_draw_line(buffer, x2, y, x2, y2, color);
 }
 
 void video_draw_rect_filled(
-	struct video_device *device,
+	struct video_buffer *buffer,
 	int x, int y, int width, int height,
 	uint32_t color)
 {
@@ -261,15 +262,25 @@ void video_draw_rect_filled(
     /* Clip against screen bounds */
     if (x < 0) x = 0;
     if (y < 0) y = 0;
-    if (x_end > device->resolution->width) x_end = device->resolution->width;
-    if (y_end > device->resolution->height) y_end = device->resolution->height;
+    if (x_end > buffer->resolution.width) x_end = buffer->resolution.width;
+    if (y_end > buffer->resolution.height) y_end = buffer->resolution.height;
 
-	int pitch = device->resolution->width * device->resolution->bpp / 8;
-	int bytes_per_pixel = device->resolution->bpp / 8;
+	int pitch = buffer->resolution.width * buffer->resolution.bpp / 8;
+	int bytes_per_pixel = buffer->resolution.bpp / 8;
 
 	for (int py = y; py < y_end; ++py) {
         for (int px = x; px < x_end; ++px) {
-            video_set_pixel(device->vidmem, pitch, bytes_per_pixel, px, py, color);
+            video_set_pixel(buffer->memory, pitch, bytes_per_pixel, px, py, color);
         }
     }
+}
+
+struct video_buffer _video_buffer;
+
+struct video_buffer *video_buffer_allocate(struct video_device *device,
+										   struct video_resolution *resolution) {
+	/* TODO: Create real allocation */
+	_video_buffer.memory = (uint8_t*)0x20000;
+	mem_copy(&_video_buffer.resolution, resolution, sizeof(struct video_resolution));
+	return &_video_buffer;
 }

@@ -4,6 +4,8 @@
 #include "memory.h"
 #include "video/video.h"
 
+#include "serial.h"
+
 /* ---- Mandelbrot using Q16.16 fixed point arithmetic ----
    - x0,y0 are Q16.16
    - x,y are Q16.16
@@ -13,7 +15,9 @@ static void draw_mandelbrot_mode13(void) {
 	struct video_device *device = video_current();
     const int width = 320;
     const int height = 200;
-    volatile uint8_t *frame = device->vidmem;
+    volatile uint8_t *frame = device->buffer->memory;
+
+	serial_put_hex32((uint32_t)frame);
 
     /* scaling factor: map pixels to [-2, +2] in X and Y */
     /* x0 = (px - width/2) * (4.0 / width) in Q16.16 */

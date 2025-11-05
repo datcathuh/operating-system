@@ -184,11 +184,11 @@ static void vga_color_set(struct terminal */*terminal*/, enum terminal_color fg,
 
 static void vga_scroll(struct video_device *device) {
     for (uint32_t i = 0; i < ((uint32_t)device->resolution->height - 1) * (uint32_t)device->resolution->width * 2; ++i) {
-        device->vidmem[i] = device->vidmem[i + device->resolution->width * 2];
+        device->buffer->memory[i] = device->buffer->memory[i + device->resolution->width * 2];
     }
     for (uint32_t i = (device->resolution->height - 1) * device->resolution->width * 2; i < device->resolution->height * device->resolution->width * 2; i += 2) {
-        device->vidmem[i] = ' ';
-        device->vidmem[i+1] = current_color;
+        device->buffer->memory[i] = ' ';
+        device->buffer->memory[i+1] = current_color;
     }
     cursor = (device->resolution->height - 1) * device->resolution->width * 2;
 }
@@ -196,8 +196,8 @@ static void vga_scroll(struct video_device *device) {
 static void vga_clear(struct terminal *terminal) {
 	struct video_device *device = terminal->data;
     for (uint32_t i = 0; i < device->resolution->width * device->resolution->height * 2; i += 2) {
-        device->vidmem[i] = ' ';
-        device->vidmem[i+1] = current_color;
+        device->buffer->memory[i] = ' ';
+        device->buffer->memory[i+1] = current_color;
     }
     cursor = 0;
 }
@@ -211,12 +211,12 @@ static void vga_print_char(struct terminal *terminal, char c) {
     }
     if (c == '\b') {
         if (cursor >= 2) cursor -= 2;
-        device->vidmem[cursor] = ' ';
-        device->vidmem[cursor+1] = current_color;
+        device->buffer->memory[cursor] = ' ';
+        device->buffer->memory[cursor+1] = current_color;
         return;
     }
-    device->vidmem[cursor] = c;
-    device->vidmem[cursor+1] = current_color;
+    device->buffer->memory[cursor] = c;
+    device->buffer->memory[cursor+1] = current_color;
     cursor += 2;
     if ((cursor / 2) % device->resolution->width == 0) {
         terminal->print_char(terminal, '\n');
@@ -428,7 +428,7 @@ static bool vga_device_resolution_set(struct video_device* device, struct video_
 		vga_mode_set(&vga_mode_text_80x25);
 		mem_copy(&_vga_resolution, res, sizeof(struct video_resolution));
 		device->resolution = &_vga_resolution;
-		device->vidmem = (uint8_t*)0xb8000;
+		device->buffer->memory = (uint8_t*)0xb8000;
 
 		device->terminal = &_terminal_vga;
 		_terminal_vga.data = device;
@@ -441,20 +441,20 @@ static bool vga_device_resolution_set(struct video_device* device, struct video_
 		vga_dac_greyscale_palette();
 		mem_copy(&_vga_resolution, res, sizeof(struct video_resolution));
 		device->resolution = &_vga_resolution;
-		device->vidmem = (uint8_t*)0xA0000;
+		device->buffer->memory = (uint8_t*)0xA0000;
 		return true;
 	}
 	return false;
 }
 
-static bool vga_device_cleanup(struct video_device*) {
-	return false;
-}
+static bool vga_device_cleanup(struct video_device *) { return false; }
+
+struct video_buffer _vga_buffer;
 
 struct video_device _vga_device = {
 	.resolution = 0,
 	.pci_device = 0,
-	.vidmem = 0,
+	.buffer = &_vga_buffer,
 	.initialize = vga_device_initialize,
 	.resolution_set = vga_device_resolution_set,
 	.cleanup = vga_device_cleanup
