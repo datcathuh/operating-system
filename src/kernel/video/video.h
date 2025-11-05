@@ -43,9 +43,19 @@ void video_draw_line(struct video_buffer *buffer, int x0, int y0, int x1,
 void video_draw_rect(struct video_buffer *buffer,
 					 int x, int y, int width, int height,
 					 uint32_t color);
-void video_draw_rect_filled(struct video_buffer *buffer,
-							int x, int y, int width, int height,
-							uint32_t color);
+void video_draw_rect_filled(struct video_buffer *buffer, int x, int y,
+                            int width, int height, uint32_t color);
+inline void video_draw_pixel(struct video_buffer *buffer, int x, int y,
+							 uint32_t color) {
+	if(buffer->resolution.bpp != 24) {
+		return;
+	}
+	int pitch = buffer->resolution.width * 3;
+    uint8_t *fb = (uint8_t *)buffer->memory + y * pitch + x * 3;
+	fb[0] = (uint8_t)(color & 0xFF);         /* B */
+	fb[1] = (uint8_t)((color >> 8) & 0xFF);  /* G */
+	fb[2] = (uint8_t)((color >> 16) & 0xFF); /* R */
+}
 
 struct video_buffer *video_buffer_allocate(struct video_device *device,
 										   struct video_resolution *resolution);

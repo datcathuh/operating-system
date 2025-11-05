@@ -1,7 +1,6 @@
 #include "kshell.h"
 #include "kshell_julia.h"
 #include "keyboard.h"
-#include "memory.h"
 #include "video/video.h"
 
 #define MAX_ITER 128
@@ -17,7 +16,6 @@ static void draw_julia(double xmin, double xmax, double ymin, double ymax) {
 	int cx = -45862;    // -0.7 in 16.16 fixed point
 	int cy = 17722;     // 0.27 in 16.16 fixed point
 
-	volatile uint8_t *vga = device->buffer->memory;
 	int x, y;
     int dx = (xmax - xmin) / device->buffer->resolution.width;
     int dy = (ymax - ymin) / device->buffer->resolution.height;
@@ -42,31 +40,21 @@ static void draw_julia(double xmin, double xmax, double ymin, double ymax) {
 
                 i++;
             }
-            vga[y * device->buffer->resolution.width + x] = i % 256;
+			uint8_t color1 = i % 256;
+			uint32_t color = color1 | color1 << 8 | color1 << 16;
+			video_draw_pixel(device->buffer, x, y, color);
         }
     }
 }
 
 static void kshell_julia_cb(void) {
-	struct video_device *device = video_current();
-
-	struct video_resolution prev;
-	mem_copy(&prev, device->resolution, sizeof(struct video_resolution));
-
-	struct video_resolution newres = {
-		.width = 320,
-		.height = 200,
-		.bpp = 8
-	};
-	device->resolution_set(device, &newres);
-
 	int xmin = -98304;  // -1.5
 	int xmax = 98304;   // 1.5
 	int ymin = -65536;  // -1.0
 	int ymax = 65536;   // 1.0
 	int zoom_factor = 62914; // 0.95 in 16.16 fixed
 
-	for(int i=0;i < 70; i++) {
+	for(int i=0;i < 10; i++) {
 		draw_julia(xmin, xmax, ymin, ymax);
 
 		int xcenter = (xmin + xmax) / 2;
@@ -81,8 +69,6 @@ static void kshell_julia_cb(void) {
 	}
 
 	while(keyboard_get_key() == 0){}
-
-	device->resolution_set(device, &prev);
 }
 
 void kshell_julia_register() {

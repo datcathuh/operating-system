@@ -14,7 +14,6 @@ static void draw_mandelbrot_mode13(void) {
 	struct video_device *device = video_current();
     const int32_t width = device->buffer->resolution.width;
     const int32_t height = device->buffer->resolution.height;
-    volatile uint8_t *frame = device->buffer->memory;
 
     /* scaling factor: map pixels to [-2, +2] in X and Y */
     /* x0 = (px - width/2) * (4.0 / width) in Q16.16 */
@@ -52,30 +51,17 @@ static void draw_mandelbrot_mode13(void) {
                 iteration++;
             }
 
-            uint8_t color = (iteration == max_iteration) ? 0 : (uint8_t)((iteration * 5) & 0xFF);
-            frame[py * width + px] = color;
+            uint8_t color1 = (iteration == max_iteration) ? 0 : (uint8_t)((iteration * 5) & 0xFF);
+			uint32_t color = color1 | color1 << 8 | color1 << 16;
+			video_draw_pixel(device->buffer, px, py, color);
         }
     }
 }
 
 static void kshell_mandelbrot_cb(void) {
-	struct video_device *device = video_current();
-
-	struct video_resolution prev;
-	mem_copy(&prev, device->resolution, sizeof(struct video_resolution));
-
-	struct video_resolution newres = {
-		.width = 320,
-		.height = 200,
-		.bpp = 8
-	};
-	device->resolution_set(device, &newres);
-
     draw_mandelbrot_mode13();
 
 	while(keyboard_get_key() == 0){}
-
-	device->resolution_set(device, &prev);
 }
 
 void kshell_mandelbrot_register() {

@@ -57,7 +57,7 @@ bool bga_pci_driver_initialize(struct pci_device_driver */*driver*/,
 	struct video_resolution res = {
 		.width = 1024,
 		.height = 768,
-		.bpp = 32
+		.bpp = 24
 	};
 	video_set(vd);
 	vd->resolution_set(vd, &res);
