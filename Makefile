@@ -35,10 +35,13 @@ run_debug_extra:
 format:
 	clang-format -i $(shell find -name "*.c" -or -name "*.h")
 
+analyze:
+	scan-build -o analyze_result make rebuild
+
 # A target for generating a definition of all compile commands.
 # This is used if you have Emacs as code editor together with
 # lsp-mode and clangd for quick code navigation.
 compile_commands.json:
 	bear -- $(MAKE) rebuild
 
-.PHONY: all clean gdb run run_debug run_debug_extra format
+.PHONY: all analyze clean gdb run run_debug run_debug_extra format
