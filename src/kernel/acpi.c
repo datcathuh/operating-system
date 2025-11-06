@@ -151,7 +151,7 @@ static uintptr_t acpi_find_table_from_xsdt(acpi_sdt_header_t *xsdt, const char *
 /* Parse generic SDT table and print header info */
 static void parse_sdt_table(uintptr_t phys_addr) {
     acpi_sdt_header_t *hdr = (acpi_sdt_header_t *)phys_addr;
-    serial_puts("Found table: ");
+    serial_puts("    ");
     print_sig4(hdr->signature);
     serial_puts(" @ ");
     serial_puthex32((uint32_t)phys_addr);
@@ -164,12 +164,12 @@ static void parse_rsdt(uint32_t rsdt_phys) {
 	/* RSDT – Root System Description Table */
     acpi_sdt_header_t *rsdt = (acpi_sdt_header_t *)rsdt_phys;
     if (acpi_checksum((uint8_t*)rsdt, rsdt->length) != 0) {
-        serial_puts("RSDT checksum invalid\n");
+        serial_puts("  RSDT checksum invalid\n");
         return;
     }
     uint32_t entries = (rsdt->length - sizeof(acpi_sdt_header_t)) / 4;
     uint32_t *list = (uint32_t *)((uint8_t*)rsdt + sizeof(acpi_sdt_header_t));
-    serial_puts("RSDT entries: ");
+    serial_puts("  RSDT entries: ");
     serial_puthex32(entries);
     serial_puts("\n");
     for (uint32_t i = 0; i < entries; ++i) {
@@ -186,7 +186,7 @@ static void parse_xsdt(uint64_t xsdt_phys) {
     }
     uint32_t entries = (xsdt->length - sizeof(acpi_sdt_header_t)) / 8;
     uint64_t *list = (uint64_t *)((uint8_t*)xsdt + sizeof(acpi_sdt_header_t));
-    serial_puts("XSDT entries: ");
+    serial_puts("  XSDT entries: ");
     serial_puthex32(entries);
     serial_puts("\n");
     for (uint32_t i = 0; i < entries; ++i) {
@@ -201,8 +201,8 @@ static void parse_madt(uintptr_t madt_phys) {
         serial_puts("MADT checksum invalid\n");
         return;
     }
-    serial_puts("MADT found @ "); serial_puthex32((uint32_t)madt_phys);
-    serial_puts("\n len="); serial_puthex32(madt->header.length);
+    serial_puts("  MADT @ "); serial_puthex32((uint32_t)madt_phys);
+    serial_puts(" len="); serial_puthex32(madt->header.length);
     serial_puts(" local_apic="); serial_puthex32(madt->local_apic_address);
     serial_puts(" flags="); serial_puthex32(madt->flags);
     serial_puts("\n");
@@ -210,7 +210,7 @@ static void parse_madt(uintptr_t madt_phys) {
     uint8_t *ent = (uint8_t*)madt + sizeof(acpi_madt_t);
     uint8_t *end = (uint8_t*)madt + madt->header.length;
 
-    serial_puts("MADT entries:\n");
+    serial_puts("  MADT entries:\n");
     while (ent + sizeof(madt_entry_header_t) <= end) {
         madt_entry_header_t *h = (madt_entry_header_t *)ent;
         if (h->length == 0) break; // avoid infinite loop
@@ -218,7 +218,7 @@ static void parse_madt(uintptr_t madt_phys) {
             case 0: {
                 if (ent + sizeof(madt_local_apic_t) <= end) {
                     madt_local_apic_t *la = (madt_local_apic_t *)ent;
-                    serial_puts("  Processor Local APIC: ACPI CPU ID=");
+                    serial_puts("    Processor Local APIC: ACPI CPU ID=");
                     serial_puthex8(la->acpi_processor_id);
                     serial_puts(" APIC ID="); serial_puthex8(la->apic_id);
                     serial_puts(" flags="); serial_puthex32(la->flags);
@@ -230,7 +230,7 @@ static void parse_madt(uintptr_t madt_phys) {
             case 1: {
                 if (ent + sizeof(madt_ioapic_t) <= end) {
                     madt_ioapic_t *io = (madt_ioapic_t *)ent;
-                    serial_puts("  IO APIC: ID="); serial_puthex8(io->ioapic_id);
+                    serial_puts("    IO APIC: ID="); serial_puthex8(io->ioapic_id);
                     serial_puts(" addr="); serial_puthex32(io->ioapic_address);
                     serial_puts(" gsi_base="); serial_puthex32(io->gsi_base);
                     serial_puts("\n");
@@ -238,26 +238,25 @@ static void parse_madt(uintptr_t madt_phys) {
                 break;
             }
             default: {
-                serial_puts("  MADT entry type "); serial_puthex8(h->type);
+                serial_puts("    type="); serial_puthex8(h->type);
                 serial_puts(" len="); serial_puthex8(h->length);
-                serial_puts(" (skipping)\n");
+                serial_puts("\n");
                 break;
             }
         }
         ent += h->length;
     }
-	serial_puts("Done\n");
 }
 
 /* Public init function */
 void acpi_init(void) {
-    serial_puts("ACPI: scanning for RSDP...");
+    serial_puts("ACPI:\n");
     rsdp_descriptor_t *rsdp = find_rsdp();
     if (!rsdp) {
         serial_puts("RSDP not found in 0xE0000-0xFFFFF\n");
         return;
     }
-    serial_puts("RSDP found at: ");
+    serial_puts("  RSDP @ ");
     serial_puthex32((uint32_t)(uintptr_t)rsdp);
     serial_puts(" revision=");
     serial_puthex32(rsdp->revision);
@@ -267,22 +266,19 @@ void acpi_init(void) {
     int use_xsdt = 0;
 
     if (rsdp->revision == 0) {
-        serial_puts("Using RSDT @ ");
-        serial_puthex32(rsdp->rsdt_address);
-        serial_puts("\n");
         parse_rsdt(rsdp->rsdt_address);
         root = (acpi_sdt_header_t *)(uintptr_t)rsdp->rsdt_address;
         use_xsdt = 0;
     } else {
         if (rsdp->xsdt_address != 0) {
-            serial_puts("Using XSDT @ ");
+            serial_puts("  XSDT @ ");
             serial_puthex32((uint32_t)rsdp->xsdt_address);
             serial_puts("\n");
             parse_xsdt(rsdp->xsdt_address);
             root = (acpi_sdt_header_t *)(uintptr_t)rsdp->xsdt_address;
             use_xsdt = 1;
         } else {
-            serial_puts("Fallback to RSDT @ ");
+            serial_puts("  Fallback to RSDT @ ");
             serial_puthex32(rsdp->rsdt_address);
             serial_puts("\n");
             parse_rsdt(rsdp->rsdt_address);
@@ -299,6 +295,7 @@ void acpi_init(void) {
     if (madt_phys) {
         parse_madt(madt_phys);
     } else {
-        serial_puts("MADT (APIC) not found\n");
+        serial_puts("  MADT (APIC) not found\n");
     }
+	serial_puts("\n");
 }

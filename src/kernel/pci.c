@@ -119,13 +119,14 @@ void pci_device_tree(struct pci_device **devices, uint16_t *device_count) {
 }
 
 void pci_debug_dump(void) {
+	serial_puts("PCI devices:\n");
 	for(int i=0; i < _device_count; i++) {
 		struct pci_device *dev = &_devices[i];
 		char vendorid[10];
 		char devid[10];
 		str_hex_from_uint32(vendorid, 10, dev->identification.vendor);
 		str_hex_from_uint32(devid, 10, dev->identification.device);
-		serial_puts("PCI device found: ");
+		serial_puts("  ");
 		serial_puts(vendorid);
 		serial_puts(":");
 		serial_puts(devid);
@@ -142,7 +143,7 @@ void pci_debug_dump(void) {
 				continue;
 			}
 			serial_puts("\n");
-			serial_puts(" bar[");
+			serial_puts("    bar[");
 			char x[10];
 			str_hex_from_uint32(x, 10, i);
 			serial_puts(x);
@@ -153,4 +154,5 @@ void pci_debug_dump(void) {
 
 		serial_puts("\n");
 	}
+	serial_puts("\n");
 }
