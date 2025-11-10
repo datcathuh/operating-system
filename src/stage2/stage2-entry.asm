@@ -69,13 +69,24 @@ start_32bit:
 	or eax, 1 << 5           ; Set PAE (bit 5)
 	mov cr4, eax
 
-
-
 	extern s2main
 	call s2main
 
+	jmp 0x08:start_64bit
+
+
+[bits 64]
+start_64bit:
+	mov ax, 0x10          ; data segment selector
+    mov ds, ax
+    mov ss, ax
+    mov es, ax
+    mov fs, ax
+    mov gs, ax
+
 	call 0x100000
 	jmp $
+
 
 msg_stage2_start db 'Stage2 starting', 0
 
