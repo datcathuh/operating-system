@@ -1,7 +1,7 @@
 [bits 64]
-global irq_timer_asm
+global irq_page_fault_asm
 
-irq_timer_asm:
+irq_page_fault_asm:
     push    r15
     push    r14
     push    r13
@@ -21,8 +21,8 @@ irq_timer_asm:
     mov     rdi, rsp
     sub     rsp, 8        ; stack align
 
-	extern irq_timer_c
-	call irq_timer_c
+	extern irq_page_fault_c
+	call irq_page_fault_c
 
     add     rsp, 8
 

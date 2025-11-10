@@ -2,5 +2,5 @@
 
 #include "types.h"
 
-void idt_gate_set(int n, uint32_t handler);
+void idt_gate_set(int n, void (*handler)());
 void idt_install();

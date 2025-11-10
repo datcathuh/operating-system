@@ -27,6 +27,6 @@ void print_diagnostics(void) {
     serial_puts("  SS  = "); serial_put_hex32(ss);  serial_puts("\n");
     serial_puts("  GDTR base = "); serial_put_hex32(gdtr.base); serial_puts("\n");
     serial_puts("  IDTR base = "); serial_put_hex32(idtr.base); serial_puts("\n");
-    serial_puts("  _start()   = "); serial_put_hex32((uint32_t)&_start); serial_puts("\n");
+    serial_puts("  _start()   = "); serial_put_hex32((uintptr_t)&_start); serial_puts("\n");
 	serial_puts("\n");
 }

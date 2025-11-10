@@ -1,4 +1,5 @@
 #include "lapic.h"
+#include "memory.h"
 #include "types.h"
 
 #define LAPIC_BASE_DEFAULT 0xFEE00000
@@ -16,6 +17,8 @@ static inline void lapic_write(uint32_t reg, uint32_t val) {
 }
 
 void lapic_default_init(void) {
+	mem_page_map(0xFEE00000, 0xFEE00000, MEM_PAGE_PRESENT | MEM_PAGE_WRITABLE | MEM_PAGE_NO_CACHE);
+
     // Enable software APIC (bit 8 in SVR)
     uint32_t svr = lapic[LAPIC_REG_SVR/4];
     svr |= 0x100;  // APIC enable

@@ -36,7 +36,7 @@ void gdt_install(void)
     gdt_set_gate(2, 0, 0xFFFFFFFF, 0x92, 0xCF); /* data */
 
     gp.limit = sizeof(gdt) - 1;
-    gp.base  = (uint32_t)&gdt;
+    gp.base  = (uintptr_t)&gdt;
 
-    gdt_flush((uint32_t)&gp); /* assembly helper to lgdt + far jump */
+    gdt_flush((uintptr_t)&gp); /* assembly helper to lgdt + far jump */
 }

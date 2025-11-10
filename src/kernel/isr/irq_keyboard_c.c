@@ -35,5 +35,5 @@ bool irq_keyboard_consume_key(uint8_t *sc) {
 }
 
 void irq_keyboard_register(void) {
-	idt_gate_set(0x21, (uint32_t)irq_keyboard_asm);
+	idt_gate_set(0x21, irq_keyboard_asm);
 }
