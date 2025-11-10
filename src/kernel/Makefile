@@ -54,7 +54,7 @@ OBJECTS+=$(BUILD_DIR)/kernel/video/bga.o
 OBJECTS+=$(BUILD_DIR)/kernel/video/vga.o
 OBJECTS+=$(BUILD_DIR)/kernel/video/video.o
 
-CFLAGS=-g -std=c23 -pedantic -Wall -Wextra -m32 -ffreestanding -O2 -nostdlib -nostdinc -I.
+CFLAGS=-g -std=c23 -pedantic -Wall -Wextra -m64 -ffreestanding -O2 -nostdlib -nostdinc -I.
 
 all: $(BUILD_DIR)/kernel/kernel.bin
 
@@ -64,14 +64,14 @@ $(BUILD_DIR)/kernel/%.o: %.c
 
 $(BUILD_DIR)/kernel/%.o: %.asm
 	@mkdir -p $(dir $@)
-	nasm $< -f elf32 -o $@
+	nasm $< -f elf64 -o $@
 
 $(BUILD_DIR)/kernel/isr/%.o: %.asm
 	@mkdir -p $(dir $@)
-	nasm $< -f elf32 -o $@
+	nasm $< -f elf64 -o $@
 
 $(BUILD_DIR)/kernel/kernel.elf: $(OBJECTS)
-	ld -m elf_i386 -o $@ -T linker.ld $^
+	ld -m elf_x86_64 -o $@ -T linker.ld $^
 
 $(BUILD_DIR)/kernel/kernel.bin: $(BUILD_DIR)/kernel/kernel.elf
 	objcopy -O binary $(BUILD_DIR)/kernel/kernel.elf $(BUILD_DIR)/kernel/kernel.bin

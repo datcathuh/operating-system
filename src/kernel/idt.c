@@ -17,7 +17,7 @@ struct IDTPtr {
 struct IDTEntry idt[256] = { 0 };
 struct IDTPtr idtp;
 
-void idt_gate_set(int n, uint32_t handler) {
+void idt_gate_set(int n, uintptr_t handler) {
     idt[n].base_low = handler & 0xFFFF;
     idt[n].sel = 0x08; // code segment selector
     idt[n].always0 = 0;
@@ -31,6 +31,6 @@ static void idt_load(struct IDTPtr* idt_ptr) {
 
 void idt_install() {
     idtp.limit = sizeof(idt) - 1;
-    idtp.base = (uint32_t)&idt;
+    // idtp.base = (uint32_t)&idt;
     idt_load(&idtp);
 }
