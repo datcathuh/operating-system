@@ -47,3 +47,4 @@ typedef unsigned char _Bool;
 #define false 0
 
 #define NULL 0
+typedef unsigned int size_t;

@@ -41,6 +41,8 @@ OBJECTS+=$(BUILD_DIR)/kernel/kshell/kshell_tetris.o
 
 OBJECTS+=$(BUILD_DIR)/kernel/lapic.o
 OBJECTS+=$(BUILD_DIR)/kernel/memory.o
+OBJECTS+=$(BUILD_DIR)/kernel/memory_heap.o
+OBJECTS+=$(BUILD_DIR)/kernel/memory_page.o
 OBJECTS+=$(BUILD_DIR)/kernel/pci.o
 OBJECTS+=$(BUILD_DIR)/kernel/pic.o
 OBJECTS+=$(BUILD_DIR)/kernel/pit.o
