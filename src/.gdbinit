@@ -16,4 +16,4 @@ layout regs
 layout split
 
 symbol-file ../build/stage2/stage2.elf
-symbol-file ../build/kernel/kernel.elf
+add-symbol-file ../build/kernel/kernel.elf

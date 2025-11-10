@@ -160,7 +160,7 @@ static void parse_sdt_table(uintptr_t phys_addr) {
     serial_puts("\n");
 }
 
-static void parse_rsdt(uint32_t rsdt_phys) {
+static void parse_rsdt(uintptr_t rsdt_phys) {
 	/* RSDT – Root System Description Table */
     acpi_sdt_header_t *rsdt = (acpi_sdt_header_t *)rsdt_phys;
     if (acpi_checksum((uint8_t*)rsdt, rsdt->length) != 0) {
@@ -177,7 +177,7 @@ static void parse_rsdt(uint32_t rsdt_phys) {
     }
 }
 
-static void parse_xsdt(uint64_t xsdt_phys) {
+static void parse_xsdt(uintptr_t xsdt_phys) {
 	/* XSDT – Extended System Description Table */
     acpi_sdt_header_t *xsdt = (acpi_sdt_header_t *)xsdt_phys;
     if (acpi_checksum((uint8_t*)xsdt, xsdt->length) != 0) {

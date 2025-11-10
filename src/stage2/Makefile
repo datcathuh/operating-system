@@ -2,12 +2,13 @@
 OBJECTS+=$(BUILD_DIR)/stage2/a20.o
 OBJECTS+=$(BUILD_DIR)/stage2/disk.o
 OBJECTS+=$(BUILD_DIR)/stage2/gdt.o
+OBJECTS+=$(BUILD_DIR)/stage2/paging.o
 OBJECTS+=$(BUILD_DIR)/stage2/print.o
 OBJECTS+=$(BUILD_DIR)/stage2/stage2-entry.o
 
 OBJECTS+=$(BUILD_DIR)/stage2/main.o
 
-CFLAGS=-std=c23 -pedantic -Wall -Wextra -m32 -ffreestanding -O2 -nostdlib
+CFLAGS=-std=c23 -pedantic -Wall -Wextra -m32 -ffreestanding -O2 -nostdlib -g
 
 all: $(BUILD_DIR)/stage2/stage2.bin
 
@@ -17,7 +18,7 @@ $(BUILD_DIR)/stage2/%.o: %.c
 
 $(BUILD_DIR)/stage2/%.o: %.asm
 	@mkdir -p $(dir $@)
-	nasm $< -f elf32 -o $@
+	nasm $< -g -F dwarf -f elf32 -o $@
 
 $(BUILD_DIR)/stage2/stage2.elf: $(OBJECTS)
 	ld -m elf_i386 -o $@ -T linker.ld $^
