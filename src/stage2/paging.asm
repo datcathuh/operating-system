@@ -20,9 +20,9 @@ pt_table:     resb 4096
 ; Setup function (runs in protected mode)
 ;===========================================================
 SECTION .text
-global setup_paging
+global paging_setup
 
-setup_paging:
+paging_setup:
     ;-------------------------------------------------------
     ; Zero out all tables (optional but good practice)
     ;-------------------------------------------------------
@@ -55,13 +55,16 @@ setup_paging:
     ;-------------------------------------------------------
     ; PT -> physical pages (identity map)
     ;-------------------------------------------------------
-    mov ecx, 512               ; map 512 * 4K = 2 MiB
-    xor edi, edi
-.set_pt_loop:
-    mov eax, edi               ; physical address
-    or  eax, 0x003             ; Present + RW
-    mov [pt_table + edi*8/8], eax  ; each entry is 8 bytes
-    add edi, 0x1000            ; next 4 KiB page
-    loop .set_pt_loop
+	mov ecx, 512          ; number of entries
+	xor ebx, ebx          ; entry index
 
-    ret
+pt_fill_loop:
+    mov eax, ebx
+    shl eax, 12       ; physical address = index * 0x1000
+    or  eax, 0x003    ; present + writable
+
+    mov [pt_table + ebx*8], eax     ; low 32 bits
+    mov dword [pt_table + ebx*8 + 4], 0 ; high 32 bits = 0
+
+    inc ebx
+    loop pt_fill_loop

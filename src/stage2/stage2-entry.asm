@@ -4,6 +4,8 @@ global start
 extern disk_load
 extern print_string
 extern print_new_line
+extern paging_setup
+extern s2main
 
 KERNEL_16_SEGMENT equ 0x1000
 KERNEL_16_OFFSET  equ 0x0000
@@ -69,7 +71,7 @@ start_32bit:
 	or eax, 1 << 5           ; Set PAE (bit 5)
 	mov cr4, eax
 
-	extern s2main
+	call paging_setup
 	call s2main
 
 	jmp 0x08:start_64bit
@@ -83,6 +85,9 @@ start_64bit:
     mov es, ax
     mov fs, ax
     mov gs, ax
+
+	mov rax, 0xB8000
+	mov word [rax], 0x0758
 
 	call 0x100000
 	jmp $
