@@ -7,6 +7,9 @@ extern print_new_line
 extern paging_setup
 extern s2main
 
+global start_32bit
+global start_64bit
+
 KERNEL_16_SEGMENT equ 0x1000
 KERNEL_16_OFFSET  equ 0x0000
 
@@ -23,7 +26,7 @@ start:
 	;; Calculate the position of the kernel and store it in
 	;; CL which is the start sector to read from.
 	mov al, 2
-	add al, [byte STAGE2_SIZE]
+	add al, [STAGE2_SIZE]
 	mov cl, al
 
 	;; Load kernel in a safe spot lower than 1MB. This means

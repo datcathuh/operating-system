@@ -7,7 +7,7 @@ OBJECTS+=$(BUILD_DIR)/stage2/stage2-entry.o
 
 OBJECTS+=$(BUILD_DIR)/stage2/main.o
 
-CFLAGS=-std=c23 -pedantic -Wall -Wextra -m32 -ffreestanding -O2 -nostdlib
+CFLAGS=-std=c23 -pedantic -Wall -Wextra -m32 -ffreestanding -O2 -nostdlib -g
 
 all: $(BUILD_DIR)/stage2/stage2.bin
 
