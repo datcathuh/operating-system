@@ -11,9 +11,9 @@ break *0x1000
 break *0x100000
 
 # Show registers and nearby instructions when stopping
-layout asm
+#layout asm
 layout regs
-layout split
+#layout split
 
 symbol-file ../build/stage2/stage2.elf
 add-symbol-file ../build/kernel/kernel.elf

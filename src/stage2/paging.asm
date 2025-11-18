@@ -68,3 +68,5 @@ pt_fill_loop:
 
     inc ebx
     loop pt_fill_loop
+
+	ret
