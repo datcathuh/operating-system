@@ -26,12 +26,8 @@ start:
     mov si, msg_loading_stage2
     call print_string
 
-	mov ax, STAGE2_SEGMENT
-	mov es, ax
-    mov bx, STAGE2_OFFSET        ; bx -> destination
-    mov dh, STAGE2_SECTOR_COUNT  ; dh -> num sectors
-	mov cl, 0x02                 ; cl -> start from sector 2
     mov dl, [BOOT_DRIVE]         ; dl -> disk
+	mov si, dap
     call disk_load
 
     mov si, msg_stage2_loaded
@@ -44,9 +40,7 @@ start:
 
 	mov dh, STAGE2_SECTOR_COUNT
     mov dl, [BOOT_DRIVE]         ; dl -> disk
-	call STAGE2_OFFSET
-
-    jmp $
+	jmp STAGE2_SEGMENT:STAGE2_OFFSET
 
 %include "disk.asm"
 %include "stage2_sector_count.asm"
@@ -58,6 +52,15 @@ msg_booting db 'Bootloader starting', 0
 msg_loading_stage2 db 'Loading stage2', 0
 msg_stage2_loaded db ' ... stage2 loaded', 0
 msg_call_stage2 db 'Calling stage2', 0
+
+	;; Disk Address Packet
+dap:
+    db 0x10                ; size of DAP (16 bytes)
+    db 0                   ; reserved
+    dw STAGE2_SECTOR_COUNT ; number of sectors to read
+    dw STAGE2_OFFSET       ; offset (BX)
+    dw STAGE2_SEGMENT      ; segment (ES)
+    dq 1                   ; starting LBA (sector number)
 
 ; padding
 times 510 - ($-$$) db 0
