@@ -1,7 +1,7 @@
 ENTRY(start)
 
 SECTIONS {
-    . = 0x8000;
+    . = 0x0500;
 
     .text BLOCK(4K) : ALIGN(4K) {
         *stage2-entry.o(.text)
