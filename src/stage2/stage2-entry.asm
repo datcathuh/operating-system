@@ -20,19 +20,16 @@ start:
 
 	;; Calculate the position of the kernel and store it in
 	;; CL which is the start sector to read from.
-	mov al, 2
-	add al, [byte STAGE2_SIZE]
-	mov cl, al
+	mov al, 1
+	add al, [STAGE2_SIZE]
+	mov [dap_lba_start], al
 
 	;; Load kernel in a safe spot lower than 1MB. This means
 	;; that we must copy it to final destination of 0x100000
 	;; as soon as we reach 32 bit code.
-	mov ax, KERNEL_16_SEGMENT
-	mov es, ax
-    mov bx, KERNEL_16_OFFSET     ; bx -> destination
-    mov dh, KERNEL_SECTOR_COUNT  ; dh -> num sectors
     mov dl, [BOOT_DRIVE]         ; dl -> disk
-    call disk_load
+	mov si, dap
+	call disk_load
 
 	;; Enable protected mode (32 bit)
     cli                      ; 1. disable interrupts
@@ -78,6 +75,16 @@ start_32bit:
 	jmp $
 
 msg_stage2_start db 'Stage2 starting', 0
+
+	;; Disk Address Packet
+dap:
+    db 0x10                ; size of DAP (16 bytes)
+    db 0                   ; reserved
+    dw KERNEL_SECTOR_COUNT ; number of sectors to read
+    dw KERNEL_16_OFFSET    ; offset (BX)
+    dw KERNEL_16_SEGMENT   ; segment (ES)
+dap_lba_start:
+    dq 0                   ; starting LBA (sector number)
 
 ;;; gdt_start and gdt_end labels are used to compute size
 
