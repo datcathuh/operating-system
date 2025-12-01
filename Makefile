@@ -29,6 +29,9 @@ run:
 run_debug:
 	$(MAKE) -C src $@
 
+run_debug_bochs:
+	bochs-debugger -debugger -q -f bochsrc -rc bochsdbg
+
 run_debug_extra:
 	$(MAKE) -C src $@
 

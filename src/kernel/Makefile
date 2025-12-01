@@ -77,6 +77,7 @@ $(BUILD_DIR)/kernel/kernel.elf: $(OBJECTS)
 
 $(BUILD_DIR)/kernel/kernel.bin: $(BUILD_DIR)/kernel/kernel.elf
 	objcopy -O binary $(BUILD_DIR)/kernel/kernel.elf $(BUILD_DIR)/kernel/kernel.bin
+	truncate -s $$(( ( $$(stat -c%s $@) + 511 ) / 512 * 512 )) $@
 	@echo -n "Kernel sector count: "
 	@./kernel-sector-count
 
