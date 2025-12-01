@@ -72,8 +72,7 @@ start_32bit:
 	extern s2main
 	call s2main
 
-	call 0x100000
-	jmp $
+	jmp 0x100000
 
 section .data
 msg_stage2_start db 'Stage2 starting', 0
