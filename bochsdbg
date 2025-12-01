@@ -1,6 +1,6 @@
 # Break at bootloader entry
 b 0x7C00
-b 0x1000
+b 0x0500
 b 0x100000
 
 c
