@@ -1,9 +1,7 @@
 megs: 64
 romimage: file=/usr/share/bochs/BIOS-bochs-latest
-vgaromimage: file=/usr/share/seavgabios/vgabios-bochs-display.bin
+vgaromimage: file=/usr/share/bochs/VGABIOS-lgpl-latest.bin
 
 boot: disk
 ata0-master: type=disk, path=build/hda.img, mode=flat, status=inserted, translation=lba
-
-display_library: sdl2
 
