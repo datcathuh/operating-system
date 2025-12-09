@@ -5,7 +5,7 @@ target remote :1234
 break *0x7C00
 
 # break at stage2
-break *0x1000
+break *0x0500
 
 # break at kernel
 break *0x100000
