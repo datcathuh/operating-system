@@ -9,6 +9,7 @@ Having fun implementing my own OS.
 Install the following:
 
 dnf install nasm gcc make qemu
+dnf install bochs bochs-gdb bochs-debugger
 
 # Compiling and running
 
