@@ -91,6 +91,18 @@ static inline void video_set_pixel(void *framebuffer, int pitch, int bytes_per_p
     }
 }
 
+void video_draw_pixel(struct video_buffer *buffer, int x, int y,
+					  uint32_t color) {
+	if(buffer->resolution.bpp != 24) {
+		return;
+	}
+	int pitch = buffer->resolution.width * 3;
+    uint8_t *fb = (uint8_t *)buffer->memory + y * pitch + x * 3;
+	fb[0] = (uint8_t)(color & 0xFF);         /* B */
+	fb[1] = (uint8_t)((color >> 8) & 0xFF);  /* G */
+	fb[2] = (uint8_t)((color >> 16) & 0xFF); /* R */
+}
+
 /* Draw an 8x16 glyph at pixel coordinates (px,py). scale is integer >= 1.
  * font must point to 256 * FONT_HEIGHT bytes; glyph c starts at font[c*FONT_HEIGHT].
  * Foreground and background colors are 0xRRGGBB.
