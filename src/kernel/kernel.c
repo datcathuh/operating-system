@@ -15,15 +15,20 @@
 #include "kshell/kshell_snake.h"
 #include "kshell/kshell_tetris.h"
 #include "lapic.h"
+#include "serial.h"
 #include "pci.h"
 #include "pic.h"
 #include "video/video.h"
 
 void kmain(void) {
+	serial_puts("Booting\n");
 	gdt_install();
+	serial_puts("GDT installed\n");
 	__asm__ volatile("cli");
 	video_init();
+	serial_puts("Video init\n");
 	lapic_default_init();
+	serial_puts("LAPIC init\n");
 	acpi_init();
 	pci_build_device_tree();
 	pci_debug_dump();

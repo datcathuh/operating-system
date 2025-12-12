@@ -24,7 +24,7 @@ void serial_put_hex32(uint32_t val) {
 }
 
 void serial_puts(const char *s) {
-	while (*s) {
-		serial_putc(*s++);
+	for(int i=0;s[i] != 0; i++) {
+		serial_putc(s[i]);
 	}
 }
