@@ -3,6 +3,7 @@ global start
 
 extern disk_load
 extern gdt_descriptor
+extern gdt64_descriptor
 extern print_string
 extern print_new_line
 extern paging_setup
@@ -78,6 +79,8 @@ start_32bit:
 
 	call paging_setup
 	call s2main
+
+	lgdt [gdt64_descriptor]
 
 	jmp 0x08:start_64bit
 
