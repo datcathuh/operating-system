@@ -1,12 +1,10 @@
 #include "io.h"
 #include "serial.h"
 
-static inline void serial_outb(uint16_t port, uint8_t val) {
-    __asm__ volatile ("outb %0, %1" : : "a"(val), "Nd"(port));
-}
-
 void serial_putc(char c) {
-	serial_outb(0x3F8, (uint8_t)c);
+	// while ((io_inb(0x3F8 + 5) & 0x20) == 0) {
+	// }
+	io_outb(0x3F8, (uint8_t)c);
 }
 
 void serial_put_hex8(uint8_t v) {

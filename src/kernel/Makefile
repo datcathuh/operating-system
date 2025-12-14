@@ -56,7 +56,16 @@ OBJECTS+=$(BUILD_DIR)/kernel/video/bga.o
 OBJECTS+=$(BUILD_DIR)/kernel/video/vga.o
 OBJECTS+=$(BUILD_DIR)/kernel/video/video.o
 
-CFLAGS=-g -std=c23 -pedantic -Wall -Wextra -m64 -ffreestanding -nostdlib -nostdinc -I.
+CFLAGS+=-g -std=c23 -pedantic -Wall -Wextra -m64
+CFLAGS+=-mno-red-zone
+CFLAGS+=-fno-omit-frame-pointer
+CFLAGS+=-fno-stack-protector
+CFLAGS+=-mcmodel=kernel
+CFLAGS+=-ffreestanding
+CFLAGS+=-O1
+CFLAGS+=-nostdlib
+CFLAGS+=-nostdinc
+CFLAGS+=-I.
 
 all: $(BUILD_DIR)/kernel/kernel.bin
 

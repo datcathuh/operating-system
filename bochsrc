@@ -5,3 +5,4 @@ vgaromimage: file=/usr/share/bochs/VGABIOS-lgpl-latest.bin
 boot: disk
 ata0-master: type=disk, path=build/hda.img, mode=flat, status=inserted, translation=lba
 
+com1: enabled=1, mode=term

@@ -21,7 +21,7 @@ static inline uint32_t io_inl(uint16_t port) {
 }
 
 static inline void io_outb(uint16_t port, uint8_t val) {
-    __asm__ volatile ("outb %0, %1" : : "a"(val), "Nd"(port));
+	__asm__ volatile ("outb %0, %1" : : "a"(val), "Nd"(port) : "memory");
 }
 
 static inline void io_outw(uint16_t port, uint16_t val) {
