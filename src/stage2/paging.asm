@@ -69,4 +69,19 @@ pt_fill_loop:
     inc ebx
     loop pt_fill_loop
 
+	;; Load the table into the CPU
+	mov eax, pml4_table
+	mov cr3, eax
+
+	;; Enable long mode by setting the LME flag
+	mov ecx, 0xC0000080     ; EFER
+	rdmsr
+	or eax, (1 << 8)        ; LME
+	wrmsr
+
+	;; Enable paging
+	mov eax, cr0
+	or eax, 0x80000000      ; PG
+	mov cr0, eax
+
 	ret
