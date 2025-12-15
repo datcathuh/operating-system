@@ -22,16 +22,18 @@
 
 void kmain(void) {
 	serial_puts("Booting\n");
-	gdt_install();
-	serial_puts("GDT installed\n");
+	// gdt_install();
+	// serial_puts("GDT installed\n");
 	__asm__ volatile("cli");
 	video_init();
 	serial_puts("Video init\n");
-	lapic_default_init();
-	serial_puts("LAPIC init\n");
-	acpi_init();
+	// lapic_default_init();
+	// serial_puts("LAPIC init\n");
+	// acpi_init();
+	// serial_puts("ACPI init\n");
 	pci_build_device_tree();
 	pci_debug_dump();
+	serial_puts("PCI\n");
 	pic_remap();
 	idt_install();
 	irq_double_fault_register();

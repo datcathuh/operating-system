@@ -12,5 +12,5 @@ void irq_double_fault_c(void) {
 }
 
 void irq_double_fault_register(void) {
-	idt_gate_set(0x8, (uint32_t)irq_double_fault_asm);
+	idt_gate_set(0x8, irq_double_fault_asm);
 }
