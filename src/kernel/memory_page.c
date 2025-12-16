@@ -67,3 +67,13 @@ void mem_page_map(uint64_t virt, uint64_t phys, uint64_t flags) {
     // Flush TLB for this page
     __asm__ volatile ("invlpg (%0)" :: "r"(virt) : "memory");
 }
+
+void mem_page_map_n(uint64_t virt, uint64_t phys,
+					uint64_t count, uint64_t flags)
+{
+    for (uint64_t i = 0; i < count; i++) {
+        mem_page_map(virt + i * 0x1000,
+					 phys + i * 0x1000,
+					 flags);
+    }
+}

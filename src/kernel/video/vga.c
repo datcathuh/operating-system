@@ -79,7 +79,13 @@ struct vga_mode vga_mode_320x200x256 = {
 	.flags = vga_mode_gfx,
 };
 
-void vga_init(void) { vga_font_save(_vga_font); }
+void vga_init(void) {
+	/* Map memory for text mode */
+	mem_page_map(0xB8000, 0xB8000, MEM_PAGE_PRESENT | MEM_PAGE_WRITABLE);
+	/* Map memory for VGA mode */
+	mem_page_map_n(0xA0000, 0xA0000, 16, MEM_PAGE_PRESENT | MEM_PAGE_WRITABLE);
+	vga_font_save(_vga_font);
+}
 
 uint8_t *vga_font() {
 	return _vga_font;
