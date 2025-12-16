@@ -41,6 +41,6 @@ static void idt_load(struct idtr* idt_ptr) {
 
 void idt_install() {
     idtp.limit = sizeof(idt) - 1;
-    // idtp.base = (uint32_t)&idt;
+    idtp.base = (uint64_t)&idt;
     idt_load(&idtp);
 }
