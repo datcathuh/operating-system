@@ -22,6 +22,8 @@ OBJECTS+=$(BUILD_DIR)/kernel/isr/irq_double_fault_asm.o
 OBJECTS+=$(BUILD_DIR)/kernel/isr/irq_double_fault_c.o
 OBJECTS+=$(BUILD_DIR)/kernel/isr/irq_keyboard_asm.o
 OBJECTS+=$(BUILD_DIR)/kernel/isr/irq_keyboard_c.o
+OBJECTS+=$(BUILD_DIR)/kernel/isr/irq_page_fault_asm.o
+OBJECTS+=$(BUILD_DIR)/kernel/isr/irq_page_fault_c.o
 OBJECTS+=$(BUILD_DIR)/kernel/isr/irq_timer_asm.o
 OBJECTS+=$(BUILD_DIR)/kernel/isr/irq_timer_c.o
 

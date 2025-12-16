@@ -4,6 +4,7 @@
 #include "idt.h"
 #include "isr/irq_double_fault.h"
 #include "isr/irq_gp.h"
+#include "isr/irq_page_fault.h"
 #include "isr/irq_keyboard.h"
 #include "isr/irq_timer.h"
 #include "kshell/kshell.h"
@@ -41,6 +42,7 @@ void kmain(void) {
 	idt_install();
 	irq_double_fault_register();
 	irq_gp_register();
+	irq_page_fault_register();
 	irq_keyboard_register();
 	irq_timer_register();
 	__asm__ volatile("sti");

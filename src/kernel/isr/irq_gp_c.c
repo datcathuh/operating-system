@@ -5,7 +5,7 @@
 void irq_gp_asm(void);
 
 void irq_gp_c(void) {
-	serial_puts("PANIC: double fault\n");
+	serial_puts("PANIC: General protection fault\n");
 	for (;;) {
 		__asm__ volatile("hlt");
 	}
