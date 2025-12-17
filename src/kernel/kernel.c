@@ -23,9 +23,7 @@
 #include "video/video.h"
 
 void kmain(void) {
-	serial_puts("Booting\n");
 	mem_page_init();
-	serial_puts("Page init\n");
 	// gdt_install();
 	// serial_puts("GDT installed\n");
 	__asm__ volatile("cli");
@@ -37,7 +35,6 @@ void kmain(void) {
 	// serial_puts("ACPI init\n");
 	pci_build_device_tree();
 	pci_debug_dump();
-	serial_puts("PCI\n");
 	pic_remap();
 	idt_install();
 	irq_double_fault_register();
