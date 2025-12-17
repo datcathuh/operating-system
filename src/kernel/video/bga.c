@@ -52,7 +52,7 @@ void bga_pci_driver_description(struct pci_device_driver */*driver*/,
 bool bga_pci_driver_initialize(struct pci_device_driver */*driver*/,
                                struct pci_device *device) {
 	struct video_device *vd = bga_device();
-	vd->buffer->memory = (uint8_t*)device->bar[0];
+	vd->buffer->memory = (uint8_t*)(uintptr_t)device->bar[0];
 
 	struct video_resolution res = {
 		.width = 1024,
@@ -89,6 +89,13 @@ static bool bga_device_initialize(struct video_device*) {
 }
 
 static bool bga_device_resolution_set(struct video_device* device, struct video_resolution *res) {
+	uint64_t bytes_per_pixel = res->bpp / 8;
+	uint64_t framebuffer_size = (uint64_t)res->width * res->height * bytes_per_pixel;
+	uint64_t pages = (framebuffer_size + 0xFFF) / 0x1000;
+	mem_page_map_n((uint64_t)device->buffer->memory,
+				   (uint64_t)device->buffer->memory, pages,
+				   MEM_PAGE_PRESENT | MEM_PAGE_WRITABLE | MEM_PAGE_NO_CACHE);
+
 	mem_copy(&_video_resolution, res, sizeof(struct video_resolution));
     bga_write(VBE_DISPI_INDEX_ENABLE, VBE_DISPI_DISABLED);
     bga_write(VBE_DISPI_INDEX_XRES, res->width);
@@ -106,6 +113,8 @@ static bool bga_device_cleanup(struct video_device*) {
 
 	// Step 2: Reinitialize VGA miscellaneous output register
 	io_outb(0x3C2, 0x63); // 25 MHz, enable color VGA, etc.
+
+	// TODO: We should probably unmap memory for the resolution we have
 	return true;
 }
 
