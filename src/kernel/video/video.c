@@ -292,6 +292,7 @@ struct video_buffer _video_buffer;
 struct video_buffer *video_buffer_allocate(struct video_device *device,
 										   struct video_resolution *resolution) {
 	/* TODO: Create real allocation */
+	/* TODO: map pages */
 	_video_buffer.memory = (uint8_t*)0x20000;
 	mem_copy(&_video_buffer.resolution, resolution, sizeof(struct video_resolution));
 	return &_video_buffer;
