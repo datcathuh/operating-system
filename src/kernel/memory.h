@@ -24,5 +24,5 @@ void mem_page_init(void);
 void mem_page_map(uint64_t virt, uint64_t phys, uint64_t flags);
 void mem_page_map_n(uint64_t virt, uint64_t phys,
 					uint64_t count, uint64_t flags);
-void *mem_page_alloc(size_t npages);
+void *mem_page_alloc(void);
 void mem_page_free(void *addr, size_t npages);

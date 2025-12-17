@@ -8,7 +8,7 @@ void mem_page_init(void) {
     next_free_page = ((uint64_t)&kernel_end + 0xFFF) & ~0xFFFULL;
 }
 
-void *mem_page_alloc(size_t npages) {
+void *mem_page_alloc(void) {
     uint64_t phys = next_free_page;
     next_free_page += 0x1000;
 
@@ -39,7 +39,7 @@ void mem_page_map(uint64_t virt, uint64_t phys, uint64_t flags) {
 
     // PML4
     if (!(pml4[pml4_i] & MEM_PAGE_PRESENT)) {
-        uint64_t* pdpt = mem_page_alloc(1);
+        uint64_t* pdpt = mem_page_alloc();
         pml4[pml4_i] = (uint64_t)pdpt | MEM_PAGE_PRESENT | MEM_PAGE_WRITABLE;
     }
 
@@ -47,7 +47,7 @@ void mem_page_map(uint64_t virt, uint64_t phys, uint64_t flags) {
 
     // PDPT
     if (!(pdpt[pdpt_i] & MEM_PAGE_PRESENT)) {
-        uint64_t* pd = mem_page_alloc(1);
+        uint64_t* pd = mem_page_alloc();
         pdpt[pdpt_i] = (uint64_t)pd | MEM_PAGE_PRESENT | MEM_PAGE_WRITABLE;
     }
 
@@ -55,7 +55,7 @@ void mem_page_map(uint64_t virt, uint64_t phys, uint64_t flags) {
 
     // PD
     if (!(pd[pd_i] & MEM_PAGE_PRESENT)) {
-        uint64_t* pt = mem_page_alloc(1);
+        uint64_t* pt = mem_page_alloc();
         pd[pd_i] = (uint64_t)pt | MEM_PAGE_PRESENT | MEM_PAGE_WRITABLE;
     }
 
