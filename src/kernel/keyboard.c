@@ -5,26 +5,28 @@
 static bool shift_pressed = false;
 
 static const char scancode_to_ascii[128] = {
-    0, 27, '1','2','3','4','5','6','7','8','9','0','-','=','\b',
-    '\t','q','w','e','r','t','y','u','i','o','p','[',']','\n', 0,
-    'a','s','d','f','g','h','j','k','l',';','\'','`', 0,'\\',
-    'z','x','c','v','b','n','m',',','.','/', 0,'*',0,' ',
+	0,   27,  '1',  '2',  '3',  '4', '5', '6',  '7', '8', '9', '0',
+	'-', '=', '\b', '\t', 'q',  'w', 'e', 'r',  't', 'y', 'u', 'i',
+	'o', 'p', '[',  ']',  '\n', 0,   'a', 's',  'd', 'f', 'g', 'h',
+	'j', 'k', 'l',  ';',  '\'', '`', 0,   '\\', 'z', 'x', 'c', 'v',
+	'b', 'n', 'm',  ',',  '.',  '/', 0,   '*',  0,   ' ',
 };
 
 static const char scancode_to_ascii_shift[128] = {
-    0, 27, '!','@','#','$','%','^','&','*','(',')','_','+','\b',
-    '\t','Q','W','E','R','T','Y','U','I','O','P','{','}','\n', 0,
-    'A','S','D','F','G','H','J','K','L',':','"','~',0,'|',
-    'Z','X','C','V','B','N','M','<','>','?', 0,'*',0,' ',
+	0,   27,  '!',  '@',  '#',  '$', '%', '^', '&', '*', '(', ')',
+	'_', '+', '\b', '\t', 'Q',  'W', 'E', 'R', 'T', 'Y', 'U', 'I',
+	'O', 'P', '{',  '}',  '\n', 0,   'A', 'S', 'D', 'F', 'G', 'H',
+	'J', 'K', 'L',  ':',  '"',  '~', 0,   '|', 'Z', 'X', 'C', 'V',
+	'B', 'N', 'M',  '<',  '>',  '?', 0,   '*', 0,   ' ',
 };
 
 char keyboard_get_key(void) {
 	uint8_t sc;
 	bool key_fetched = false;
-	while(!key_fetched) {
+	while (!key_fetched) {
 		__asm__ volatile("hlt");
 		key_fetched = irq_keyboard_consume_key(&sc);
-		if(key_fetched) {
+		if (key_fetched) {
 			// Handle key release
 			if (sc & 0x80) {
 				sc &= 0x7F;
@@ -42,7 +44,8 @@ char keyboard_get_key(void) {
 				}
 
 				if (sc < 128) {
-					return shift_pressed ? scancode_to_ascii_shift[sc] : scancode_to_ascii[sc];
+					return shift_pressed ? scancode_to_ascii_shift[sc]
+					                     : scancode_to_ascii[sc];
 				}
 				return 0;
 			}
@@ -53,9 +56,9 @@ char keyboard_get_key(void) {
 
 bool keyboard_get_key_if_exists(char *key) {
 	uint8_t sc;
-	while(irq_keyboard_count()) {
+	while (irq_keyboard_count()) {
 		bool key_fetched = irq_keyboard_consume_key(&sc);
-		if(key_fetched) {
+		if (key_fetched) {
 			// Handle key release
 			if (sc & 0x80) {
 				sc &= 0x7F;
@@ -73,7 +76,8 @@ bool keyboard_get_key_if_exists(char *key) {
 				}
 
 				if (sc < 128) {
-					*key = shift_pressed ? scancode_to_ascii_shift[sc] : scancode_to_ascii[sc];
+					*key = shift_pressed ? scancode_to_ascii_shift[sc]
+					                     : scancode_to_ascii[sc];
 					return true;
 				}
 				continue;

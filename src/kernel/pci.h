@@ -23,17 +23,22 @@ struct pci_device {
 };
 
 struct pci_device_driver {
-	void (*description)(struct pci_device_driver* driver, struct pci_device *device, char *buffer, uint16_t size);
-	bool (*initialize)(struct pci_device_driver* driver, struct pci_device *device);
-	bool (*unload)(struct pci_device_driver* driver, struct pci_device *device);
+	void (*description)(struct pci_device_driver *driver,
+	                    struct pci_device *device, char *buffer, uint16_t size);
+	bool (*initialize)(struct pci_device_driver *driver,
+	                   struct pci_device *device);
+	bool (*unload)(struct pci_device_driver *driver, struct pci_device *device);
 };
 
-typedef void(*pci_enumerate_cb)(struct pci_device*);
+typedef void (*pci_enumerate_cb)(struct pci_device *);
 
 uint8_t pci_cfg_read8(uint8_t bus, uint8_t slot, uint8_t func, uint8_t offset);
-uint16_t pci_cfg_read16(uint8_t bus, uint8_t slot, uint8_t func, uint8_t offset);
-uint32_t pci_config_read32(uint8_t bus, uint8_t slot, uint8_t func, uint8_t offset);
-void pci_cfg_write32(uint8_t bus, uint8_t slot, uint8_t func, uint8_t offset, uint32_t val);
+uint16_t pci_cfg_read16(uint8_t bus, uint8_t slot, uint8_t func,
+                        uint8_t offset);
+uint32_t pci_config_read32(uint8_t bus, uint8_t slot, uint8_t func,
+                           uint8_t offset);
+void pci_cfg_write32(uint8_t bus, uint8_t slot, uint8_t func, uint8_t offset,
+                     uint32_t val);
 
 /* Walk the PCI bus and call the callback for each found device */
 void pci_enumerate(pci_enumerate_cb cb);

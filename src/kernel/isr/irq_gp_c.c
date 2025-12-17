@@ -11,6 +11,4 @@ void irq_gp_c(void) {
 	}
 }
 
-void irq_gp_register(void) {
-	idt_gate_set(0x13, irq_gp_asm);
-}
+void irq_gp_register(void) { idt_gate_set(0x13, irq_gp_asm); }

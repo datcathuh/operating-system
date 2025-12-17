@@ -8,29 +8,29 @@ void serial_putc(char c) {
 }
 
 void serial_put_hex8(uint8_t v) {
-    const char hex[] = "0123456789ABCDEF";
-    serial_putc(hex[v >> 4]);
-    serial_putc(hex[v & 0x0F]);
+	const char hex[] = "0123456789ABCDEF";
+	serial_putc(hex[v >> 4]);
+	serial_putc(hex[v & 0x0F]);
 }
 
 void serial_put_hex32(uint32_t val) {
-    const char *hex = "0123456789ABCDEF";
-    serial_puts("0x");
-    for (int i = 28; i >= 0; i -= 4) {
+	const char *hex = "0123456789ABCDEF";
+	serial_puts("0x");
+	for (int i = 28; i >= 0; i -= 4) {
 		serial_putc(hex[(val >> i) & 0xF]);
 	}
 }
 
 void serial_put_hex64(uint64_t val) {
-    const char *hex = "0123456789ABCDEF";
-    serial_puts("0x");
-    for (int i = 60; i >= 0; i -= 4) {
+	const char *hex = "0123456789ABCDEF";
+	serial_puts("0x");
+	for (int i = 60; i >= 0; i -= 4) {
 		serial_putc(hex[(val >> i) & 0xF]);
 	}
 }
 
 void serial_puts(const char *s) {
-	for(int i=0;s[i] != 0; i++) {
+	for (int i = 0; s[i] != 0; i++) {
 		serial_putc(s[i]);
 	}
 }

@@ -10,4 +10,4 @@ struct kshell_command {
 void kshell_init();
 void kshell();
 bool kshell_register_command(const struct kshell_command *cmd);
-const struct kshell_command* kshell_commands_get();
+const struct kshell_command *kshell_commands_get();

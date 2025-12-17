@@ -12,7 +12,7 @@ static char *_welcome =
 	" \\___|_  /|____/\\___  / \\____/  \\_______  /_______  /\n"
 	"       \\/      /_____/                  \\/        \\/\n";
 
-static const char* _prompt = " > ";
+static const char *_prompt = " > ";
 #define _commands_size 10
 static struct kshell_command _commands[_commands_size];
 
@@ -24,13 +24,11 @@ static void prompt(struct terminal *terminal) {
 	terminal->pos_set(terminal, str_length(_prompt), height - 1);
 }
 
-void kshell_init() {
-	mem_set(_commands, 0, sizeof(_commands));
-}
+void kshell_init() { mem_set(_commands, 0, sizeof(_commands)); }
 
 bool kshell_register_command(const struct kshell_command *cmd) {
-	for(int i=0;i < _commands_size;i++) {
-		if(str_length(_commands[i].name) == 0) {
+	for (int i = 0; i < _commands_size; i++) {
+		if (str_length(_commands[i].name) == 0) {
 			mem_copy(&_commands[i], cmd, sizeof(struct kshell_command));
 			return true;
 		}
@@ -38,13 +36,11 @@ bool kshell_register_command(const struct kshell_command *cmd) {
 	return false;
 }
 
-const struct kshell_command* kshell_commands_get() {
-	return _commands;
-}
+const struct kshell_command *kshell_commands_get() { return _commands; }
 
-struct kshell_command* kshell_find_command(const char *name) {
-	for(int i=0;i < _commands_size;i++) {
-		if(str_compare(_commands[i].name, name) == 0) {
+struct kshell_command *kshell_find_command(const char *name) {
+	for (int i = 0; i < _commands_size; i++) {
+		if (str_compare(_commands[i].name, name) == 0) {
 			return &_commands[i];
 		}
 	}
@@ -55,31 +51,32 @@ void kshell() {
 	struct video_device *device = video_current();
 	struct terminal *terminal = device->terminal;
 
-    terminal->clear(terminal);
+	terminal->clear(terminal);
 	terminal->print(terminal, _welcome);
 
-    prompt(terminal);
+	prompt(terminal);
 
 	char command[70] = "";
 	const int command_size = sizeof(command);
 
-    while (1) {
-        char c = keyboard_get_key();
-        if (c) {
-			if(c == '\n') {
+	while (1) {
+		char c = keyboard_get_key();
+		if (c) {
+			if (c == '\n') {
 				terminal->clear(terminal);
 
-				if(str_length(command) > 0) {
-					struct kshell_command* cmd = kshell_find_command(command);
-					if(cmd) {
+				if (str_length(command) > 0) {
+					struct kshell_command *cmd = kshell_find_command(command);
+					if (cmd) {
 						terminal->pos_set(terminal, 0, 0);
 						cmd->callback();
-					}
-					else {
+					} else {
 						terminal->pos_set(terminal, 0, 0);
-						terminal->color_set(terminal, terminal_red, terminal_black);
+						terminal->color_set(terminal, terminal_red,
+						                    terminal_black);
 						terminal->print(terminal, "Invalid command");
-						terminal->color_set(terminal, terminal_white, terminal_black);
+						terminal->color_set(terminal, terminal_white,
+						                    terminal_black);
 					}
 				}
 
@@ -87,24 +84,24 @@ void kshell() {
 				prompt(terminal);
 				continue;
 			}
-			if(c == '\b') {
-				int x,y;
+			if (c == '\b') {
+				int x, y;
 				terminal->pos_get(terminal, &x, &y);
-				if(x <= str_length(_prompt)) {
+				if (x <= str_length(_prompt)) {
 					continue;
 				}
 				command[str_length(command) - 1] = 0;
 				terminal->print_char(terminal, c);
-				terminal->pos_set(terminal, x-1, y);
+				terminal->pos_set(terminal, x - 1, y);
 				continue;
 			}
 
-			if(str_append_char(command, c, command_size)) {
+			if (str_append_char(command, c, command_size)) {
 				terminal->print_char(terminal, c);
-				int x,y;
+				int x, y;
 				terminal->pos_get(terminal, &x, &y);
 				terminal->pos_set(terminal, x, y);
 			}
-        }
-    }
+		}
+	}
 }
