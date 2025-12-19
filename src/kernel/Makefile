@@ -64,7 +64,7 @@ CFLAGS+=-fno-omit-frame-pointer
 CFLAGS+=-fno-stack-protector
 CFLAGS+=-mcmodel=kernel
 CFLAGS+=-ffreestanding
-CFLAGS+=-O1
+CFLAGS+=-O3
 CFLAGS+=-nostdlib
 CFLAGS+=-nostdinc
 CFLAGS+=-I.

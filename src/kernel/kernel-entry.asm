@@ -3,8 +3,12 @@ global _start
 
 extern __bss_start
 extern __bss_end
+extern stack_top
 
 _start:
+	lea rsp, [stack_top]   ; set RSP to top of stack
+	and rsp, -16           ; align stack to 16 bytes
+
 	;; Clear BSS manually (no SSE, no memset)
 	lea rdi, __bss_start
 	lea rcx, __bss_end

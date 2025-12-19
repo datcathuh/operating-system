@@ -23,6 +23,13 @@ SECTIONS {
         __bss_end = .;
     }
 
-	kernel_end = ALIGN(4096);
+    .stack : ALIGN(16)
+    {
+        stack_bottom = .;      /* lowest address of stack */
+        . += 0x4000;           /* 16 KB stack */
+        stack_top = .;         /* highest address of stack */
+    }
+
+    kernel_end = ALIGN(4096);
 	kernel_end = .;
 }
