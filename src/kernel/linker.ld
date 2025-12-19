@@ -21,5 +21,6 @@ SECTIONS {
         *(.bss)
     }
 
+	kernel_end = ALIGN(4096);
 	kernel_end = .;
 }
