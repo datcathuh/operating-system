@@ -17,8 +17,10 @@ SECTIONS {
     }
 
     .bss BLOCK(4K) : ALIGN(4K) {
+         __bss_start = .;
         *(COMMON)
         *(.bss)
+        __bss_end = .;
     }
 
 	kernel_end = ALIGN(4096);
