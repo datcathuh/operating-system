@@ -1,6 +1,5 @@
 #include "acpi.h"
 #include "diagnostics.h"
-#include "gdt.h"
 #include "idt.h"
 #include "isr/irq_double_fault.h"
 #include "isr/irq_gp.h"
@@ -24,8 +23,6 @@
 
 void kmain(void) {
 	mem_page_init();
-	// gdt_install();
-	// serial_puts("GDT installed\n");
 	__asm__ volatile("cli");
 	video_init();
 	serial_puts("Video init\n");
