@@ -13,6 +13,7 @@
 #include "kshell/kshell_mandelbrot.h"
 #include "kshell/kshell_shutdown.h"
 #include "kshell/kshell_snake.h"
+#include "kshell/kshell_sysinfo.h"
 #include "kshell/kshell_tetris.h"
 #include "lapic.h"
 #include "memory.h"
@@ -50,6 +51,7 @@ void kmain(void) {
 	kshell_mandelbrot_register();
 	kshell_shutdown_register();
 	kshell_snake_register();
+	kshell_sysinfo_register();
 	kshell_tetris_register();
 
 	kshell();
