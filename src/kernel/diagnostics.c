@@ -1,7 +1,7 @@
 #include "serial.h"
 #include "types.h"
 
-extern uint32_t _start;
+extern uint32_t legacy_entry;
 
 void print_diagnostics(void) {
 	uint32_t esp, ebp, cs, ds, ss;
@@ -41,8 +41,8 @@ void print_diagnostics(void) {
 	serial_puts("  IDTR base = ");
 	serial_put_hex32(idtr.base);
 	serial_puts("\n");
-	serial_puts("  _start()   = ");
-	serial_put_hex32((uintptr_t)&_start);
+	serial_puts("  legacy_entry()   = ");
+	serial_put_hex32((uintptr_t)&legacy_entry);
 	serial_puts("\n");
 	serial_puts("\n");
 }

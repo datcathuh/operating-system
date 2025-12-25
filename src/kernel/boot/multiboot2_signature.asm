@@ -1,6 +1,6 @@
 bits 32
 
-extern _start
+extern multiboot2_entry
 
 section .text
 align 8
@@ -20,7 +20,7 @@ multiboot2_header_start:
     dw 3                  ; type = entry address
     dw 0
     dd 12
-    dd _start
+    dd multiboot2_entry
 
     ; --- End tag ---
     dw 0

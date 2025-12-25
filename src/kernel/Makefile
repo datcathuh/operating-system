@@ -4,6 +4,11 @@ OBJECTS+=$(BUILD_DIR)/kernel/apm.o
 OBJECTS+=$(BUILD_DIR)/kernel/diagnostics.o
 OBJECTS+=$(BUILD_DIR)/kernel/idt.o
 
+# Boot
+OBJECTS+=$(BUILD_DIR)/kernel/boot/legacy_entry.o
+OBJECTS+=$(BUILD_DIR)/kernel/boot/multiboot2_entry.o
+OBJECTS+=$(BUILD_DIR)/kernel/boot/multiboot2_signature.o
+
 # Devices
 OBJECTS+=$(BUILD_DIR)/kernel/devices/intel_440fx.o
 OBJECTS+=$(BUILD_DIR)/kernel/devices/intel_82371sb_acpi.o
@@ -26,7 +31,6 @@ OBJECTS+=$(BUILD_DIR)/kernel/isr/irq_timer_asm.o
 OBJECTS+=$(BUILD_DIR)/kernel/isr/irq_timer_c.o
 
 OBJECTS+=$(BUILD_DIR)/kernel/keyboard.o
-OBJECTS+=$(BUILD_DIR)/kernel/kernel-entry.o
 OBJECTS+=$(BUILD_DIR)/kernel/kernel.o
 
 # Kernel shell commands.
@@ -44,7 +48,6 @@ OBJECTS+=$(BUILD_DIR)/kernel/lapic.o
 OBJECTS+=$(BUILD_DIR)/kernel/memory.o
 OBJECTS+=$(BUILD_DIR)/kernel/memory_heap.o
 OBJECTS+=$(BUILD_DIR)/kernel/memory_page.o
-OBJECTS+=$(BUILD_DIR)/kernel/multiboot2.o
 OBJECTS+=$(BUILD_DIR)/kernel/pci.o
 OBJECTS+=$(BUILD_DIR)/kernel/pic.o
 OBJECTS+=$(BUILD_DIR)/kernel/pit.o

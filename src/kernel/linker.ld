@@ -1,11 +1,15 @@
-ENTRY(_start)
+/* legacy_entry is used when booting through MBR -> stage2 -> kernel */
+ENTRY(legacy_entry)
 
 SECTIONS {
 	. = 0x100000;
 
     .text BLOCK(4K) : ALIGN(4K) {
-        *kernel-entry.o(.text)
-		*multiboot2.o(.text)
+        *legacy_entry.o(.text)
+		/* The multiboot signature must exist very early in the file in order
+		   for UEFI to pick it up. The signature contains a pointer to the
+		   actual multiboot2_entry for the kernel. */
+		*multiboot2_signature.o(.text)
         *(.text)
     }
 

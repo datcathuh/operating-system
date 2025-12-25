@@ -1,11 +1,11 @@
-[bits 64]
-global _start
+bits 64
+global legacy_entry
 
 extern __bss_start
 extern __bss_end
 extern stack_top
 
-_start:
+legacy_entry:
 	lea rsp, [stack_top]   ; set RSP to top of stack
 	and rsp, -16           ; align stack to 16 bytes
 
