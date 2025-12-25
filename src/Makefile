@@ -19,6 +19,22 @@ clean:
 gdb:
 	gdb
 
+$(BUILD_DIR)/ovmf/OVMF_VARS.fd:
+	mkdir -p $(BUILD_DIR)/ovmf
+	cp /usr/share/edk2/ovmf/OVMF_VARS.fd $@
+
+run_uefi: $(BUILD_DIR)/uefi.img $(BUILD_DIR)/ovmf/OVMF_VARS.fd
+	qemu-system-x86_64 \
+		-smp cpus=2 \
+		-device qemu-xhci \
+		-drive if=pflash,format=raw,readonly=on,file=/usr/share/edk2/ovmf/OVMF_CODE.fd \
+		-drive if=pflash,format=raw,file=$(BUILD_DIR)/ovmf/OVMF_VARS.fd \
+		-drive file=$(BUILD_DIR)/uefi.img,format=raw \
+		-serial stdio
+
+	# -drive file=$(BUILD_DIR)/hdb.img,if=virtio,format=raw \
+
+
 run: $(BUILD_DIR)/hda.img $(BUILD_DIR)/hdb.img
 	qemu-system-x86_64 \
 		-smp cpus=2 \

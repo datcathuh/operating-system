@@ -23,6 +23,9 @@ clean:
 gdb:
 	$(MAKE) -C src $@
 
+run_uefi:
+	$(MAKE) -C src $@
+
 run:
 	$(MAKE) -C src $@
 

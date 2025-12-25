@@ -10,7 +10,7 @@ Install the following:
 
 dnf install nasm gcc make qemu
 dnf install bochs bochs-gdb bochs-debugger
-dnf install grub2-efi-x64-modules
+dnf install grub2-efi-x64-modules grub2-tools-extra
 
 # Compiling and running
 
