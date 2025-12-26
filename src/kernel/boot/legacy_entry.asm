@@ -4,6 +4,7 @@ global legacy_entry
 extern __bss_start
 extern __bss_end
 extern stack_top
+extern kmain
 
 legacy_entry:
 	lea rsp, [stack_top]   ; set RSP to top of stack
@@ -19,7 +20,8 @@ legacy_entry:
 
 	call sse_enable
 
-	extern kmain
+	mov edi, 0   ; 1st arg
+    mov rsi, 0   ; 2nd arg
 	call kmain
 	jmp $
 

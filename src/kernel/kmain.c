@@ -1,4 +1,5 @@
 #include "acpi.h"
+#include "boot/multiboot2.h"
 #include "diagnostics.h"
 #include "idt.h"
 #include "isr/irq_double_fault.h"
@@ -21,8 +22,21 @@
 #include "pci.h"
 #include "pic.h"
 #include "video/video.h"
+#include "video/bga.h"
 
-void kmain(void) {
+void kmain(uint64_t magic, void* mb_addr) {
+	if(magic == MULTIBOOT2_BOOTLOADER_MAGIC) {
+		/* We are booting using UEFI. This means that VGA and BGA
+		   arent available. UEFI has configured a framebuffer for
+		   us that we can use until we are using a real graphics
+		   driver.
+
+		   This means that we blacklists the BGA driver so it won't
+		   be initialized.
+		*/
+		pci_blacklist(&bga_identification);
+	}
+
 	mem_page_init();
 	__asm__ volatile("cli");
 	video_init();

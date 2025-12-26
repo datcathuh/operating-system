@@ -1,3 +1,8 @@
+section .bss
+align 8
+mb_magic:    resd 1
+mb_addr:     resd 1
+
 section .text
 bits 32
 
@@ -10,6 +15,10 @@ extern kmain
 
 multiboot2_entry:
     cli
+
+	;; multiboot2 magic number and address to tags
+    mov [mb_magic], eax
+    mov [mb_addr], ebx
 
 	;; Enable PAE
 	mov eax, cr4
@@ -35,5 +44,8 @@ multiboot2_entry:
 
 bits 64
 multiboot2_64bit_entry:
+	mov edi, [mb_magic]   ; 1st arg
+    mov rsi, [mb_addr]    ; 2nd arg
 	call kmain
+
 	jmp $
