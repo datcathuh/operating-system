@@ -26,6 +26,9 @@ gdb:
 run_uefi:
 	$(MAKE) -C src $@
 
+run_uefi_debug:
+	$(MAKE) -C src $@
+
 run:
 	$(MAKE) -C src $@
 

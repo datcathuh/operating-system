@@ -16,6 +16,9 @@ break *0x0500
 # break at kernel
 break *0x100000
 
+break legacy_entry
+break multiboot2_entry
+
 # Show registers and nearby instructions when stopping
 #layout asm
 #layout regs
