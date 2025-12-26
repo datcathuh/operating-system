@@ -127,7 +127,11 @@ static void pci_device_create_cb(struct pci_device *device) {
 	               redhat_virtio_block_device_identification.device) {
 		_devices[_device_count].driver = &redhat_virtio_block_device_driver;
 	}
-	if (_devices[_device_count].driver) {
+
+	/* If the device has a driver and isn't blacklisted we will initialize
+	   the driver. */
+	if (_devices[_device_count].driver &&
+		!pci_blacklist_check(&_devices[_device_count].identification)) {
 		_devices[_device_count].driver->initialize(
 			_devices[_device_count].driver, &_devices[_device_count]);
 	}

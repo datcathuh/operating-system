@@ -47,3 +47,6 @@ void pci_enumerate(pci_enumerate_cb cb);
 void pci_build_device_tree(void);
 void pci_device_tree(struct pci_device **devices, uint16_t *device_count);
 void pci_debug_dump(void);
+
+void pci_blacklist(struct pci_identification *devid);
+bool pci_blacklist_check(struct pci_identification *devid);
