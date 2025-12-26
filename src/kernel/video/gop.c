@@ -1,7 +1,9 @@
 #include "memory.h"
+#include "terminal_gfx.h"
 #include "video/gop.h"
 
-static bool gop_device_initialize(struct video_device *) {
+static bool gop_device_initialize(struct video_device *vd) {
+	vd->terminal = terminal_gfx(vd);
 	return true;
 }
 
