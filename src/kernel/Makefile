@@ -33,7 +33,7 @@ OBJECTS+=$(BUILD_DIR)/kernel/isr/irq_timer_asm.o
 OBJECTS+=$(BUILD_DIR)/kernel/isr/irq_timer_c.o
 
 OBJECTS+=$(BUILD_DIR)/kernel/keyboard.o
-OBJECTS+=$(BUILD_DIR)/kernel/kernel.o
+OBJECTS+=$(BUILD_DIR)/kernel/kmain.o
 
 # Kernel shell commands.
 OBJECTS+=$(BUILD_DIR)/kernel/kshell/kshell.o
