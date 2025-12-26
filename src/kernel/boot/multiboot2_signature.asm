@@ -14,13 +14,13 @@ multiboot2_header_start:
     ; checksum
     dd 0x100000000 - (0xe85250d6 + 0 + (multiboot2_header_end - multiboot2_header_start))
 
-    ; --- Entry address tag ---
+	align 8
     dw 3                  		; type (entry address)
     dw 0				  		; flags
     dd 12				  		; size
     dd multiboot2_entry
 
-    ; --- End tag ---
+	align 8
     dw 0						; type (end)
     dw 0						; flags
     dd 8						; size

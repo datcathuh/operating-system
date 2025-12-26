@@ -8,11 +8,11 @@ SECTIONS {
         *legacy_entry.o(.text)
     }
 
-	.multiboot2 : ALIGN(8) {
+	.boot : ALIGN(8) {
 		/* The multiboot signature must exist very early in the file in order
 		   for UEFI to pick it up. The signature contains a pointer to the
 		   actual multiboot2_entry for the kernel. */
-		*multiboot2_signature.o(.text)
+		*(.multiboot2)
 	}
 
     .text BLOCK(4K) : ALIGN(4K) {
