@@ -20,8 +20,8 @@
 
 #define VBE_DISPI_ID5 0xB0C5
 
-struct video_resolution _video_resolution;
-struct video_buffer _video_bga_buffer;
+static struct video_resolution _video_resolution;
+static struct video_buffer _video_bga_buffer;
 struct pci_identification bga_identification = {.vendor = 0x1234,
                                                 .device = 0x1111};
 
@@ -112,10 +112,10 @@ static bool bga_device_cleanup(struct video_device *) {
 	return true;
 }
 
-struct video_device _bga_device = {.resolution = 0,
-                                   .buffer = &_video_bga_buffer,
-                                   .initialize = bga_device_initialize,
-                                   .resolution_set = bga_device_resolution_set,
-                                   .cleanup = bga_device_cleanup};
+static struct video_device _bga_device = {.resolution = 0,
+										  .buffer = &_video_bga_buffer,
+										  .initialize = bga_device_initialize,
+										  .resolution_set = bga_device_resolution_set,
+										  .cleanup = bga_device_cleanup};
 
 struct video_device *bga_device() { return &_bga_device; }
