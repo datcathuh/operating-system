@@ -5,13 +5,11 @@ global multiboot2_entry
 global multiboot2_64bit_entry
 
 extern multiboot2_paging_setup
+extern multiboot2_gdt64_descriptor
 extern kmain
 
 multiboot2_entry:
     cli
-
-    ; You probably already do:
-    ; - GDT
 
 	;; Enable PAE
 	mov eax, cr4
@@ -31,8 +29,11 @@ multiboot2_entry:
 	or eax, 0x80000000      ; PG
 	mov cr0, eax
 
+	lgdt [multiboot2_gdt64_descriptor]
+
 	jmp 0x08:multiboot2_64bit_entry
 
 bits 64
 multiboot2_64bit_entry:
 	call kmain
+	jmp $
