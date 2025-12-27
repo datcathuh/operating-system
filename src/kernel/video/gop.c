@@ -30,6 +30,7 @@ static struct video_device _gop_device = {.resolution = 0,
 struct video_device *gop_device(uint8_t *memory, struct video_resolution *resolution) {
 	_video_gop_buffer.memory = memory;
 	mem_copy(&_video_gop_buffer.resolution, resolution, sizeof(struct video_resolution));
+	_gop_device.resolution = &_video_gop_buffer.resolution;
 	uint64_t bytes_per_pixel = resolution->bpp / 8;
 	uint64_t framebuffer_size =
 		(uint64_t)resolution->width * resolution->height * bytes_per_pixel;
