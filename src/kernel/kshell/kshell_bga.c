@@ -1,10 +1,9 @@
 #include "io.h"
 #include "keyboard.h"
 #include "kshell.h"
-#include "memory.h"
 #include "types.h"
-#include "video/bga.h"
-#include "video/vga.h"
+#include "video/video.h"
+#include "video/font.h"
 
 static void kshell_bga_cb(void) {
 	struct video_device *dev = video_current();
@@ -15,7 +14,7 @@ static void kshell_bga_cb(void) {
 		}
 	}
 
-	video_draw_string(dev->buffer, vga_font(), 100, 100, "Hugo\nwas here!",
+	video_draw_string(dev->buffer, video_font_8x16(), 100, 100, "Hugo\nwas here!",
 	                  0xffffff, 0x0, 1);
 	video_draw_line(dev->buffer, 10, 10, 200, 200, 0xff0000);
 	video_draw_rect(dev->buffer, 250, 10, 400, 30, 0x00ff00);

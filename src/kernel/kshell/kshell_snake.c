@@ -1,12 +1,11 @@
 #include "keyboard.h"
 #include "kshell.h"
 #include "kshell_snake.h"
-#include "memory.h"
 #include "pit.h"
 #include "string.h"
 #include "types.h"
-#include "video/vga.h"
 #include "video/video.h"
+#include "video/font.h"
 
 #define COL_BORDER 0xffffff
 #define COL_BG 0x000000
@@ -18,7 +17,7 @@ void kshell_snake_cb(void) {
 	if (!vd)
 		return;
 
-	_font = vga_font();
+	_font = video_font_8x16();
 	if (!_font) {
 		return;
 	}

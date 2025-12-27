@@ -22,8 +22,6 @@ struct vga_mode {
 
 static uint32_t cursor = 0;
 static uint8_t current_color = 0x07; // Default: light gray on black
-#define VGA_FONT_SIZE 4096
-static uint8_t _vga_font[VGA_FONT_SIZE];
 
 struct vga_mode vga_mode_text_80x25 = {
 	.name = "80x25 (text)",
@@ -67,88 +65,6 @@ void vga_init(void) {
 	mem_page_map(0xB8000, 0xB8000, MEM_PAGE_PRESENT | MEM_PAGE_WRITABLE);
 	/* Map memory for VGA mode */
 	mem_page_map_n(0xA0000, 0xA0000, 16, MEM_PAGE_PRESENT | MEM_PAGE_WRITABLE);
-	vga_font_save(_vga_font);
-}
-
-uint8_t *vga_font() { return _vga_font; }
-
-void vga_font_save(uint8_t *buffer) {
-	io_outb(0x3C4, 0x02);
-	io_outb(0x3C5, 0x04); // Write plane 2
-	io_outb(0x3C4, 0x04);
-	io_outb(0x3C5, 0x07); // Disable chain-4, odd/even
-
-	io_outb(0x3CE, 0x04);
-	io_outb(0x3CF, 0x02); // Read plane 2
-	io_outb(0x3CE, 0x05);
-	io_outb(0x3CF, 0x00); // Disable odd/even
-	io_outb(0x3CE, 0x06);
-	io_outb(0x3CF, 0x00); // Map A0000h
-
-	volatile uint8_t *vga = (uint8_t *)0xA0000;
-	for (int i = 0; i < 256; i++) {
-		for (int y = 0; y < 16; y++) {
-			buffer[i * 16 + y] = vga[i * 32 + y];
-
-			// Debug: dump each byte as binary
-			/*
-			uint8_t value = buffer[i * 16 + y];
-			for (int b = 7; b >= 0; b--) {
-			    serial_putc((value & (1 << b)) ? '1' : '0');
-			}
-			serial_putc('\n');
-			*/
-		}
-	}
-
-	io_outb(0x3C4, 0x02);
-	io_outb(0x3C5, 0x03); // Planes 0+1
-	io_outb(0x3C4, 0x04);
-	io_outb(0x3C5, 0x03); // Enable odd/even
-
-	io_outb(0x3CE, 0x04);
-	io_outb(0x3CF, 0x00); // Read plane 0
-	io_outb(0x3CE, 0x05);
-	io_outb(0x3CF, 0x10); // Enable odd/even
-	io_outb(0x3CE, 0x06);
-	io_outb(0x3CF, 0x0E); // Map B8000h (text)
-}
-
-void vga_font_restore(uint8_t *font) {
-	io_outw(0x3C4, 0x0100); // reset sequencer
-	io_outw(0x3C4, 0x0300); // end reset
-
-	io_outb(0x3C4, 0x02);
-	io_outb(0x3C5, 0x04); // map mask: plane 2
-	io_outb(0x3C4, 0x04);
-	io_outb(0x3C5, 0x07); // disable chain-4 and odd/even
-
-	io_outb(0x3CE, 0x04);
-	io_outb(0x3CF, 0x02); // read plane 2
-	io_outb(0x3CE, 0x05);
-	io_outb(0x3CF, 0x00); // disable odd/even + shift
-	io_outb(0x3CE, 0x06);
-	io_outb(0x3CF, 0x00); // map A0000-AFFFF
-
-	volatile uint8_t *vga = (uint8_t *)0xA0000;
-	for (int i = 0; i < 256; i++) {
-		for (int y = 0; y < 16; y++)
-			vga[i * 32 + y] = font[i * 16 + y];
-	}
-
-	io_outb(0x3C4, 0x02);
-	io_outb(0x3C5, 0x03); // planes 0+1
-	io_outb(0x3C4, 0x04);
-	io_outb(0x3C5, 0x03); // re-enable chain 4
-	io_outb(0x3CE, 0x04);
-	io_outb(0x3CF, 0x00); // read plane 0
-	io_outb(0x3CE, 0x05);
-	io_outb(0x3CF, 0x10); // enable odd/even
-	io_outb(0x3CE, 0x06);
-	io_outb(0x3CF, 0x0E); // map B8000-BFFFF
-
-	io_outb(0x3D4, 0x09);
-	io_outb(0x3D5, 0x0F); // 16 scanlines/char
 }
 
 static inline uint8_t vga_color_entry(enum terminal_color fg,
@@ -413,8 +329,6 @@ static void vga_mode_set(struct vga_mode *mode) {
 	}
 
 	if (mode->flags == vga_mode_text) {
-		vga_font_restore(_vga_font);
-
 		vga_restore_default_text_colors();
 
 		uint8_t ht = 16;

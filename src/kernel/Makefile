@@ -62,6 +62,7 @@ OBJECTS+=$(BUILD_DIR)/kernel/terminal_gfx.o
 
 # Video drivers
 OBJECTS+=$(BUILD_DIR)/kernel/video/bga.o
+OBJECTS+=$(BUILD_DIR)/kernel/video/font.o
 OBJECTS+=$(BUILD_DIR)/kernel/video/gop.o
 OBJECTS+=$(BUILD_DIR)/kernel/video/vga.o
 OBJECTS+=$(BUILD_DIR)/kernel/video/video.o

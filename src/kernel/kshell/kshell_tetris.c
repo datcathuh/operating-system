@@ -5,8 +5,8 @@
 #include "pit.h"
 #include "string.h"
 #include "types.h"
-#include "video/vga.h"
 #include "video/video.h"
+#include "video/font.h"
 
 #define PLAY_WIDTH 10
 #define PLAY_HEIGHT 20
@@ -340,7 +340,7 @@ void kshell_tetris_cb(void) {
 	if (!vd)
 		return;
 
-	_font = vga_font();
+	_font = video_font_8x16();
 
 	/* clear board */
 	mem_set(board, 0, sizeof(board));
