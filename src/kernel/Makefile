@@ -6,6 +6,7 @@ OBJECTS+=$(BUILD_DIR)/kernel/idt.o
 
 # Boot
 OBJECTS+=$(BUILD_DIR)/kernel/boot/legacy_entry.o
+OBJECTS+=$(BUILD_DIR)/kernel/boot/multiboot2.o
 OBJECTS+=$(BUILD_DIR)/kernel/boot/multiboot2_entry.o
 OBJECTS+=$(BUILD_DIR)/kernel/boot/multiboot2_gdt.o
 OBJECTS+=$(BUILD_DIR)/kernel/boot/multiboot2_paging.o

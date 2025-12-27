@@ -21,10 +21,20 @@
 #include "serial.h"
 #include "pci.h"
 #include "pic.h"
+#include "video/gop.h"
 #include "video/video.h"
 #include "video/bga.h"
 
 void kmain(uint64_t magic, void* mb_addr) {
+	mem_page_init();
+	__asm__ volatile("cli");
+	video_init();
+	serial_puts("Video init\n");
+
+	serial_puts("kmain: magic: ");
+	serial_put_hex64(magic);
+	serial_puts("\n");
+
 	if(magic == MULTIBOOT2_BOOTLOADER_MAGIC) {
 		/* We are booting using UEFI. This means that VGA and BGA
 		   arent available. UEFI has configured a framebuffer for
@@ -35,12 +45,27 @@ void kmain(uint64_t magic, void* mb_addr) {
 		   be initialized.
 		*/
 		pci_blacklist(&bga_identification);
+		multiboot2_parse(mb_addr);
+		struct multiboot2_tag_framebuffer *fb = multiboot2_get_framebuffer();
+
+		struct video_resolution res = {
+			.width = fb->width,
+			.height = fb->height,
+			.bpp = fb->bpp
+		};
+		struct video_device *vd = gop_device((uint8_t*)fb->addr, &res);
+		video_set(vd);
+		serial_puts("Video GOP @");
+		serial_put_hex64(fb->addr);
+		serial_puts(" ");
+		serial_put_hex64(res.width);
+		serial_puts("x");
+		serial_put_hex64(res.height);
+		serial_puts(" bpp: ");
+		serial_put_hex64(res.bpp);
+		serial_puts("\n");
 	}
 
-	mem_page_init();
-	__asm__ volatile("cli");
-	video_init();
-	serial_puts("Video init\n");
 	lapic_default_init();
 	serial_puts("LAPIC init\n");
 	// acpi_init();
