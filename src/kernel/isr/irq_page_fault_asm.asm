@@ -1,48 +1,23 @@
 [bits 64]
 global irq_page_fault_asm
+extern irq_page_fault_c
 
 irq_page_fault_asm:
-    push    r15
-    push    r14
-    push    r13
-    push    r12
-    push    r11
-    push    r10
-    push    r9
-    push    r8
-    push    rdi
-    push    rsi
-    push    rbp
-    push    rbx
-    push    rdx
-    push    rcx
-    push    rax
+    cli
 
-    mov     rdi, rsp
-    sub     rsp, 8        ; stack align
+    ;; Stack on entry:
+    ;; [rsp + 0]  = error code
+    ;; [rsp + 8]  = RIP
+    ;; [rsp + 16] = CS
+    ;; [rsp + 24] = RFLAGS
+    ;; [rsp + 32] = RSP (old, maybe)
+    ;; [rsp + 40] = SS  (maybe)
 
-	extern irq_page_fault_c
-	call irq_page_fault_c
+    mov rdi, rsp        ; frame pointer
+    mov rsi, [rsp]      ; error code
 
-    add     rsp, 8
+    call irq_page_fault_c
 
-	mov al, 0x20
-	out 0x20, al     ; EOI
-
-    pop     rax
-    pop     rcx
-    pop     rdx
-    pop     rbx
-    pop     rbp
-    pop     rsi
-    pop     rdi
-    pop     r8
-    pop     r9
-    pop     r10
-    pop     r11
-    pop     r12
-    pop     r13
-    pop     r14
-    pop     r15
-
-	iretq
+.hang:
+    hlt
+    jmp .hang
