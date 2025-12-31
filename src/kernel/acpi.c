@@ -1,4 +1,5 @@
 #include "io.h"
+#include "memory.h"
 #include "serial.h"
 
 static void serial_puthex32(uint32_t v) {
@@ -185,6 +186,13 @@ static void parse_rsdt(uintptr_t rsdt_phys) {
 		serial_puts("  RSDT checksum invalid\n");
 		return;
 	}
+
+	uint64_t page_base = rsdt_phys & ~0xFFFULL;
+	uint64_t offset = rsdt_phys & 0xFFFULL;
+	uint64_t total_size = offset + rsdt->length;
+	uint64_t page_count = (total_size + 0xFFF) >> 12;
+	mem_page_map_n(page_base, page_base, page_count, MEM_PAGE_PRESENT | MEM_PAGE_WRITABLE);
+
 	uint32_t entries = (rsdt->length - sizeof(acpi_sdt_header_t)) / 4;
 	uint32_t *list = (uint32_t *)((uint8_t *)rsdt + sizeof(acpi_sdt_header_t));
 	serial_puts("  RSDT entries: ");
@@ -284,6 +292,7 @@ static void parse_madt(uintptr_t madt_phys) {
 /* Public init function */
 void acpi_init(void) {
 	serial_puts("ACPI:\n");
+	mem_page_map_n(0xe0000, 0xe0000, 32, MEM_PAGE_PRESENT | MEM_PAGE_WRITABLE);
 	rsdp_descriptor_t *rsdp = find_rsdp();
 	if (!rsdp) {
 		serial_puts("RSDP not found in 0xE0000-0xFFFFF\n");
@@ -299,6 +308,9 @@ void acpi_init(void) {
 	int use_xsdt = 0;
 
 	if (rsdp->revision == 0) {
+	    uint64_t page_base = rsdp->rsdt_address & ~0xFFFULL;
+		mem_page_map_n(page_base, page_base, 1, MEM_PAGE_PRESENT | MEM_PAGE_WRITABLE);
+
 		parse_rsdt(rsdp->rsdt_address);
 		root = (acpi_sdt_header_t *)(uintptr_t)rsdp->rsdt_address;
 		use_xsdt = 0;

@@ -31,11 +31,10 @@ void kmain(uint64_t magic, void* mb_addr) {
 	video_init();
 	serial_puts("Video init\n");
 
-	serial_puts("kmain: magic: ");
-	serial_put_hex64(magic);
-	serial_puts("\n");
-
-	if(magic == MULTIBOOT2_BOOTLOADER_MAGIC) {
+	if(magic == 0) {
+		serial_puts("kmain: legacy boot\n");
+	}
+	else if(magic == MULTIBOOT2_BOOTLOADER_MAGIC) {
 		/* We are booting using UEFI. This means that VGA and BGA
 		   arent available. UEFI has configured a framebuffer for
 		   us that we can use until we are using a real graphics
@@ -44,6 +43,7 @@ void kmain(uint64_t magic, void* mb_addr) {
 		   This means that we blacklists the BGA driver so it won't
 		   be initialized.
 		*/
+	  serial_puts("kmain: multiboot2\n");
 		pci_blacklist(&bga_identification);
 		multiboot2_parse(mb_addr);
 		struct multiboot2_tag_framebuffer *fb = multiboot2_get_framebuffer();
@@ -68,8 +68,8 @@ void kmain(uint64_t magic, void* mb_addr) {
 
 	lapic_default_init();
 	serial_puts("LAPIC init\n");
-	// acpi_init();
-	// serial_puts("ACPI init\n");
+	acpi_init();
+	serial_puts("ACPI init\n");
 	pci_build_device_tree();
 	pci_debug_dump();
 	pic_remap();
