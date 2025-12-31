@@ -2,6 +2,7 @@
 
 #include "types.h"
 
+void serial_put_dec(uint64_t v);
 void serial_put_hex8(uint8_t v);
 void serial_put_hex32(uint32_t val);
 void serial_put_hex64(uint64_t val);

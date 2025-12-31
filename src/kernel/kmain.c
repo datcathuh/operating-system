@@ -93,5 +93,7 @@ void kmain(uint64_t magic, void* mb_addr) {
 	kshell_sysinfo_register();
 	kshell_tetris_register();
 
+	mem_page_debug_dump();
+
 	kshell();
 }

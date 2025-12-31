@@ -15,11 +15,13 @@ size_t mem_alloc_usable_size(void *ptr);
 #define MEM_PAGE_USER (1ULL << 2)
 #define MEM_PAGE_PWT (1ULL << 3) // write-through
 #define MEM_PAGE_PCD (1ULL << 4) // cache-disable
+#define MEM_PAGE_PS (1ULL << 7)
 #define MEM_PAGE_GLOBAL (1ULL << 8)
 #define MEM_PAGE_NX (1ULL << 63)
 #define MEM_PAGE_NO_CACHE ((1ULL << 3) | (1ULL << 4)) // PWT | PCD
 #define MEM_PAGE_MMIO                                                          \
 	(MEM_PAGE_PRESENT | MEM_PAGE_WRITABLE | MEM_PAGE_PWT | MEM_PAGE_PCD)
+#define MEM_PAGE_ADDR_MASK 0x000FFFFFFFFFF000ULL
 
 void mem_page_init(void);
 void mem_page_map(uint64_t virt, uint64_t phys, uint64_t flags);
@@ -27,3 +29,5 @@ void mem_page_map_n(uint64_t virt, uint64_t phys, uint64_t count,
                     uint64_t flags);
 void *mem_page_alloc(void);
 void mem_page_free(void *addr, size_t npages);
+
+void mem_page_debug_dump(void);
