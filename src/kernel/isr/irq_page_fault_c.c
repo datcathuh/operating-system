@@ -51,6 +51,8 @@ void irq_page_fault_c(struct page_fault_frame *frame, uint64_t error) {
     serial_put_hex64(frame->rip);
     serial_puts("\n");
 
+	mem_page_dump(cr2);
+
 	mem_page_debug_dump();
 
 	for (;;) {

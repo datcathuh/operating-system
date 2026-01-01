@@ -5,6 +5,7 @@ extern __bss_start
 extern __bss_end
 extern stack_top
 extern kmain
+extern nxe_enable
 
 legacy_entry:
 	lea rsp, [stack_top]   ; set RSP to top of stack
@@ -19,6 +20,8 @@ legacy_entry:
 	rep stosq
 
 	call sse_enable
+
+	call nxe_enable
 
 	mov edi, 0   ; 1st arg
     mov rsi, 0   ; 2nd arg

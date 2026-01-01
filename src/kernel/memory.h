@@ -22,6 +22,7 @@ size_t mem_alloc_usable_size(void *ptr);
 #define MEM_PAGE_MMIO                                                          \
 	(MEM_PAGE_PRESENT | MEM_PAGE_WRITABLE | MEM_PAGE_PWT | MEM_PAGE_PCD)
 #define MEM_PAGE_ADDR_MASK 0x000FFFFFFFFFF000ULL
+#define MEM_UPPER_FLAGS (MEM_PAGE_PRESENT | MEM_PAGE_WRITABLE)
 
 void mem_page_init(void);
 void mem_page_map(uint64_t virt, uint64_t phys, uint64_t flags);
@@ -31,3 +32,4 @@ void *mem_page_alloc(void);
 void mem_page_free(void *addr, size_t npages);
 
 void mem_page_debug_dump(void);
+void mem_page_dump(uint64_t virt);

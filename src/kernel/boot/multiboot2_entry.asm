@@ -11,6 +11,7 @@ global multiboot2_64bit_entry
 
 extern multiboot2_paging_setup
 extern multiboot2_gdt64_descriptor
+extern nxe_enable
 extern kmain
 
 multiboot2_entry:
@@ -37,6 +38,9 @@ multiboot2_entry:
 	mov eax, cr0
 	or eax, 0x80000000      ; PG
 	mov cr0, eax
+
+	;; Make it possible to use NX (no execute) flag in page tables
+	call nxe_enable
 
 	lgdt [multiboot2_gdt64_descriptor]
 

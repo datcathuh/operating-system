@@ -31,6 +31,13 @@ void kmain(uint64_t magic, void* mb_addr) {
 	video_init();
 	serial_puts("Video init\n");
 
+	idt_install();
+	irq_double_fault_register();
+	irq_gp_register();
+	irq_page_fault_register();
+	irq_keyboard_register();
+	irq_timer_register();
+
 	if(magic == 0) {
 		serial_puts("kmain: legacy boot\n");
 	}
@@ -73,12 +80,6 @@ void kmain(uint64_t magic, void* mb_addr) {
 	pci_build_device_tree();
 	pci_debug_dump();
 	pic_remap();
-	idt_install();
-	irq_double_fault_register();
-	irq_gp_register();
-	irq_page_fault_register();
-	irq_keyboard_register();
-	irq_timer_register();
 	__asm__ volatile("sti");
 
 	print_diagnostics();

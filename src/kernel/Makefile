@@ -11,6 +11,7 @@ OBJECTS+=$(BUILD_DIR)/kernel/boot/multiboot2_entry.o
 OBJECTS+=$(BUILD_DIR)/kernel/boot/multiboot2_gdt.o
 OBJECTS+=$(BUILD_DIR)/kernel/boot/multiboot2_paging.o
 OBJECTS+=$(BUILD_DIR)/kernel/boot/multiboot2_signature.o
+OBJECTS+=$(BUILD_DIR)/kernel/boot/nxe.o
 
 # Devices
 OBJECTS+=$(BUILD_DIR)/kernel/devices/intel_440fx.o
