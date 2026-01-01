@@ -18,6 +18,7 @@ break *0x100000
 
 break legacy_entry
 break multiboot2_entry
+break kmain
 
 # Show registers and nearby instructions when stopping
 #layout asm
