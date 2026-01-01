@@ -1,6 +1,13 @@
+#include "acpi.h"
 #include "io.h"
 #include "memory.h"
 #include "serial.h"
+
+static struct acpi_lapic acpi_lapics[ACPI_LAPIC_LIMIT];
+static int acpi_lapics_count = 0;
+
+struct acpi_ioapic acpi_ioapics[ACPI_IOAPIC_LIMIT];
+static int acpi_ioapics_count = 0;
 
 static void serial_puthex32(uint32_t v) {
 	char buf[11];
@@ -260,6 +267,11 @@ static void parse_madt(uintptr_t madt_phys) {
 				else
 					serial_puts(" (DISABLED)");
 				serial_puts("\n");
+
+				acpi_lapics[acpi_lapics_count].cpuid = la->acpi_processor_id;
+				acpi_lapics[acpi_lapics_count].lapicid = la->apic_id;
+				acpi_lapics[acpi_lapics_count].flags = la->flags;
+				acpi_lapics_count++;
 			}
 			break;
 		}
@@ -273,6 +285,11 @@ static void parse_madt(uintptr_t madt_phys) {
 				serial_puts(" gsi_base=");
 				serial_puthex32(io->gsi_base);
 				serial_puts("\n");
+
+				acpi_ioapics[acpi_ioapics_count].ioapicid = io->ioapic_id;
+				acpi_ioapics[acpi_ioapics_count].address = io->ioapic_address;
+				acpi_ioapics[acpi_ioapics_count].gsi_base = io->gsi_base;
+				acpi_ioapics_count++;
 			}
 			break;
 		}
@@ -289,8 +306,7 @@ static void parse_madt(uintptr_t madt_phys) {
 	}
 }
 
-/* Public init function */
-void acpi_init(void) {
+void acpi_parse(void) {
 	serial_puts("ACPI:\n");
 	mem_page_map_n(0xe0000, 0xe0000, 32, MEM_PAGE_PRESENT | MEM_PAGE_NX);
 	rsdp_descriptor_t *rsdp = find_rsdp();
@@ -346,3 +362,14 @@ void acpi_init(void) {
 	}
 	serial_puts("\n");
 }
+
+void acpi_lapic_get(struct acpi_lapic **lapics, int *count) {
+	*lapics = acpi_lapics;
+	*count = acpi_lapics_count;
+}
+
+void acpi_ioapic_get(struct acpi_ioapic **ioapics, int *count) {
+	*ioapics = acpi_ioapics;
+	*count = acpi_ioapics_count;
+}
+

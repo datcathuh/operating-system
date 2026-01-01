@@ -73,11 +73,9 @@ void kmain(uint64_t magic, void* mb_addr) {
 		serial_puts("\n");
 	}
 
+	acpi_parse();
 	pic_disable();
 	lapic_default_init();
-	serial_puts("LAPIC init\n");
-	acpi_init();
-	serial_puts("ACPI init\n");
 	pci_build_device_tree();
 	pci_debug_dump();
 	__asm__ volatile("sti");
