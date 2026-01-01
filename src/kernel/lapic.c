@@ -16,6 +16,9 @@ static inline void lapic_write(uint32_t reg, uint32_t val) {
 }
 
 void lapic_default_init(void) {
+	/* 0xFEE00000 is extremely common. But can be different.
+	   It is possible to read this using a Model-Specific Register
+	   (MSR) called IA32_APIC_BASE (0x1B). */
 	mem_page_map(0xFEE00000, 0xFEE00000,
 	             MEM_PAGE_PRESENT | MEM_PAGE_WRITABLE | MEM_PAGE_NO_CACHE);
 
