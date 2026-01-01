@@ -3,6 +3,7 @@
 
 extern uint64_t kernel_end;
 static uint64_t next_free_page = 0;
+static uint64_t pages_allocated = 0;
 
 void mem_page_init(void) {
 	// Align up to 4 KiB
@@ -12,14 +13,10 @@ void mem_page_init(void) {
 void *mem_page_alloc(void) {
 	uint64_t phys = next_free_page;
 	next_free_page += 0x1000;
-
-	// Identity-mapped: phys == virt
-	void *ptr = (void *)phys;
-
-	// MUST zero page tables
-	mem_set(ptr, 0, 0x1000);
-
-	return ptr;
+	void *virt = (void *)phys;
+	mem_set(virt, 0, 0x1000);
+	pages_allocated++;
+	return virt;
 }
 
 void mem_page_free(void *addr, size_t npages) {}
@@ -110,6 +107,9 @@ static void mem_page_debug_dump_4k_flush(uint64_t len,
 
 void mem_page_debug_dump(void) {
     serial_puts("Memory pagemap:\n");
+	serial_puts("  Pages allocated: ");
+	serial_put_dec(pages_allocated);
+	serial_puts("\n");
 
 	uint64_t *pml4 = mem_pml4_get();
     for (int pml4_i = 0; pml4_i < 512; pml4_i++) {
