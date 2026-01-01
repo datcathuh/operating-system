@@ -3,7 +3,6 @@
 #include "types.h"
 
 #define LAPIC_BASE_DEFAULT 0xFEE00000
-#define LAPIC_REG_ID 0x20
 #define LAPIC_REG_EOI 0xB0
 #define LAPIC_REG_SVR 0xF0
 #define LAPIC_REG_LVT_TIMER 0x320

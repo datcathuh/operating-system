@@ -22,24 +22,3 @@ void pic_disable(void) {
     io_outb(PIC1_COMMAND, 0x20); // End Of Interrupt command
     io_outb(PIC2_COMMAND, 0x20); // End Of Interrupt command
 }
-
-void pic_remap(void) {
-	// IRQ0-7 → 0x20-0x27
-	// IRQ8-15 → 0x28-0x2F
-
-	unsigned char a1 = io_inb(PIC1_DATA);
-	unsigned char a2 = io_inb(PIC2_DATA);
-
-	io_outb(PIC1_COMMAND, ICW1_INIT);
-	io_outb(PIC2_COMMAND, ICW1_INIT);
-	io_outb(PIC1_DATA, 0x20); // PIC1 vector offset
-	io_outb(PIC2_DATA, 0x28); // PIC2 vector offset
-	io_outb(PIC1_DATA, 0x04); // tell PIC1 about PIC2 at IRQ2
-	io_outb(PIC2_DATA, 0x02); // tell PIC2 its cascade identity
-	io_outb(PIC1_DATA, ICW4_8086);
-	io_outb(PIC2_DATA, ICW4_8086);
-
-	// Restore masks
-	io_outb(PIC1_DATA, a1);
-	io_outb(PIC2_DATA, a2);
-}
