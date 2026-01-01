@@ -9,30 +9,6 @@ static int acpi_lapics_count = 0;
 struct acpi_ioapic acpi_ioapics[ACPI_IOAPIC_LIMIT];
 static int acpi_ioapics_count = 0;
 
-static void serial_puthex32(uint32_t v) {
-	char buf[11];
-	buf[10] = 0;
-	for (int i = 9; i >= 0; --i) {
-		uint8_t nib = v & 0xF;
-		buf[i] = (nib < 10) ? ('0' + nib) : ('A' + nib - 10);
-		v >>= 4;
-	}
-	serial_puts("0x");
-	serial_puts(buf);
-}
-
-static void serial_puthex8(uint8_t v) {
-	char buf[3];
-	buf[2] = 0;
-	buf[1] = (v & 0xF) < 10 ? ('0' + (v & 0xF)) : ('A' + (v & 0xF) - 10);
-	v >>= 4;
-	buf[0] = (v & 0xF) < 10 ? ('0' + (v & 0xF)) : ('A' + (v & 0xF) - 10);
-	serial_puts("0x");
-	serial_puts(buf);
-}
-
-/* --- ACPI structures (packed) --- */
-
 #define ACPI_SIG_RSDP "RSD PTR "
 
 typedef struct __attribute__((packed)) {
@@ -180,9 +156,9 @@ static void parse_sdt_table(uintptr_t phys_addr) {
 	serial_puts("    ");
 	print_sig4(hdr->signature);
 	serial_puts(" @ ");
-	serial_puthex32((uint32_t)phys_addr);
+	serial_put_hex32((uint32_t)phys_addr);
 	serial_puts(" len=");
-	serial_puthex32(hdr->length);
+	serial_put_hex32(hdr->length);
 	serial_puts("\n");
 }
 
@@ -203,7 +179,7 @@ static void parse_rsdt(uintptr_t rsdt_phys) {
 	uint32_t entries = (rsdt->length - sizeof(acpi_sdt_header_t)) / 4;
 	uint32_t *list = (uint32_t *)((uint8_t *)rsdt + sizeof(acpi_sdt_header_t));
 	serial_puts("  RSDT entries: ");
-	serial_puthex32(entries);
+	serial_put_hex32(entries);
 	serial_puts("\n");
 	for (uint32_t i = 0; i < entries; ++i) {
 		parse_sdt_table((uintptr_t)list[i]);
@@ -220,7 +196,7 @@ static void parse_xsdt(uintptr_t xsdt_phys) {
 	uint32_t entries = (xsdt->length - sizeof(acpi_sdt_header_t)) / 8;
 	uint64_t *list = (uint64_t *)((uint8_t *)xsdt + sizeof(acpi_sdt_header_t));
 	serial_puts("  XSDT entries: ");
-	serial_puthex32(entries);
+	serial_put_hex32(entries);
 	serial_puts("\n");
 	for (uint32_t i = 0; i < entries; ++i) {
 		parse_sdt_table((uintptr_t)list[i]);
@@ -235,13 +211,13 @@ static void parse_madt(uintptr_t madt_phys) {
 		return;
 	}
 	serial_puts("  MADT @ ");
-	serial_puthex32((uint32_t)madt_phys);
+	serial_put_hex32((uint32_t)madt_phys);
 	serial_puts(" len=");
-	serial_puthex32(madt->header.length);
+	serial_put_hex32(madt->header.length);
 	serial_puts(" local_apic=");
-	serial_puthex32(madt->local_apic_address);
+	serial_put_hex32(madt->local_apic_address);
 	serial_puts(" flags=");
-	serial_puthex32(madt->flags);
+	serial_put_hex32(madt->flags);
 	serial_puts("\n");
 
 	uint8_t *ent = (uint8_t *)madt + sizeof(acpi_madt_t);
@@ -257,11 +233,11 @@ static void parse_madt(uintptr_t madt_phys) {
 			if (ent + sizeof(madt_local_apic_t) <= end) {
 				madt_local_apic_t *la = (madt_local_apic_t *)ent;
 				serial_puts("    Processor Local APIC: ACPI CPU ID=");
-				serial_puthex8(la->acpi_processor_id);
+				serial_put_hex8(la->acpi_processor_id);
 				serial_puts(" APIC ID=");
-				serial_puthex8(la->apic_id);
+				serial_put_hex8(la->apic_id);
 				serial_puts(" flags=");
-				serial_puthex32(la->flags);
+				serial_put_hex32(la->flags);
 				if (la->flags & 1)
 					serial_puts(" (ENABLED)");
 				else
@@ -279,11 +255,11 @@ static void parse_madt(uintptr_t madt_phys) {
 			if (ent + sizeof(madt_ioapic_t) <= end) {
 				madt_ioapic_t *io = (madt_ioapic_t *)ent;
 				serial_puts("    IO APIC: ID=");
-				serial_puthex8(io->ioapic_id);
+				serial_put_hex8(io->ioapic_id);
 				serial_puts(" addr=");
-				serial_puthex32(io->ioapic_address);
+				serial_put_hex32(io->ioapic_address);
 				serial_puts(" gsi_base=");
-				serial_puthex32(io->gsi_base);
+				serial_put_hex32(io->gsi_base);
 				serial_puts("\n");
 
 				acpi_ioapics[acpi_ioapics_count].ioapicid = io->ioapic_id;
@@ -295,9 +271,9 @@ static void parse_madt(uintptr_t madt_phys) {
 		}
 		default: {
 			serial_puts("    type=");
-			serial_puthex8(h->type);
+			serial_put_hex8(h->type);
 			serial_puts(" len=");
-			serial_puthex8(h->length);
+			serial_put_hex8(h->length);
 			serial_puts("\n");
 			break;
 		}
@@ -315,9 +291,9 @@ void acpi_parse(void) {
 		return;
 	}
 	serial_puts("  RSDP @ ");
-	serial_puthex32((uint32_t)(uintptr_t)rsdp);
+	serial_put_hex32((uint32_t)(uintptr_t)rsdp);
 	serial_puts(" revision=");
-	serial_puthex32(rsdp->revision);
+	serial_put_hex32(rsdp->revision);
 	serial_puts("\n");
 
 	acpi_sdt_header_t *root = NULL;
@@ -333,14 +309,14 @@ void acpi_parse(void) {
 	} else {
 		if (rsdp->xsdt_address != 0) {
 			serial_puts("  XSDT @ ");
-			serial_puthex32((uint32_t)rsdp->xsdt_address);
+			serial_put_hex32((uint32_t)rsdp->xsdt_address);
 			serial_puts("\n");
 			parse_xsdt(rsdp->xsdt_address);
 			root = (acpi_sdt_header_t *)(uintptr_t)rsdp->xsdt_address;
 			use_xsdt = 1;
 		} else {
 			serial_puts("  Fallback to RSDT @ ");
-			serial_puthex32(rsdp->rsdt_address);
+			serial_put_hex32(rsdp->rsdt_address);
 			serial_puts("\n");
 			parse_rsdt(rsdp->rsdt_address);
 			root = (acpi_sdt_header_t *)(uintptr_t)rsdp->rsdt_address;
@@ -372,4 +348,3 @@ void acpi_ioapic_get(struct acpi_ioapic **ioapics, int *count) {
 	*ioapics = acpi_ioapics;
 	*count = acpi_ioapics_count;
 }
-
