@@ -307,14 +307,19 @@ static void parse_madt(uintptr_t madt_phys) {
 	}
 }
 
-void acpi_parse(void) {
-	serial_puts("ACPI:\n");
+uintptr_t acpi_legacy_find_address(void) {
 	mem_page_map_n(0xe0000, 0xe0000, 32, MEM_PAGE_PRESENT | MEM_PAGE_NX);
 	rsdp_descriptor_t *rsdp = find_rsdp();
 	if (!rsdp) {
 		serial_puts("RSDP not found in 0xE0000-0xFFFFF\n");
-		return;
+		return 0;
 	}
+	return (uintptr_t)rsdp;
+}
+
+void acpi_parse(uintptr_t address) {
+	serial_puts("ACPI:\n");
+	rsdp_descriptor_t *rsdp = (rsdp_descriptor_t *)address;
 	serial_puts("  RSDP @ ");
 	serial_put_hex32((uint32_t)(uintptr_t)rsdp);
 	serial_puts(" revision=");

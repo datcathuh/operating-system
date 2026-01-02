@@ -17,6 +17,8 @@ struct acpi_ioapic {
 	uint32_t gsi_base;
 };
 
-void acpi_parse(void);
+uintptr_t acpi_legacy_find_address(void);
+void acpi_parse(uintptr_t address);
+
 void acpi_lapic_get(struct acpi_lapic **lapics, int *count);
 void acpi_ioapic_get(struct acpi_ioapic **ioapics, int *count);
