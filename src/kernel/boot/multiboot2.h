@@ -5,6 +5,8 @@
 #define MULTIBOOT2_BOOTLOADER_MAGIC 0x36D76289
 #define MULTIBOOT2_TAG_TYPE_END          0
 #define MULTIBOOT2_TAG_TYPE_FRAMEBUFFER  8
+#define MULTIBOOT2_TAG_TYPE_ACPI_1      14
+#define MULTIBOOT2_TAG_TYPE_ACPI_2      15
 
 struct multiboot2_tag {
     uint32_t type;
@@ -32,5 +34,12 @@ struct multiboot2_tag_framebuffer_rgb {
     uint8_t blue_mask_size;
 };
 
+struct multiboot2_tag_acpi {
+    uint32_t type;
+    uint32_t size;
+    uint8_t  rsdp[];
+};
+
 void multiboot2_parse(void *mb_addr);
 struct multiboot2_tag_framebuffer *multiboot2_get_framebuffer(void);
+void *multiboot2_get_acpi_rsdp(void);

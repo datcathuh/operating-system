@@ -317,9 +317,9 @@ uintptr_t acpi_legacy_find_address(void) {
 	return (uintptr_t)rsdp;
 }
 
-void acpi_parse(uintptr_t address) {
+void acpi_parse(void* rsdp_address) {
 	serial_puts("ACPI:\n");
-	rsdp_descriptor_t *rsdp = (rsdp_descriptor_t *)address;
+	rsdp_descriptor_t *rsdp = (rsdp_descriptor_t *)rsdp_address;
 	serial_puts("  RSDP @ ");
 	serial_put_hex32((uint32_t)(uintptr_t)rsdp);
 	serial_puts(" revision=");
@@ -338,6 +338,9 @@ void acpi_parse(uintptr_t address) {
 		use_xsdt = 0;
 	} else {
 		if (rsdp->xsdt_address != 0) {
+			uint64_t page_base = rsdp->xsdt_address & ~0xFFFULL;
+			mem_page_map_n(page_base, page_base, 1, MEM_PAGE_PRESENT | MEM_PAGE_NX);
+
 			serial_puts("  XSDT @ ");
 			serial_put_hex32((uint32_t)rsdp->xsdt_address);
 			serial_puts("\n");

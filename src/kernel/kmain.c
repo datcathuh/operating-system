@@ -43,7 +43,7 @@ void kmain(uint64_t magic, void* mb_addr) {
 
 		uintptr_t acpi_address = acpi_legacy_find_address();
 		if(acpi_address) {
-			acpi_parse(acpi_address);
+			acpi_parse((void*)acpi_address);
 		}
 	}
 	else if(magic == MULTIBOOT2_BOOTLOADER_MAGIC) {
@@ -58,6 +58,12 @@ void kmain(uint64_t magic, void* mb_addr) {
 		serial_puts("kmain: multiboot2\n");
 		pci_blacklist(&bga_identification);
 		multiboot2_parse(mb_addr);
+
+		void *acpi_rsdp = multiboot2_get_acpi_rsdp();
+		if(acpi_rsdp) {
+			acpi_parse(acpi_rsdp);
+		}
+
 		struct multiboot2_tag_framebuffer *fb = multiboot2_get_framebuffer();
 
 		struct video_resolution res = {

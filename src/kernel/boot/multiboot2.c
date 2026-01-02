@@ -2,6 +2,7 @@
 #include "multiboot2.h"
 
 static struct multiboot2_tag_framebuffer fb = {0};
+static struct multiboot2_tag_acpi *multiboot2_tag_acpi = 0;
 
 static void multiboot2_parse_tag_framebuffer(struct multiboot2_tag* tag) {
 	mem_copy(&fb, tag, sizeof(struct multiboot2_tag_framebuffer));
@@ -28,6 +29,10 @@ void multiboot2_parse(void* mb_addr) {
         case MULTIBOOT2_TAG_TYPE_FRAMEBUFFER:
             multiboot2_parse_tag_framebuffer(tag);
             break;
+		case MULTIBOOT2_TAG_TYPE_ACPI_1:
+		case MULTIBOOT2_TAG_TYPE_ACPI_2:
+			multiboot2_tag_acpi = (struct multiboot2_tag_acpi*)tag;
+			break;
         default:
             /* ignore */
             break;
@@ -38,4 +43,11 @@ void multiboot2_parse(void* mb_addr) {
             (uint8_t*)tag + ((tag->size + 7) & ~7)
         );
     }
+}
+
+void *multiboot2_get_acpi_rsdp(void) {
+	if(multiboot2_tag_acpi) {
+		return (void*)multiboot2_tag_acpi->rsdp;
+	}
+	return NULL;
 }
