@@ -67,6 +67,16 @@ typedef struct __attribute__((packed)) {
 	uint32_t gsi_base;
 } madt_ioapic_t;
 
+/* Type: 2: ISO (Interrupt Source Override) */
+struct madt_iso {
+    uint8_t  type;
+    uint8_t  length;
+    uint8_t  bus;         // usually 0 (ISA)
+    uint8_t  source;      // legacy IRQ (e.g. 1 = keyboard)
+    uint32_t gsi;         // Global System Interrupt
+    uint16_t flags;       // polarity & trigger mode
+} __attribute__((packed));
+
 /* --- Helpers --- */
 
 static uint8_t acpi_checksum(const uint8_t *addr, int len) {
@@ -266,6 +276,21 @@ static void parse_madt(uintptr_t madt_phys) {
 				acpi_ioapics[acpi_ioapics_count].address = io->ioapic_address;
 				acpi_ioapics[acpi_ioapics_count].gsi_base = io->gsi_base;
 				acpi_ioapics_count++;
+			}
+			break;
+		}
+		case 2: {
+			if(ent + sizeof(struct madt_iso) <= end) {
+				struct madt_iso *iso = (struct madt_iso *)ent;
+				serial_puts("    Interrupt Source Override: Bus=");
+				serial_put_hex8(iso->bus);
+				serial_puts(" Source=");
+				serial_put_hex8(iso->source);
+				serial_puts(" GSI=");
+				serial_put_hex32(iso->gsi);
+				serial_puts(" flags=");
+				serial_put_hex16(iso->flags);
+				serial_puts("\n");
 			}
 			break;
 		}
