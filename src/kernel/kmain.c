@@ -1,4 +1,4 @@
-#include "acpi.h"
+#include "boot/acpi.h"
 #include "boot/multiboot2.h"
 #include "diagnostics.h"
 #include "idt.h"

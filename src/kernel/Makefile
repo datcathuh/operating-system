@@ -1,10 +1,10 @@
 OBJECTS+=$(BUILD_DIR)/kernel/arithmetics.o
-OBJECTS+=$(BUILD_DIR)/kernel/acpi.o
 OBJECTS+=$(BUILD_DIR)/kernel/apm.o
 OBJECTS+=$(BUILD_DIR)/kernel/diagnostics.o
 OBJECTS+=$(BUILD_DIR)/kernel/idt.o
 
 # Boot
+OBJECTS+=$(BUILD_DIR)/kernel/boot/acpi.o
 OBJECTS+=$(BUILD_DIR)/kernel/boot/legacy_entry.o
 OBJECTS+=$(BUILD_DIR)/kernel/boot/multiboot2.o
 OBJECTS+=$(BUILD_DIR)/kernel/boot/multiboot2_entry.o
