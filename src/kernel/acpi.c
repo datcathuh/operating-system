@@ -162,6 +162,9 @@ static uintptr_t acpi_find_table_from_xsdt(acpi_sdt_header_t *xsdt,
 
 /* Parse generic SDT table and print header info */
 static void parse_sdt_table(uintptr_t phys_addr) {
+	uint64_t page_base = phys_addr & ~0xFFFULL;
+	mem_page_map_n(page_base, page_base, 1, MEM_PAGE_PRESENT | MEM_PAGE_NX);
+
 	acpi_sdt_header_t *hdr = (acpi_sdt_header_t *)phys_addr;
 	serial_puts("    ");
 	print_sig4(hdr->signature);
