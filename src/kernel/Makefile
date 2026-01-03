@@ -1,7 +1,6 @@
 OBJECTS+=$(BUILD_DIR)/kernel/arithmetics.o
 OBJECTS+=$(BUILD_DIR)/kernel/apm.o
 OBJECTS+=$(BUILD_DIR)/kernel/diagnostics.o
-OBJECTS+=$(BUILD_DIR)/kernel/idt.o
 
 # Boot
 OBJECTS+=$(BUILD_DIR)/kernel/boot/acpi.o
@@ -23,6 +22,7 @@ OBJECTS+=$(BUILD_DIR)/kernel/devices/redhat_virtio_block_device.o
 OBJECTS+=$(BUILD_DIR)/kernel/devices/usb_xhci.o
 
 # Interrupt service routines
+OBJECTS+=$(BUILD_DIR)/kernel/isr/idt.o
 OBJECTS+=$(BUILD_DIR)/kernel/isr/ioapic.o
 OBJECTS+=$(BUILD_DIR)/kernel/isr/irq_gp_asm.o
 OBJECTS+=$(BUILD_DIR)/kernel/isr/irq_gp_c.o
@@ -34,6 +34,7 @@ OBJECTS+=$(BUILD_DIR)/kernel/isr/irq_page_fault_asm.o
 OBJECTS+=$(BUILD_DIR)/kernel/isr/irq_page_fault_c.o
 OBJECTS+=$(BUILD_DIR)/kernel/isr/irq_timer_asm.o
 OBJECTS+=$(BUILD_DIR)/kernel/isr/irq_timer_c.o
+OBJECTS+=$(BUILD_DIR)/kernel/isr/lapic.o
 
 OBJECTS+=$(BUILD_DIR)/kernel/keyboard.o
 OBJECTS+=$(BUILD_DIR)/kernel/kmain.o
@@ -49,7 +50,6 @@ OBJECTS+=$(BUILD_DIR)/kernel/kshell/kshell_snake.o
 OBJECTS+=$(BUILD_DIR)/kernel/kshell/kshell_sysinfo.o
 OBJECTS+=$(BUILD_DIR)/kernel/kshell/kshell_tetris.o
 
-OBJECTS+=$(BUILD_DIR)/kernel/lapic.o
 OBJECTS+=$(BUILD_DIR)/kernel/memory.o
 OBJECTS+=$(BUILD_DIR)/kernel/memory_heap.o
 OBJECTS+=$(BUILD_DIR)/kernel/memory_page.o
