@@ -26,9 +26,6 @@ irq_keyboard_asm:
 
     add     rsp, 8
 
-	mov al, 0x20
-	out 0x20, al     ; EOI
-
     pop     rax
     pop     rcx
     pop     rdx

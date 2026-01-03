@@ -2,6 +2,7 @@
 #include "boot/multiboot2.h"
 #include "diagnostics.h"
 #include "idt.h"
+#include "isr/ioapic.h"
 #include "isr/irq_double_fault.h"
 #include "isr/irq_gp.h"
 #include "isr/irq_page_fault.h"
@@ -84,8 +85,23 @@ void kmain(uint64_t magic, void* mb_addr) {
 		serial_puts("\n");
 	}
 
+	ioapic_setup();
 	pic_disable();
 	lapic_default_init();
+
+	/* Route keyboard interrupt through the IOAPIC into the
+	   LAPIC for the runnint CPU */
+	/* TODO: This code isn't fully safe since we also need to check
+	   ACPI and the GSI tables if the keyboard has been configured
+	   for something else than GSI 1 */
+	uint64_t keyboard_flags =
+		IOAPIC_DM_FIXED |
+		IOAPIC_DEST_PHYSICAL |
+		IOAPIC_POLARITY_HIGH |
+		IOAPIC_TRIGGER_EDGE |
+		IOAPIC_UNMASKED;
+	ioapic_set_irq(1, 0x21, lapic_get_id(), keyboard_flags);
+
 	pci_build_device_tree();
 	pci_debug_dump();
 	__asm__ volatile("sti");

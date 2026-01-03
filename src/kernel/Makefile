@@ -23,6 +23,7 @@ OBJECTS+=$(BUILD_DIR)/kernel/devices/redhat_virtio_block_device.o
 OBJECTS+=$(BUILD_DIR)/kernel/devices/usb_xhci.o
 
 # Interrupt service routines
+OBJECTS+=$(BUILD_DIR)/kernel/isr/ioapic.o
 OBJECTS+=$(BUILD_DIR)/kernel/isr/irq_gp_asm.o
 OBJECTS+=$(BUILD_DIR)/kernel/isr/irq_gp_c.o
 OBJECTS+=$(BUILD_DIR)/kernel/isr/irq_double_fault_asm.o

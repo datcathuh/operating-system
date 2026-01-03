@@ -1,5 +1,6 @@
 #include "idt.h"
 #include "io.h"
+#include "lapic.h"
 
 static uint32_t irq_key_count = 0;
 #define irq_key_queue_length 32
@@ -15,6 +16,8 @@ void irq_keyboard_c(void) {
 	uint8_t sc = io_inb(0x60);
 	irq_key_queue[irq_key_count] = sc;
 	irq_key_count++;
+
+	lapic_eoi();
 }
 
 uint32_t irq_keyboard_count(void) { return irq_key_count; }
