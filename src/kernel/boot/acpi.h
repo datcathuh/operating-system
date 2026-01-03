@@ -18,7 +18,7 @@ struct acpi_ioapic {
 };
 
 uintptr_t acpi_legacy_find_address(void);
-void acpi_parse(void* rsdp_address);
+void acpi_parse(void *rsdp_address);
 
 void acpi_lapic_get(struct acpi_lapic **lapics, int *count);
 void acpi_ioapic_get(struct acpi_ioapic **ioapics, int *count);

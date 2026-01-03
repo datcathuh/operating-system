@@ -14,8 +14,8 @@ static void kshell_bga_cb(void) {
 		}
 	}
 
-	video_draw_string(dev->buffer, video_font_8x16(), 100, 100, "Hugo\nwas here!",
-	                  0xffffff, 0x0, 1);
+	video_draw_string(dev->buffer, video_font_8x16(), 100, 100,
+	                  "Hugo\nwas here!", 0xffffff, 0x0, 1);
 	video_draw_line(dev->buffer, 10, 10, 200, 200, 0xff0000);
 	video_draw_rect(dev->buffer, 250, 10, 400, 30, 0x00ff00);
 	video_draw_rect_filled(dev->buffer, 250, 50, 400, 90, 0x00ffff);

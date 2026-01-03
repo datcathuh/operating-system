@@ -113,9 +113,10 @@ static bool bga_device_cleanup(struct video_device *) {
 }
 
 static struct video_device _bga_device = {.resolution = 0,
-										  .buffer = &_video_bga_buffer,
-										  .initialize = bga_device_initialize,
-										  .resolution_set = bga_device_resolution_set,
-										  .cleanup = bga_device_cleanup};
+                                          .buffer = &_video_bga_buffer,
+                                          .initialize = bga_device_initialize,
+                                          .resolution_set =
+                                              bga_device_resolution_set,
+                                          .cleanup = bga_device_cleanup};
 
 struct video_device *bga_device() { return &_bga_device; }

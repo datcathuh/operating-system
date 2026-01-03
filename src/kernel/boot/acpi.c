@@ -69,12 +69,12 @@ typedef struct __attribute__((packed)) {
 
 /* Type: 2: ISO (Interrupt Source Override) */
 struct madt_iso {
-    uint8_t  type;
-    uint8_t  length;
-    uint8_t  bus;         // usually 0 (ISA)
-    uint8_t  source;      // legacy IRQ (e.g. 1 = keyboard)
-    uint32_t gsi;         // Global System Interrupt
-    uint16_t flags;       // polarity & trigger mode
+	uint8_t type;
+	uint8_t length;
+	uint8_t bus;    // usually 0 (ISA)
+	uint8_t source; // legacy IRQ (e.g. 1 = keyboard)
+	uint32_t gsi;   // Global System Interrupt
+	uint16_t flags; // polarity & trigger mode
 } __attribute__((packed));
 
 /* --- Helpers --- */
@@ -187,7 +187,8 @@ static void parse_rsdt(uintptr_t rsdt_phys) {
 	uint64_t offset = rsdt_phys & 0xFFFULL;
 	uint64_t total_size = offset + rsdt->length;
 	uint64_t page_count = (total_size + 0xFFF) >> 12;
-	mem_page_map_n(page_base, page_base, page_count, MEM_PAGE_PRESENT | MEM_PAGE_NX);
+	mem_page_map_n(page_base, page_base, page_count,
+	               MEM_PAGE_PRESENT | MEM_PAGE_NX);
 
 	uint32_t entries = (rsdt->length - sizeof(acpi_sdt_header_t)) / 4;
 	uint32_t *list = (uint32_t *)((uint8_t *)rsdt + sizeof(acpi_sdt_header_t));
@@ -283,7 +284,7 @@ static void parse_madt(uintptr_t madt_phys) {
 			break;
 		}
 		case 2: {
-			if(ent + sizeof(struct madt_iso) <= end) {
+			if (ent + sizeof(struct madt_iso) <= end) {
 				struct madt_iso *iso = (struct madt_iso *)ent;
 				serial_puts("    Interrupt Source Override: Bus=");
 				serial_put_hex8(iso->bus);
@@ -320,7 +321,7 @@ uintptr_t acpi_legacy_find_address(void) {
 	return (uintptr_t)rsdp;
 }
 
-void acpi_parse(void* rsdp_address) {
+void acpi_parse(void *rsdp_address) {
 	serial_puts("ACPI:\n");
 	rsdp_descriptor_t *rsdp = (rsdp_descriptor_t *)rsdp_address;
 	serial_puts("  RSDP @ ");
@@ -333,7 +334,7 @@ void acpi_parse(void* rsdp_address) {
 	int use_xsdt = 0;
 
 	if (rsdp->revision == 0) {
-	    uint64_t page_base = rsdp->rsdt_address & ~0xFFFULL;
+		uint64_t page_base = rsdp->rsdt_address & ~0xFFFULL;
 		mem_page_map_n(page_base, page_base, 1, MEM_PAGE_PRESENT | MEM_PAGE_NX);
 
 		parse_rsdt(rsdp->rsdt_address);
@@ -342,7 +343,8 @@ void acpi_parse(void* rsdp_address) {
 	} else {
 		if (rsdp->xsdt_address != 0) {
 			uint64_t page_base = rsdp->xsdt_address & ~0xFFFULL;
-			mem_page_map_n(page_base, page_base, 1, MEM_PAGE_PRESENT | MEM_PAGE_NX);
+			mem_page_map_n(page_base, page_base, 1,
+			               MEM_PAGE_PRESENT | MEM_PAGE_NX);
 
 			serial_puts("  XSDT @ ");
 			serial_put_hex32((uint32_t)rsdp->xsdt_address);

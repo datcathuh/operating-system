@@ -9,21 +9,21 @@ void serial_putc(char c) {
 
 void serial_put_dec(uint64_t v) {
 	char buf[21]; // max 20 digits for uint64_t + '\0'
-    int i = 0;
+	int i = 0;
 
-    if (v == 0) {
-        serial_putc('0');
-        return;
-    }
+	if (v == 0) {
+		serial_putc('0');
+		return;
+	}
 
-    while (v > 0) {
-        buf[i++] = '0' + (v % 10);
-        v /= 10;
-    }
+	while (v > 0) {
+		buf[i++] = '0' + (v % 10);
+		v /= 10;
+	}
 
-    while (i > 0) {
-        serial_putc(buf[--i]);
-    }
+	while (i > 0) {
+		serial_putc(buf[--i]);
+	}
 }
 
 void serial_put_hex8(uint8_t val) {

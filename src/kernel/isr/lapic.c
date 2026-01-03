@@ -12,13 +12,9 @@
 #define LAPIC_REG_LVT_ERROR 0x370
 
 static inline uint64_t rdmsr(uint32_t msr) {
-    uint32_t lo, hi;
-    __asm__ volatile (
-        "rdmsr"
-        : "=a"(lo), "=d"(hi)
-        : "c"(msr)
-    );
-    return ((uint64_t)hi << 32) | lo;
+	uint32_t lo, hi;
+	__asm__ volatile("rdmsr" : "=a"(lo), "=d"(hi) : "c"(msr));
+	return ((uint64_t)hi << 32) | lo;
 }
 
 static uint64_t lapic_get_physical_base(void) {
@@ -28,24 +24,24 @@ static uint64_t lapic_get_physical_base(void) {
 
 	uint64_t msr = rdmsr(IA32_APIC_BASE_MSR);
 
-    if (!(msr & IA32_APIC_BASE_ENABLE)) {
-        // This should never happen on modern systems
-        return 0;
-    }
+	if (!(msr & IA32_APIC_BASE_ENABLE)) {
+		// This should never happen on modern systems
+		return 0;
+	}
 
-    // Bits 12..35 contain the physical base address
-    return (uint64_t)(msr & 0xFFFFF000ULL);
+	// Bits 12..35 contain the physical base address
+	return (uint64_t)(msr & 0xFFFFF000ULL);
 }
 
 static inline void lapic_write(uint32_t reg, uint32_t val) {
-	volatile uint32_t* lapic = (volatile uint32_t*)lapic_get_physical_base();
+	volatile uint32_t *lapic = (volatile uint32_t *)lapic_get_physical_base();
 	lapic[reg / 4] = val;
 	(void)lapic[reg / 4]; // Read-back to flush write buffer
 }
 
 void lapic_default_init(void) {
 	uint64_t lapic_address = lapic_get_physical_base();
-	volatile uint32_t* lapic = (volatile uint32_t*)lapic_address;
+	volatile uint32_t *lapic = (volatile uint32_t *)lapic_address;
 
 	mem_page_map(lapic_address, lapic_address,
 	             MEM_PAGE_PRESENT | MEM_PAGE_WRITABLE | MEM_PAGE_NO_CACHE);
@@ -65,11 +61,11 @@ void lapic_default_init(void) {
 }
 
 uint8_t lapic_get_id(void) {
-	volatile uint32_t* lapic = (volatile uint32_t*)lapic_get_physical_base();
-    return (lapic[LAPIC_REG_ID / 4] >> 24) & 0xFF;
+	volatile uint32_t *lapic = (volatile uint32_t *)lapic_get_physical_base();
+	return (lapic[LAPIC_REG_ID / 4] >> 24) & 0xFF;
 }
 
 void lapic_eoi(void) {
-	volatile uint32_t* lapic = (volatile uint32_t*)lapic_get_physical_base();
-    lapic[LAPIC_REG_EOI / 4] = 0;
+	volatile uint32_t *lapic = (volatile uint32_t *)lapic_get_physical_base();
+	lapic[LAPIC_REG_EOI / 4] = 0;
 }

@@ -26,7 +26,7 @@
 #include "video/video.h"
 #include "video/bga.h"
 
-void kmain(uint64_t magic, void* mb_addr) {
+void kmain(uint64_t magic, void *mb_addr) {
 	mem_page_init();
 	__asm__ volatile("cli");
 	video_init();
@@ -39,15 +39,14 @@ void kmain(uint64_t magic, void* mb_addr) {
 	irq_keyboard_register();
 	irq_timer_register();
 
-	if(magic == 0) {
+	if (magic == 0) {
 		serial_puts("kmain: legacy boot\n");
 
 		uintptr_t acpi_address = acpi_legacy_find_address();
-		if(acpi_address) {
-			acpi_parse((void*)acpi_address);
+		if (acpi_address) {
+			acpi_parse((void *)acpi_address);
 		}
-	}
-	else if(magic == MULTIBOOT2_BOOTLOADER_MAGIC) {
+	} else if (magic == MULTIBOOT2_BOOTLOADER_MAGIC) {
 		/* We are booting using UEFI. This means that VGA and BGA
 		   arent available. UEFI has configured a framebuffer for
 		   us that we can use until we are using a real graphics
@@ -61,18 +60,15 @@ void kmain(uint64_t magic, void* mb_addr) {
 		multiboot2_parse(mb_addr);
 
 		void *acpi_rsdp = multiboot2_get_acpi_rsdp();
-		if(acpi_rsdp) {
+		if (acpi_rsdp) {
 			acpi_parse(acpi_rsdp);
 		}
 
 		struct multiboot2_tag_framebuffer *fb = multiboot2_get_framebuffer();
 
 		struct video_resolution res = {
-			.width = fb->width,
-			.height = fb->height,
-			.bpp = fb->bpp
-		};
-		struct video_device *vd = gop_device((uint8_t*)fb->addr, &res);
+			.width = fb->width, .height = fb->height, .bpp = fb->bpp};
+		struct video_device *vd = gop_device((uint8_t *)fb->addr, &res);
 		video_set(vd);
 		serial_puts("Video GOP @");
 		serial_put_hex64(fb->addr);
@@ -94,12 +90,9 @@ void kmain(uint64_t magic, void* mb_addr) {
 	/* TODO: This code isn't fully safe since we also need to check
 	   ACPI and the GSI tables if the keyboard has been configured
 	   for something else than GSI 1 */
-	uint64_t keyboard_flags =
-		IOAPIC_DM_FIXED |
-		IOAPIC_DEST_PHYSICAL |
-		IOAPIC_POLARITY_HIGH |
-		IOAPIC_TRIGGER_EDGE |
-		IOAPIC_UNMASKED;
+	uint64_t keyboard_flags = IOAPIC_DM_FIXED | IOAPIC_DEST_PHYSICAL |
+	                          IOAPIC_POLARITY_HIGH | IOAPIC_TRIGGER_EDGE |
+	                          IOAPIC_UNMASKED;
 	ioapic_set_irq(1, 0x21, lapic_get_id(), keyboard_flags);
 
 	pci_build_device_tree();
