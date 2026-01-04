@@ -1,6 +1,7 @@
 #include "boot/acpi.h"
 #include "boot/multiboot2.h"
 #include "diagnostics.h"
+#include "gdt.h"
 #include "isr/idt.h"
 #include "isr/ioapic.h"
 #include "isr/irq_double_fault.h"
@@ -29,6 +30,7 @@
 void kmain(uint64_t magic, void *mb_addr) {
 	mem_page_init();
 	__asm__ volatile("cli");
+	gdt_init();
 	video_init();
 	serial_puts("Video init\n");
 

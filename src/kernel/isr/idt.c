@@ -20,7 +20,6 @@ struct idt_entry idt[256] = {0};
 struct idtr idtp;
 
 void idt_gate_set(int n, void (*handler)()) {
-
 	uint16_t selector = 0x08;
 	uint8_t type_attr = 0x8E; // P=1, DPL=0, type=14
 	uint8_t ist = 0;          // Use current stack

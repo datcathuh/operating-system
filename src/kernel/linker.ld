@@ -41,6 +41,13 @@ SECTIONS {
         stack_top = .;         /* highest address of stack */
     }
 
+    .stack_df : ALIGN(16)
+    {
+        stack_df_bottom = .;   /* lowest address of stack */
+        . += 0x4000;           /* 16 KB stack */
+        stack_df_top = .;      /* highest address of stack */
+    }
+
     kernel_end = ALIGN(4096);
 	kernel_end = .;
 }
