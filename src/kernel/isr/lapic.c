@@ -39,7 +39,7 @@ static inline void lapic_write(uint32_t reg, uint32_t val) {
 	(void)lapic[reg / 4]; // Read-back to flush write buffer
 }
 
-void lapic_default_init(void) {
+void lapic_init(void) {
 	uint64_t lapic_address = lapic_get_physical_base();
 	volatile uint32_t *lapic = (volatile uint32_t *)lapic_address;
 

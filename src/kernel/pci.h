@@ -30,6 +30,9 @@ struct pci_device_driver {
 	bool (*unload)(struct pci_device_driver *driver, struct pci_device *device);
 };
 
+/* Scans the PCI bus and build a list of devices. */
+void pci_init(void);
+
 typedef void (*pci_enumerate_cb)(struct pci_device *);
 
 uint8_t pci_cfg_read8(uint8_t bus, uint8_t slot, uint8_t func, uint8_t offset);
@@ -43,8 +46,6 @@ void pci_cfg_write32(uint8_t bus, uint8_t slot, uint8_t func, uint8_t offset,
 /* Walk the PCI bus and call the callback for each found device */
 void pci_enumerate(pci_enumerate_cb cb);
 
-/* Scans the PCI bus and build a list of devices. */
-void pci_build_device_tree(void);
 void pci_device_tree(struct pci_device **devices, uint16_t *device_count);
 void pci_debug_dump(void);
 

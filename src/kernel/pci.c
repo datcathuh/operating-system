@@ -16,6 +16,10 @@
 static struct pci_device _devices[256] = {0};
 static uint16_t _device_count = 0;
 
+static void pci_device_create_cb(struct pci_device *device);
+
+void pci_init(void) { pci_enumerate(pci_device_create_cb); }
+
 #define PCI_CONFIG_ADDRESS 0xCF8
 #define PCI_CONFIG_DATA 0xCFC
 
@@ -137,8 +141,6 @@ static void pci_device_create_cb(struct pci_device *device) {
 	}
 	_device_count++;
 }
-
-void pci_build_device_tree(void) { pci_enumerate(pci_device_create_cb); }
 
 void pci_device_tree(struct pci_device **devices, uint16_t *device_count) {
 	(*devices) = _devices;

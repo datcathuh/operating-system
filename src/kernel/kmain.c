@@ -27,15 +27,31 @@
 #include "video/gop.h"
 #include "video/video.h"
 #include "video/bga.h"
+#include "video/vga.h"
 
 void kmain(uint64_t magic, void *mb_addr) {
-	mem_page_init();
+	/* No interrupts please. */
 	__asm__ volatile("cli");
-	gdt_init();
-	video_init();
-	serial_puts("Video init\n");
 
+	/* We have no idea what stage2 or grub has configured for
+	   us. Lets setup the Global Descriptor Table. This also
+	   setups stack for double faults etc. */
+	gdt_init();
+
+	/* Setup paging so many of the below _init functions can map
+	   memory used. */
+	mem_page_init();
+
+	/* Setup video. Not much is done at this stage since we havn't
+	   checked if we should be doing VGA/BGA or use a framebuffer
+	   provided by grub. */
+	video_init();
+
+	/* Setup the Interupt Descriptor Table (IDT). This is needed
+	   since we need to register handler for a wide range of
+	   interrupts from now on. */
 	idt_init();
+
 	irq_double_fault_register();
 	irq_gp_register();
 	irq_page_fault_register();
@@ -43,12 +59,25 @@ void kmain(uint64_t magic, void *mb_addr) {
 	irq_timer_register();
 
 	if (magic == 0) {
+		/* We have come to this point using MBR -> stage2 -> kernel.
+		   No UEFI involved in this boot. We need to find ACPI in
+		   memory etc. */
 		serial_puts("kmain: legacy boot\n");
 
+		/* During boot of a computer we set the default device
+		   to be VGA with 80x25. When running virtual we will
+		   most likely find a BGA device when we scan the PCI bus. */
+		vga_init();
+		struct video_device *dev = vga_device();
+		video_set(dev);
+		struct video_resolution res = {.width = 80, .height = 25, .bpp = 4};
+		dev->resolution_set(dev, &res);
+
 		uintptr_t acpi_address = acpi_legacy_find_address();
-		if (acpi_address) {
-			acpi_parse((void *)acpi_address);
+		if (!acpi_address) {
+			panic("ACPI not found during Legacy boot\n");
 		}
+		acpi_parse((void *)acpi_address);
 	} else if (magic == MULTIBOOT2_BOOTLOADER_MAGIC) {
 		/* We are booting using UEFI. This means that VGA and BGA
 		   arent available. UEFI has configured a framebuffer for
@@ -56,7 +85,7 @@ void kmain(uint64_t magic, void *mb_addr) {
 		   driver.
 
 		   This means that we blacklists the BGA driver so it won't
-		   be initialized.
+		   be initialized. This is common on virtual machines.
 		*/
 		serial_puts("kmain: multiboot2\n");
 		pci_blacklist(&bga_identification);
@@ -83,15 +112,28 @@ void kmain(uint64_t magic, void *mb_addr) {
 		serial_put_hex64(res.bpp);
 		serial_puts("\n");
 	} else {
+		/* Unknown magic number during boot. At this point it could be a
+		   legacy system using multiboot 1. */
 		panic("Unsupported boot method");
 	}
 
-	ioapic_init();
+	/* We disable the Programmable Interupt Controller (PIC) completely
+	   since modern system have a different kind of routing done for
+	   interrupts. */
 	pic_disable();
-	lapic_default_init();
+
+	/* At this point we have parsed ACPI information and know at which
+	   address the IOAPIC can be reached. Normally only one IOAPIC per
+	   system unless you have a high end server. This IOAPIC is receiving
+	   interrupts which then is routed to the LAPIC for further processing. */
+	ioapic_init();
+
+	/* Initialize the LAPIC (there is one for each logical CPU in a system.
+	 */
+	lapic_init();
 
 	/* Route keyboard interrupt through the IOAPIC into the
-	   LAPIC for the runnint CPU */
+	   LAPIC for the running CPU */
 	/* TODO: This code isn't fully safe since we also need to check
 	   ACPI and the GSI tables if the keyboard has been configured
 	   for something else than GSI 1 */
@@ -100,8 +142,13 @@ void kmain(uint64_t magic, void *mb_addr) {
 	                          IOAPIC_UNMASKED;
 	ioapic_set_irq(1, 0x21, lapic_get_id(), keyboard_flags);
 
-	pci_build_device_tree();
+	/* Init PCI by scanning the bus and find all devices there. This will
+	   load drivers for everything it finds. */
+	pci_init();
+
 	pci_debug_dump();
+
+	/* Allow interrupts again. */
 	__asm__ volatile("sti");
 
 	print_diagnostics();
