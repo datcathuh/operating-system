@@ -17,7 +17,7 @@ static inline uint32_t ioapic_read(uint32_t ioapic_base, uint32_t reg) {
 	return *(volatile uint32_t *)(ioapic_base + IOAPIC_WINDOW);
 }
 
-void ioapic_setup(void) {
+void ioapic_init(void) {
 	struct acpi_ioapic *ioapics;
 	int ioapic_count = 0;
 	acpi_ioapic_get(&ioapics, &ioapic_count);

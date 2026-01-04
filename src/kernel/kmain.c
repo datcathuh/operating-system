@@ -35,7 +35,7 @@ void kmain(uint64_t magic, void *mb_addr) {
 	video_init();
 	serial_puts("Video init\n");
 
-	idt_install();
+	idt_init();
 	irq_double_fault_register();
 	irq_gp_register();
 	irq_page_fault_register();
@@ -86,7 +86,7 @@ void kmain(uint64_t magic, void *mb_addr) {
 		panic("Unsupported boot method");
 	}
 
-	ioapic_setup();
+	ioapic_init();
 	pic_disable();
 	lapic_default_init();
 

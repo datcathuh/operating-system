@@ -17,6 +17,6 @@
 #define IOAPIC_MASKED (1 << 16)
 #define IOAPIC_UNMASKED (0 << 16)
 
-void ioapic_setup(void);
+void ioapic_init(void);
 void ioapic_set_irq(uint32_t gsi, uint8_t vector, uint8_t lapic_id,
                     uint64_t flags);

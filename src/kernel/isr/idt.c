@@ -38,7 +38,7 @@ static void idt_load(struct idtr *idt_ptr) {
 	__asm__ volatile("lidt (%0)" : : "r"(idt_ptr));
 }
 
-void idt_install() {
+void idt_init() {
 	idtp.limit = sizeof(idt) - 1;
 	idtp.base = (uint64_t)&idt;
 	idt_load(&idtp);
