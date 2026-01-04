@@ -70,14 +70,8 @@ static inline void video_set_pixel(void *framebuffer, int pitch,
 
 void video_draw_pixel(struct video_buffer *buffer, int x, int y,
                       uint32_t color) {
-	if (buffer->resolution.bpp != 24) {
-		return;
-	}
-	int pitch = buffer->resolution.width * 3;
-	uint8_t *fb = (uint8_t *)buffer->memory + y * pitch + x * 3;
-	fb[0] = (uint8_t)(color & 0xFF);         /* B */
-	fb[1] = (uint8_t)((color >> 8) & 0xFF);  /* G */
-	fb[2] = (uint8_t)((color >> 16) & 0xFF); /* R */
+	int pitch = buffer->resolution.width * buffer->resolution.bpp / 8;
+	video_set_pixel(buffer->memory, pitch, buffer->resolution.bpp / 8, x, y, color);
 }
 
 /* Draw an 8x16 glyph at pixel coordinates (px,py). scale is integer >= 1.
