@@ -2,6 +2,7 @@ OBJECTS+=$(BUILD_DIR)/kernel/arithmetics.o
 OBJECTS+=$(BUILD_DIR)/kernel/apm.o
 OBJECTS+=$(BUILD_DIR)/kernel/diagnostics.o
 OBJECTS+=$(BUILD_DIR)/kernel/gdt.o
+OBJECTS+=$(BUILD_DIR)/kernel/panic.o
 
 # Boot
 OBJECTS+=$(BUILD_DIR)/kernel/boot/acpi.o

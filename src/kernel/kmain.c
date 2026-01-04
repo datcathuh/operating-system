@@ -21,6 +21,7 @@
 #include "kshell/kshell_tetris.h"
 #include "memory.h"
 #include "serial.h"
+#include "panic.h"
 #include "pci.h"
 #include "pic.h"
 #include "video/gop.h"
@@ -81,6 +82,8 @@ void kmain(uint64_t magic, void *mb_addr) {
 		serial_puts(" bpp: ");
 		serial_put_hex64(res.bpp);
 		serial_puts("\n");
+	} else {
+		panic("Unsupported boot method");
 	}
 
 	ioapic_setup();
