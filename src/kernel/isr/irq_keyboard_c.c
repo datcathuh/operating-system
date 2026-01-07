@@ -9,11 +9,14 @@ static uint32_t irq_key_queue[irq_key_queue_length];
 void irq_keyboard_asm(void);
 
 void irq_keyboard_c(void) {
+	uint8_t sc = io_inb(0x60);
+
 	// TODO: Add locking
 	if (irq_key_count >= irq_key_queue_length) {
+		lapic_eoi();
 		return;
 	}
-	uint8_t sc = io_inb(0x60);
+
 	irq_key_queue[irq_key_count] = sc;
 	irq_key_count++;
 
