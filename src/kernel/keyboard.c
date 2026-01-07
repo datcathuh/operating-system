@@ -24,7 +24,7 @@ char keyboard_get_key(void) {
 	uint8_t sc;
 	bool key_fetched = false;
 	while (!key_fetched) {
-		if(irq_keyboard_count() == 0) {
+		if (irq_keyboard_count() == 0) {
 			__asm__ volatile("hlt");
 		}
 		key_fetched = irq_keyboard_consume_key(&sc);
