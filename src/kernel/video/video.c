@@ -5,8 +5,7 @@
 
 static struct video_device *_current = 0;
 
-void video_init() {
-}
+void video_init() {}
 
 struct video_device *video_current() { return _current; }
 
