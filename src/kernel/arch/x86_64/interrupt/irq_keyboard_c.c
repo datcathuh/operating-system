@@ -1,6 +1,6 @@
-#include "idt.h"
+#include "arch/x86_64/cpu/idt.h"
 #include "io.h"
-#include "lapic.h"
+#include "arch/x86_64/cpu/lapic.h"
 
 static uint32_t irq_key_count = 0;
 #define irq_key_queue_length 32

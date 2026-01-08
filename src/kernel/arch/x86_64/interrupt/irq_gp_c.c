@@ -1,4 +1,4 @@
-#include "idt.h"
+#include "arch/x86_64/cpu/idt.h"
 #include "irq_gp.h"
 #include "serial.h"
 

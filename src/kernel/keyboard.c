@@ -1,4 +1,4 @@
-#include "isr/irq_keyboard.h"
+#include "arch/x86_64/interrupt/irq_keyboard.h"
 #include "keyboard.h"
 #include "types.h"
 

@@ -1,4 +1,4 @@
-#include "boot/acpi.h"
+#include "arch/x86_64/entry/acpi.h"
 #include "ioapic.h"
 #include "memory.h"
 

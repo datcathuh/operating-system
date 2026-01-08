@@ -4,15 +4,32 @@ OBJECTS+=$(BUILD_DIR)/kernel/diagnostics.o
 OBJECTS+=$(BUILD_DIR)/kernel/gdt.o
 OBJECTS+=$(BUILD_DIR)/kernel/panic.o
 
-# Boot
-OBJECTS+=$(BUILD_DIR)/kernel/boot/acpi.o
-OBJECTS+=$(BUILD_DIR)/kernel/boot/legacy_entry.o
-OBJECTS+=$(BUILD_DIR)/kernel/boot/multiboot2.o
-OBJECTS+=$(BUILD_DIR)/kernel/boot/multiboot2_entry.o
-OBJECTS+=$(BUILD_DIR)/kernel/boot/multiboot2_gdt.o
-OBJECTS+=$(BUILD_DIR)/kernel/boot/multiboot2_paging.o
-OBJECTS+=$(BUILD_DIR)/kernel/boot/multiboot2_signature.o
-OBJECTS+=$(BUILD_DIR)/kernel/boot/nxe.o
+# x86_64 / CPU
+OBJECTS+=$(BUILD_DIR)/kernel/arch/x86_64/cpu/nxe.o
+OBJECTS+=$(BUILD_DIR)/kernel/arch/x86_64/cpu/idt.o
+OBJECTS+=$(BUILD_DIR)/kernel/arch/x86_64/cpu/ioapic.o
+OBJECTS+=$(BUILD_DIR)/kernel/arch/x86_64/cpu/lapic.o
+
+# x86_64 / entry
+OBJECTS+=$(BUILD_DIR)/kernel/arch/x86_64/entry/acpi.o
+OBJECTS+=$(BUILD_DIR)/kernel/arch/x86_64/entry/legacy_entry.o
+OBJECTS+=$(BUILD_DIR)/kernel/arch/x86_64/entry/multiboot2.o
+OBJECTS+=$(BUILD_DIR)/kernel/arch/x86_64/entry/multiboot2_entry.o
+OBJECTS+=$(BUILD_DIR)/kernel/arch/x86_64/entry/multiboot2_gdt.o
+OBJECTS+=$(BUILD_DIR)/kernel/arch/x86_64/entry/multiboot2_paging.o
+OBJECTS+=$(BUILD_DIR)/kernel/arch/x86_64/entry/multiboot2_signature.o
+
+# x86_64 / Interrupt service routines
+OBJECTS+=$(BUILD_DIR)/kernel/arch/x86_64/interrupt/irq_gp_asm.o
+OBJECTS+=$(BUILD_DIR)/kernel/arch/x86_64/interrupt/irq_gp_c.o
+OBJECTS+=$(BUILD_DIR)/kernel/arch/x86_64/interrupt/irq_double_fault_asm.o
+OBJECTS+=$(BUILD_DIR)/kernel/arch/x86_64/interrupt/irq_double_fault_c.o
+OBJECTS+=$(BUILD_DIR)/kernel/arch/x86_64/interrupt/irq_keyboard_asm.o
+OBJECTS+=$(BUILD_DIR)/kernel/arch/x86_64/interrupt/irq_keyboard_c.o
+OBJECTS+=$(BUILD_DIR)/kernel/arch/x86_64/interrupt/irq_page_fault_asm.o
+OBJECTS+=$(BUILD_DIR)/kernel/arch/x86_64/interrupt/irq_page_fault_c.o
+OBJECTS+=$(BUILD_DIR)/kernel/arch/x86_64/interrupt/irq_timer_asm.o
+OBJECTS+=$(BUILD_DIR)/kernel/arch/x86_64/interrupt/irq_timer_c.o
 
 # Devices
 OBJECTS+=$(BUILD_DIR)/kernel/devices/intel_440fx.o
@@ -22,21 +39,6 @@ OBJECTS+=$(BUILD_DIR)/kernel/devices/intel_82371sb_ide.o
 OBJECTS+=$(BUILD_DIR)/kernel/devices/intel_82540em.o
 OBJECTS+=$(BUILD_DIR)/kernel/devices/redhat_virtio_block_device.o
 OBJECTS+=$(BUILD_DIR)/kernel/devices/usb_xhci.o
-
-# Interrupt service routines
-OBJECTS+=$(BUILD_DIR)/kernel/isr/idt.o
-OBJECTS+=$(BUILD_DIR)/kernel/isr/ioapic.o
-OBJECTS+=$(BUILD_DIR)/kernel/isr/irq_gp_asm.o
-OBJECTS+=$(BUILD_DIR)/kernel/isr/irq_gp_c.o
-OBJECTS+=$(BUILD_DIR)/kernel/isr/irq_double_fault_asm.o
-OBJECTS+=$(BUILD_DIR)/kernel/isr/irq_double_fault_c.o
-OBJECTS+=$(BUILD_DIR)/kernel/isr/irq_keyboard_asm.o
-OBJECTS+=$(BUILD_DIR)/kernel/isr/irq_keyboard_c.o
-OBJECTS+=$(BUILD_DIR)/kernel/isr/irq_page_fault_asm.o
-OBJECTS+=$(BUILD_DIR)/kernel/isr/irq_page_fault_c.o
-OBJECTS+=$(BUILD_DIR)/kernel/isr/irq_timer_asm.o
-OBJECTS+=$(BUILD_DIR)/kernel/isr/irq_timer_c.o
-OBJECTS+=$(BUILD_DIR)/kernel/isr/lapic.o
 
 OBJECTS+=$(BUILD_DIR)/kernel/keyboard.o
 OBJECTS+=$(BUILD_DIR)/kernel/kmain.o
@@ -92,7 +94,7 @@ $(BUILD_DIR)/kernel/%.o: %.asm
 	@mkdir -p $(dir $@)
 	nasm $< -f elf64 -o $@
 
-$(BUILD_DIR)/kernel/isr/%.o: %.asm
+$(BUILD_DIR)/kernel/arch/x86_64/interrupt/%.o: %.asm
 	@mkdir -p $(dir $@)
 	nasm $< -f elf64 -o $@
 
@@ -106,6 +108,6 @@ $(BUILD_DIR)/kernel/kernel.bin: $(BUILD_DIR)/kernel/kernel.elf
 	@./kernel-sector-count
 
 clean:
-	$(RM) -f $(BUILD_DIR)/kernel/*.o $(BUILD_DIR)/kernel/devices/*.o $(BUILD_DIR)/kernel/isr/*.o $(BUILD_DIR)/kernel/video/*.o $(BUILD_DIR)/kernel/kshell/*.o $(BUILD_DIR)/kernel/kernel.bin $(BUILD_DIR)/kernel/kernel.elf
+	$(RM) -rf $(BUILD_DIR)/kernel
 
 .PHONY: all clean

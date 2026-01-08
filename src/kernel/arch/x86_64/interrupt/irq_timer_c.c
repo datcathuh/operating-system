@@ -1,4 +1,4 @@
-#include "idt.h"
+#include "arch/x86_64/cpu/idt.h"
 
 void irq_timer_asm(void);
 

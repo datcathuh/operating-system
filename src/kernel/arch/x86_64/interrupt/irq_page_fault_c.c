@@ -1,4 +1,4 @@
-#include "idt.h"
+#include "arch/x86_64/cpu/idt.h"
 #include "irq_page_fault.h"
 #include "memory.h"
 #include "serial.h"
