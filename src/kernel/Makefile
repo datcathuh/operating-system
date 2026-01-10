@@ -1,14 +1,14 @@
 OBJECTS+=$(BUILD_DIR)/kernel/arithmetics.o
 OBJECTS+=$(BUILD_DIR)/kernel/apm.o
 OBJECTS+=$(BUILD_DIR)/kernel/diagnostics.o
-OBJECTS+=$(BUILD_DIR)/kernel/gdt.o
 OBJECTS+=$(BUILD_DIR)/kernel/panic.o
 
 # x86_64 / CPU
-OBJECTS+=$(BUILD_DIR)/kernel/arch/x86_64/cpu/nxe.o
+OBJECTS+=$(BUILD_DIR)/kernel/arch/x86_64/cpu/gdt.o
 OBJECTS+=$(BUILD_DIR)/kernel/arch/x86_64/cpu/idt.o
 OBJECTS+=$(BUILD_DIR)/kernel/arch/x86_64/cpu/ioapic.o
 OBJECTS+=$(BUILD_DIR)/kernel/arch/x86_64/cpu/lapic.o
+OBJECTS+=$(BUILD_DIR)/kernel/arch/x86_64/cpu/nxe.o
 
 # x86_64 / entry
 OBJECTS+=$(BUILD_DIR)/kernel/arch/x86_64/entry/acpi.o
