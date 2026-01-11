@@ -8,5 +8,9 @@ void mem_set(void *ptr, unsigned char value, int size) {
 }
 
 void mem_copy(void *dst, const void *src, size_t n) {
-	__asm__ volatile("rep movsb" : "+D"(dst), "+S"(src), "+c"(n) : : "memory");
+	__asm__ volatile("cld\n"
+	                 "rep movsb"
+	                 : "+D"(dst), "+S"(src), "+c"(n)
+	                 :
+	                 : "memory");
 }
