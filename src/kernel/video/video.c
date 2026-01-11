@@ -228,6 +228,26 @@ void video_draw_rect_filled(struct video_buffer *buffer, int x, int y,
 	}
 }
 
+void video_draw_rect_construction(struct video_buffer *buffer, int x, int y,
+                                  int width, int height) {
+	int margin = height / 4;
+	int section_width = 50;
+	for (int xx = x; xx < (x + width); xx++) {
+		for (int yy = y; yy < (y + height); yy++) {
+			if (yy < (y + margin) || yy > (y + height - margin)) {
+				video_draw_pixel(buffer, xx, yy, 0xaaaa00);
+			} else {
+				int z = (xx + yy) % section_width;
+				if (z >= 0 && z < (section_width / 2)) {
+					video_draw_pixel(buffer, xx, yy, 0xaaaa00);
+				} else {
+					video_draw_pixel(buffer, xx, yy, 0x000000);
+				}
+			}
+		}
+	}
+}
+
 struct video_buffer _video_buffer;
 
 struct video_buffer *

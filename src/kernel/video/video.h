@@ -45,3 +45,6 @@ void video_draw_pixel(struct video_buffer *buffer, int x, int y,
 
 struct video_buffer *video_buffer_allocate(struct video_device *device,
                                            struct video_resolution *resolution);
+
+void video_draw_rect_construction(struct video_buffer *buffer, int x, int y,
+                                  int width, int height);
