@@ -167,6 +167,46 @@ void pci_debug_dump(void) {
 			serial_puts(description);
 		}
 
+		serial_puts(" class: ");
+		switch(dev->class_id) {
+		case 0x01:
+			serial_puts("Mass storage controller (0x01)");
+			break;
+		case 0x02:
+			serial_puts("Network controller (0x02)");
+			break;
+		case 0x03:
+			serial_puts("Display controller (0x03)");
+			break;
+		case 0x04:
+			serial_puts("Multimedia controller (0x04)");
+			break;
+		case 0x05:
+			serial_puts("Memory controller (0x05)");
+			break;
+		case 0x06:
+			serial_puts("Bridge (0x06)");
+			break;
+		case 0x07:
+			serial_puts("Communication controller (0x07)");
+			break;
+		case 0x08:
+			serial_puts("Generic system peripheral (0x08)");
+			break;
+		case 0x09:
+			serial_puts("Input device controller (0x09)");
+			break;
+		case 0x0c:
+			serial_puts("Serial bus controller (0x0C)");
+			break;
+		case 0x0d:
+			serial_puts("Wireless controller (0x0D)");
+			break;
+		default:
+			serial_put_hex8(dev->class_id);
+			break;
+		}
+
 		for (int i = 0; i < 6; i++) {
 			if (dev->bar[i] == 0) {
 				continue;
