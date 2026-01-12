@@ -83,8 +83,7 @@ static void terminal_gfx_clear(struct terminal *t) {
 	struct video_device *device = t->data;
 	int bytes = device->resolution->width * device->resolution->height *
 	            device->resolution->bpp / 8;
-	int qwords = bytes / 8;
-	mem_set_qword(device->buffer->memory, 0, qwords);
+	mem_set_qword(device->buffer->memory, 0, bytes);
 
 	video_draw_rect(device->buffer, 0, 0, device->resolution->width,
 	                TERMINAL_MARGIN_TOP, 0xffffff);
