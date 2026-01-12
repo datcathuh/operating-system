@@ -168,7 +168,7 @@ void pci_debug_dump(void) {
 		}
 
 		serial_puts(" class: ");
-		switch(dev->class_id) {
+		switch (dev->class_id) {
 		case 0x01:
 			serial_puts("Mass storage controller (0x01)");
 			break;

@@ -32,7 +32,9 @@ static const uint8_t _default_palette[16][3] = {
 static void terminal_gfx_size(struct terminal *t, int *width, int *height) {
 	struct video_device *device = t->data;
 	*width = (device->resolution->width - TERMINAL_MARGIN * 2) / 8;
-	*height = (device->resolution->height - TERMINAL_MARGIN_TOP - TERMINAL_MARGIN_BOTTOM - TERMINAL_MARGIN * 2) / 16;
+	*height = (device->resolution->height - TERMINAL_MARGIN_TOP -
+	           TERMINAL_MARGIN_BOTTOM - TERMINAL_MARGIN * 2) /
+	          16;
 }
 
 static void terminal_gfx_color_get(struct terminal * /*t*/,
@@ -83,8 +85,10 @@ static void terminal_gfx_clear(struct terminal *t) {
 	        device->resolution->width * device->resolution->height *
 	            device->resolution->bpp / 8);
 
-	video_draw_rect(device->buffer, 0, 0, device->resolution->width, TERMINAL_MARGIN_TOP, 0xffffff);
-	video_draw_string(device->buffer, video_font_8x16(), 4, 2, "Hugo OS", 0xffffff, 0x000000, 1);
+	video_draw_rect(device->buffer, 0, 0, device->resolution->width,
+	                TERMINAL_MARGIN_TOP, 0xffffff);
+	video_draw_string(device->buffer, video_font_8x16(), 4, 2, "Hugo OS",
+	                  0xffffff, 0x000000, 1);
 
 	video_draw_rect_construction(
 		device->buffer, 0, device->resolution->height - TERMINAL_MARGIN_BOTTOM,
