@@ -3,6 +3,7 @@
 #include "types.h"
 
 void mem_set(void *ptr, unsigned char value, size_t size);
+void mem_set_qword(void *dst, uint64_t value, uint64_t qword_count);
 void mem_copy(void *dst, const void *src, size_t size);
 
 void *mem_alloc(size_t size);
