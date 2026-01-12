@@ -15,8 +15,10 @@ size_t mem_alloc_usable_size(void *ptr);
 #define MEM_PAGE_USER (1ULL << 2)
 #define MEM_PAGE_PWT (1ULL << 3) // write-through
 #define MEM_PAGE_PCD (1ULL << 4) // cache-disable
-#define MEM_PAGE_PS (1ULL << 7)
+#define MEM_PAGE_PAT (1ULL << 7) // PAT bit in PTE
+#define MEM_PAGE_PS (1ULL << 7)  // PS bit in PDE/PDPTE (do NOT use in PT)
 #define MEM_PAGE_GLOBAL (1ULL << 8)
+#define MEM_PAGE_WRITE_COMBINING (1ULL << 9) // purely OS-internal flag
 #define MEM_PAGE_NX (1ULL << 63)
 #define MEM_PAGE_NO_CACHE ((1ULL << 3) | (1ULL << 4)) // PWT | PCD
 #define MEM_PAGE_MMIO                                                          \

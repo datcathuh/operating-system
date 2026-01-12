@@ -63,7 +63,12 @@ void mem_page_map(uint64_t virt, uint64_t phys, uint64_t flags) {
 	uint64_t *pt = (uint64_t *)(pd[pd_i] & ~0xFFFULL);
 
 	// PT
-	pt[pt_i] = (phys & ~0xFFFULL) | flags;
+	uint64_t hw_flags = flags;
+	if (flags & MEM_PAGE_WRITE_COMBINING) {
+		hw_flags &= ~(MEM_PAGE_PWT | MEM_PAGE_PCD); // must be 0
+		hw_flags |= MEM_PAGE_PAT;                   // PAT = 1
+	}
+	pt[pt_i] = (phys & ~0xFFFULL) | hw_flags;
 
 	// Flush TLB for this page
 	__asm__ volatile("invlpg (%0)" ::"r"(virt) : "memory");

@@ -36,6 +36,7 @@ struct video_device *gop_device(uint8_t *memory,
 		(uint64_t)resolution->width * resolution->height * bytes_per_pixel;
 	uint64_t pages = (framebuffer_size + 0xFFF) / 0x1000;
 	mem_page_map_n((uint64_t)memory, (uint64_t)memory, pages,
-	               MEM_PAGE_PRESENT | MEM_PAGE_WRITABLE | MEM_PAGE_NO_CACHE);
+	               MEM_PAGE_PRESENT | MEM_PAGE_WRITABLE |
+	                   MEM_PAGE_WRITE_COMBINING);
 	return &_gop_device;
 }
