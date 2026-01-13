@@ -19,14 +19,14 @@ DATA_SEG equ 0x10
 
 start:
 	mov [STAGE2_SIZE], dh
-    mov [BOOT_DRIVE], dl
+	mov [BOOT_DRIVE], dl
 
 	mov ax, 0x9000     ; pick a safe segment far from loads
 	mov ss, ax
 	mov sp, 0xFFFF
 
-    ;; mov si, msg_stage2_start
-    ;; call print_string
+	;; mov si, msg_stage2_start
+	;; call print_string
 	;; call print_new_line
 
 	;; Calculate the position of the kernel and store it in
@@ -38,34 +38,34 @@ start:
 	;; Load kernel in a safe spot lower than 1MB. This means
 	;; that we must copy it to final destination of 0x100000
 	;; as soon as we reach 32 bit code.
-    mov dl, [BOOT_DRIVE]         ; dl -> disk
+	mov dl, [BOOT_DRIVE]         ; dl -> disk
 	mov si, dap
 	call disk_load
 
 	;; Enable protected mode (32 bit)
-    cli                      ; 1. disable interrupts
-    lgdt [gdt_descriptor]    ; 2. load GDT descriptor
-    mov eax, cr0
-    or eax, 0x1              ; 3. enable protected mode
-    mov cr0, eax
-    jmp CODE_SEG:start_32bit ; 4. far jump
+	cli                      ; 1. disable interrupts
+	lgdt [gdt_descriptor]    ; 2. load GDT descriptor
+	mov eax, cr0
+	or eax, 0x1              ; 3. enable protected mode
+	mov cr0, eax
+	jmp CODE_SEG:start_32bit ; 4. far jump
 
 [bits 32]
 start_32bit:
-    mov ax, DATA_SEG         ; 5. update segment registers
-    mov ds, ax
-    mov ss, ax
-    mov es, ax
-    mov fs, ax
-    mov gs, ax
+	mov ax, DATA_SEG         ; 5. update segment registers
+	mov ds, ax
+	mov ss, ax
+	mov es, ax
+	mov fs, ax
+	mov gs, ax
 
-    mov ebp, 0x90000         ; 6. setup stack
-    mov esp, ebp
+	mov ebp, 0x90000         ; 6. setup stack
+	mov esp, ebp
 
 	mov esi, 0x00010000
-    mov edi, 0x00100000
-    mov ecx, KERNEL_SECTOR_COUNT * 512
-    rep movsd
+	mov edi, 0x00100000
+	mov ecx, KERNEL_SECTOR_COUNT * 512
+	rep movsd
 
 	;; Make sure that paging is disable for now.
 	mov eax, cr0
@@ -87,11 +87,11 @@ start_32bit:
 [bits 64]
 start_64bit:
 	mov ax, 0x10          ; data segment selector
-    mov ds, ax
-    mov ss, ax
-    mov es, ax
-    mov fs, ax
-    mov gs, ax
+	mov ds, ax
+	mov ss, ax
+	mov es, ax
+	mov fs, ax
+	mov gs, ax
 
 	mov rax, 0xB8000
 	mov word [rax], 0x0758
@@ -105,13 +105,13 @@ msg_stage2_start db 'Stage2 starting', 0
 
 	;; Disk Address Packet
 dap:
-    db 0x10                ; size of DAP (16 bytes)
-    db 0                   ; reserved
-    dw KERNEL_SECTOR_COUNT ; number of sectors to read
-    dw KERNEL_16_OFFSET    ; offset (BX)
-    dw KERNEL_16_SEGMENT   ; segment (ES)
+	db 0x10                ; size of DAP (16 bytes)
+	db 0                   ; reserved
+	dw KERNEL_SECTOR_COUNT ; number of sectors to read
+	dw KERNEL_16_OFFSET    ; offset (BX)
+	dw KERNEL_16_SEGMENT   ; segment (ES)
 dap_lba_start:
-    dq 0                   ; starting LBA (sector number)
+	dq 0                   ; starting LBA (sector number)
 
 
 BOOT_DRIVE     db	0
