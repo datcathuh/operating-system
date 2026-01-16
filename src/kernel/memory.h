@@ -11,6 +11,8 @@ void *mem_alloc_zero(size_t size);
 void mem_free(void *ptr);
 size_t mem_alloc_usable_size(void *ptr);
 
+#define MEM_PAGE_SIZE 4096
+
 #define MEM_PAGE_PRESENT (1ULL << 0)
 #define MEM_PAGE_WRITABLE (1ULL << 1)
 #define MEM_PAGE_USER (1ULL << 2)

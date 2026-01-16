@@ -42,6 +42,7 @@ CXXFLAGS+=-O3
 
 OBJECTS+=$(BUILD_DIR)/kernel/arithmetics.o
 OBJECTS+=$(BUILD_DIR)/kernel/apm.o
+OBJECTS+=$(BUILD_DIR)/kernel/cpu_context_asm.o
 OBJECTS+=$(BUILD_DIR)/kernel/diagnostics.o
 OBJECTS+=$(BUILD_DIR)/kernel/panic.o
 OBJECTS+=$(BUILD_DIR)/kernel/keyboard.o
@@ -53,9 +54,11 @@ OBJECTS+=$(BUILD_DIR)/kernel/pci.o
 OBJECTS+=$(BUILD_DIR)/kernel/pci_blacklist.o
 OBJECTS+=$(BUILD_DIR)/kernel/pic.o
 OBJECTS+=$(BUILD_DIR)/kernel/pit.o
+OBJECTS+=$(BUILD_DIR)/kernel/scheduler.o
 OBJECTS+=$(BUILD_DIR)/kernel/serial.o
 OBJECTS+=$(BUILD_DIR)/kernel/stream_simple.o
 OBJECTS+=$(BUILD_DIR)/kernel/string.o
+OBJECTS+=$(BUILD_DIR)/kernel/task.o
 OBJECTS+=$(BUILD_DIR)/kernel/terminal_gfx.o
 
 # x86_64 / CPU
