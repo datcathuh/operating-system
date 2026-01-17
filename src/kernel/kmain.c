@@ -19,6 +19,7 @@
 #include "kshell/kshell_snake.h"
 #include "kshell/kshell_sysinfo.h"
 #include "kshell/kshell_tetris.h"
+#include "kshell/kshell_x.h"
 #include "memory.h"
 #include "serial.h"
 #include "panic.h"
@@ -162,6 +163,7 @@ void kmain(uint64_t magic, void *mb_addr) {
 	kshell_snake_register();
 	kshell_sysinfo_register();
 	kshell_tetris_register();
+	kshell_x_register();
 
 	mem_page_debug_dump();
 

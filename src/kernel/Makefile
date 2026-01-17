@@ -108,6 +108,7 @@ OBJECTS+=$(BUILD_DIR)/kernel/kshell/kshell_shutdown.o
 OBJECTS+=$(BUILD_DIR)/kernel/kshell/kshell_snake.o
 OBJECTS+=$(BUILD_DIR)/kernel/kshell/kshell_sysinfo.o
 OBJECTS+=$(BUILD_DIR)/kernel/kshell/kshell_tetris.o
+OBJECTS+=$(BUILD_DIR)/kernel/kshell/kshell_x.o
 
 # Video drivers
 OBJECTS+=$(BUILD_DIR)/kernel/video/bga.o
