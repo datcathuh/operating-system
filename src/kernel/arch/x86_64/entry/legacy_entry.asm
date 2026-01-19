@@ -8,6 +8,8 @@ extern kmain
 extern nxe_enable
 
 legacy_entry:
+	mov [e820_map], ebx
+
 	lea rsp, [stack_top]   ; set RSP to top of stack
 	and rsp, -16           ; align stack to 16 bytes
 
@@ -23,8 +25,8 @@ legacy_entry:
 
 	call nxe_enable
 
-	mov edi, 0   ; 1st arg
-    mov rsi, 0   ; 2nd arg
+	mov edi, 0            ; 1st arg
+	mov rsi, [e820_map]   ; 2nd arg
 	call kmain
 	jmp $
 
@@ -49,3 +51,7 @@ sse_enable:
 	fninit                     ; or finit
 
 	ret
+
+section .data
+
+e820_map dw 0

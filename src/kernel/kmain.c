@@ -64,6 +64,7 @@ void kmain(uint64_t magic, void *mb_addr) {
 		   No UEFI involved in this boot. We need to find ACPI in
 		   memory etc. */
 		serial_puts("kmain: legacy boot\n");
+		serial_put_hex32((uint32_t)mb_addr);
 
 		/* During boot of a computer we set the default device
 		   to be VGA with 80x25. When running virtual we will

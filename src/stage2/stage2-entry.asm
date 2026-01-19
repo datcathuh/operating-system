@@ -2,6 +2,8 @@
 global start
 
 extern disk_load
+extern e820_map
+extern e820_map_get
 extern gdt_descriptor
 extern gdt64_descriptor
 extern print_string
@@ -9,12 +11,7 @@ extern print_new_line
 extern paging_setup
 extern s2main
 
-;; Temporary loading address of 0x20000 for the kernel
-KERNEL_16_SEGMENT equ 0x1000
-KERNEL_16_OFFSET  equ 0x0000
-CODE_SEG equ 0x08
-DATA_SEG equ 0x10
-
+%include "defines.asm"
 %include "kernel_sector_count.asm"
 
 start:
@@ -34,6 +31,8 @@ start:
 	mov al, 1
 	add al, [STAGE2_SIZE]
 	mov [dap_lba_start], al
+
+	call e820_map_get
 
 	;; Load kernel in a safe spot lower than 1MB. This means
 	;; that we must copy it to final destination of 0x100000
@@ -93,8 +92,8 @@ start_64bit:
 	mov fs, ax
 	mov gs, ax
 
-	mov rax, 0xB8000
-	mov word [rax], 0x0758
+	mov eax, 0
+	lea ebx, [rel e820_map]
 
 	call 0x100000
 	jmp $
