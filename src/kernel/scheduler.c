@@ -1,25 +1,35 @@
-#include "task.h"
+#include "arch/x86_64/cpu/interrupt.h"
+#include "scheduler.h"
 
 #define TASK_MAX 64
 
-struct task *current;
-struct task *tasks[TASK_MAX];
-int task_count;
-int task_current_index;
+struct task *task_current = NULL;
+struct task *tasks[TASK_MAX] = {0};
+int task_count = 0;
+int task_current_index = 0;
+
+void scheduler_task_add(struct task *task) {
+	tasks[task_count] = task;
+	task_count++;
+}
 
 void schedule(void) {
-	// TODO cli
+	if(task_count == 0) {
+		return;
+	}
+
+	cli();
 
     int next = (task_current_index + 1) % task_count;
     struct task *next_task = tasks[next];
 
-    if (next_task != current) {
-        struct task *prev = current;
-        current = next_task;
+    if (next_task != task_current) {
+        struct task *prev = task_current;
+        task_current = next_task;
         context_switch(&prev->ctx, &next_task->ctx);
     }
 
-	// TODO sti
+	sti();
 }
 
 void yield(void) { schedule(); }
