@@ -84,10 +84,14 @@ OBJECTS+=$(BUILD_DIR)/kernel/arch/x86_64/interrupt/irq_double_fault_asm.o
 OBJECTS+=$(BUILD_DIR)/kernel/arch/x86_64/interrupt/irq_double_fault_c.o
 OBJECTS+=$(BUILD_DIR)/kernel/arch/x86_64/interrupt/irq_keyboard_asm.o
 OBJECTS+=$(BUILD_DIR)/kernel/arch/x86_64/interrupt/irq_keyboard_c.o
+OBJECTS+=$(BUILD_DIR)/kernel/arch/x86_64/interrupt/irq_nm_asm.o
+OBJECTS+=$(BUILD_DIR)/kernel/arch/x86_64/interrupt/irq_nm_c.o
 OBJECTS+=$(BUILD_DIR)/kernel/arch/x86_64/interrupt/irq_page_fault_asm.o
 OBJECTS+=$(BUILD_DIR)/kernel/arch/x86_64/interrupt/irq_page_fault_c.o
 OBJECTS+=$(BUILD_DIR)/kernel/arch/x86_64/interrupt/irq_timer_asm.o
 OBJECTS+=$(BUILD_DIR)/kernel/arch/x86_64/interrupt/irq_timer_c.o
+OBJECTS+=$(BUILD_DIR)/kernel/arch/x86_64/interrupt/irq_ud_asm.o
+OBJECTS+=$(BUILD_DIR)/kernel/arch/x86_64/interrupt/irq_ud_c.o
 
 # Devices
 OBJECTS+=$(BUILD_DIR)/kernel/devices/intel_440fx.o

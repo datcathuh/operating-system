@@ -11,13 +11,13 @@ int task_current_index = 0;
 void scheduler_task_add(struct task *task) {
 	tasks[task_count] = task;
 	task_count++;
+
+	if(task_count == 1) {
+		task_current = task;
+	}
 }
 
 void schedule(void) {
-	if(task_count == 0) {
-		return;
-	}
-
 	cli();
 
     int next = (task_current_index + 1) % task_count;

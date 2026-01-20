@@ -1,6 +1,12 @@
-[bits 64]
+bits 64
 
 global context_switch
+global context_fpu_save
+
+context_fpu_save:
+	fninit
+    fxsave [rdi]
+    ret
 
 ; void context_switch(struct cpu_context *old,
 ;                     struct cpu_context *new);
@@ -34,13 +40,25 @@ context_switch:
     lea rax, [rel .resume]
     mov [rdi + 0x80], rax
 
-    ; Save RFLAGS
+	; Save RFLAGS
     pushfq
     pop qword [rdi + 0x88]
+
+	; ---------------------------
+    ; Save SSE/FPU state (fxsave)
+    ; ---------------------------
+    lea rax, [rdi + 0x90]        ; fxsave_area offset (aligned 16)
+    fxsave [rax]
 
     ; ---------------------------
     ; Load new CPU state
     ; ---------------------------
+
+    ; ---------------------------
+    ; Restore SSE/FPU state for new task
+    ; ---------------------------
+    lea rax, [rsi + 0x90]
+    fxrstor [rax]
 
     mov r15, [rsi + 0x00]
     mov r14, [rsi + 0x08]
@@ -60,6 +78,8 @@ context_switch:
     ; Restore RFLAGS
     push qword [rsi + 0x88]
     popfq
+
+	clts
 
     ; Jump to new RIP
     jmp qword [rsi + 0x80]

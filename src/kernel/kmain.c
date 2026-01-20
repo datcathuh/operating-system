@@ -6,9 +6,11 @@
 #include "arch/x86_64/entry/multiboot2.h"
 #include "arch/x86_64/interrupt/irq_double_fault.h"
 #include "arch/x86_64/interrupt/irq_gp.h"
+#include "arch/x86_64/interrupt/irq_nm.h"
 #include "arch/x86_64/interrupt/irq_page_fault.h"
 #include "arch/x86_64/interrupt/irq_keyboard.h"
 #include "arch/x86_64/interrupt/irq_timer.h"
+#include "arch/x86_64/interrupt/irq_ud.h"
 #include "diagnostics.h"
 #include "kshell/kshell.h"
 #include "kshell/kshell_bga.h"
@@ -21,14 +23,21 @@
 #include "kshell/kshell_tetris.h"
 #include "kshell/kshell_x.h"
 #include "memory.h"
-#include "serial.h"
 #include "panic.h"
 #include "pci.h"
 #include "pic.h"
+#include "scheduler.h"
+#include "serial.h"
+#include "task.h"
 #include "video/gop.h"
 #include "video/video.h"
 #include "video/bga.h"
 #include "video/vga.h"
+
+static struct task kmain_idle;
+static struct task kmain_kshell;
+
+void idle(void);
 
 void kmain(uint64_t magic, void *mb_addr) {
 	/* No interrupts please. */
@@ -57,7 +66,9 @@ void kmain(uint64_t magic, void *mb_addr) {
 	irq_gp_register();
 	irq_page_fault_register();
 	irq_keyboard_register();
+	irq_nm_register();
 	irq_timer_register();
+	irq_ud_register();
 
 	if (magic == 0) {
 		/* We have come to this point using MBR -> stage2 -> kernel.
@@ -167,5 +178,13 @@ void kmain(uint64_t magic, void *mb_addr) {
 
 	mem_page_debug_dump();
 
-	kshell();
+	task_create(&kmain_idle, idle);
+	scheduler_task_add(&kmain_idle);
+
+	task_create(&kmain_kshell, kshell);
+	scheduler_task_add(&kmain_kshell);
+
+	schedule();
 }
+
+void idle(void) { yield(); }
