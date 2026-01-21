@@ -184,7 +184,7 @@ void kmain(uint64_t magic, void *mb_addr) {
 	task_create("kshell", &kmain_kshell, kshell);
 	scheduler_task_add(&kmain_kshell);
 
-	schedule();
+	scheduler_start();
 }
 
 void idle(void) {

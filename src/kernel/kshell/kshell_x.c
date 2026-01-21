@@ -4,7 +4,7 @@
 #include "task.h"
 #include "video/video.h"
 
-static struct task my_task;
+static struct task my_task = { 0 };
 
 static void my_task_cb(void) {
 	for (;;) {
@@ -21,8 +21,10 @@ static void my_task_cb(void) {
 }
 
 static void kshell_x_cb() {
-	task_create("display_clock", &my_task, my_task_cb);
-	scheduler_task_add(&my_task);
+	if(my_task.name[0] == 0) {
+		task_create("display_clock", &my_task, my_task_cb);
+		scheduler_task_add(&my_task);
+	}
 	yield();
 }
 

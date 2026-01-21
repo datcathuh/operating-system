@@ -13,4 +13,6 @@ struct cpu_context {
 };
 
 void context_fpu_save(uint8_t *fxsave_area);
+void context_capture(struct cpu_context *old);
+void context_restore(struct cpu_context *new);
 void context_switch(struct cpu_context *old, struct cpu_context *new);

@@ -11,13 +11,20 @@ int task_current_index = 0;
 void scheduler_task_add(struct task *task) {
 	tasks[task_count] = task;
 	task_count++;
-
-	if (task_count == 1) {
-		task_current = task;
-	}
 }
 
 #include "serial.h"
+
+void scheduler_start(void) {
+	if(task_current == NULL) {
+		/* Never returning from this call since we
+		   restore a context directly. The first task
+		   entry function will be the new "main"
+		*/
+		task_current = tasks[0];
+		context_restore(&task_current->ctx);
+	}
+}
 
 void schedule(void) {
 	cli();
@@ -35,6 +42,7 @@ void schedule(void) {
 		task_current_index = next;
 		struct task *prev = task_current;
 		task_current = next_task;
+
 		context_switch(&prev->ctx, &next_task->ctx);
 	}
 
