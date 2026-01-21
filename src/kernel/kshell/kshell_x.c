@@ -7,9 +7,9 @@
 static struct task my_task;
 
 static void my_task_cb(void) {
-	for(;;) {
+	for (;;) {
 		struct video_device *vd = video_current();
-		if(vd && vd->terminal) {
+		if (vd && vd->terminal) {
 			/* TODO This is dangerous. We have no locking around the vd and
 			   the terminal. */
 			vd->terminal->pos_set(vd->terminal, 0, 0);
@@ -27,7 +27,6 @@ static void kshell_x_cb() {
 }
 
 void kshell_x_register() {
-	struct kshell_command cmd = {.name = "x",
-	                             .callback = kshell_x_cb};
+	struct kshell_command cmd = {.name = "x", .callback = kshell_x_cb};
 	kshell_register_command(&cmd);
 }

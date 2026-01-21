@@ -4,8 +4,7 @@
 extern uint32_t legacy_entry;
 
 /* Print helper */
-static inline void print_check(const char *name, bool ok)
-{
+static inline void print_check(const char *name, bool ok) {
 	serial_puts(name);
 	serial_puts(ok ? " OK" : " FAIL");
 	serial_puts("\n");
@@ -15,33 +14,34 @@ static inline void print_check(const char *name, bool ok)
 void print_diagnostics_sse(void) {
 	serial_puts("SSE Diagnostics:\n");
 
-    uint64_t cr0;
-    uint64_t cr4;
+	uint64_t cr0;
+	uint64_t cr4;
 	uint64_t rflags;
 
-    __asm__ volatile ("mov %%cr0, %0" : "=r"(cr0));
-    __asm__ volatile ("mov %%cr4, %0" : "=r"(cr4));
-    __asm__ volatile (
-        "pushfq\n"
-        "pop %0" : "=r"(rflags) : : "memory"
-    );
+	__asm__ volatile("mov %%cr0, %0" : "=r"(cr0));
+	__asm__ volatile("mov %%cr4, %0" : "=r"(cr4));
+	__asm__ volatile("pushfq\n"
+	                 "pop %0"
+	                 : "=r"(rflags)
+	                 :
+	                 : "memory");
 
-    bool cr0_em        = (cr0 & (1ULL << 2)) == 0;     /* EM = 0 */
-    bool cr0_mp        = (cr0 & (1ULL << 1)) != 0;     /* MP = 1 */
-	bool cr0_ts        = (cr0 & (1ULL << 3)) == 0;     /* TS = 0 */
-    bool cr4_osfxsr    = (cr4 & (1ULL << 9)) != 0;     /* OSFXSR */
-    bool cr4_osxmmexc  = (cr4 & (1ULL << 10)) != 0;    /* OSXMMEXCPT */
-    bool rflags_ok     = (rflags == 0x202);
+	bool cr0_em = (cr0 & (1ULL << 2)) == 0;        /* EM = 0 */
+	bool cr0_mp = (cr0 & (1ULL << 1)) != 0;        /* MP = 1 */
+	bool cr0_ts = (cr0 & (1ULL << 3)) == 0;        /* TS = 0 */
+	bool cr4_osfxsr = (cr4 & (1ULL << 9)) != 0;    /* OSFXSR */
+	bool cr4_osxmmexc = (cr4 & (1ULL << 10)) != 0; /* OSXMMEXCPT */
+	bool rflags_ok = (rflags == 0x202);
 
-    print_check("CR0.EM == 0", cr0_em);
-    print_check("CR0.MP == 1", cr0_mp);
-    print_check("CR0.TS == 0", cr0_ts);
-    print_check("CR4.OSFXSR == 1", cr4_osfxsr);
-    print_check("CR4.OSXMMEXCPT == 1", cr4_osxmmexc);
-    print_check("RFLAGS == 0x202", rflags_ok);
+	print_check("CR0.EM == 0", cr0_em);
+	print_check("CR0.MP == 1", cr0_mp);
+	print_check("CR0.TS == 0", cr0_ts);
+	print_check("CR4.OSFXSR == 1", cr4_osfxsr);
+	print_check("CR4.OSXMMEXCPT == 1", cr4_osxmmexc);
+	print_check("RFLAGS == 0x202", rflags_ok);
 	serial_put_hex64(rflags);
 
-    serial_puts("\n");
+	serial_puts("\n");
 }
 
 void print_diagnostics(void) {

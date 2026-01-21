@@ -12,7 +12,7 @@ void scheduler_task_add(struct task *task) {
 	tasks[task_count] = task;
 	task_count++;
 
-	if(task_count == 1) {
+	if (task_count == 1) {
 		task_current = task;
 	}
 }
@@ -20,14 +20,14 @@ void scheduler_task_add(struct task *task) {
 void schedule(void) {
 	cli();
 
-    int next = (task_current_index + 1) % task_count;
-    struct task *next_task = tasks[next];
+	int next = (task_current_index + 1) % task_count;
+	struct task *next_task = tasks[next];
 
-    if (next_task != task_current) {
-        struct task *prev = task_current;
-        task_current = next_task;
-        context_switch(&prev->ctx, &next_task->ctx);
-    }
+	if (next_task != task_current) {
+		struct task *prev = task_current;
+		task_current = next_task;
+		context_switch(&prev->ctx, &next_task->ctx);
+	}
 
 	sti();
 }
