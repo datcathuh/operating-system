@@ -21,7 +21,7 @@ static void my_task_cb(void) {
 }
 
 static void kshell_x_cb() {
-	task_create(&my_task, my_task_cb);
+	task_create("display_clock", &my_task, my_task_cb);
 	scheduler_task_add(&my_task);
 	yield();
 }

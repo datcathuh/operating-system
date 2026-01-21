@@ -178,13 +178,17 @@ void kmain(uint64_t magic, void *mb_addr) {
 
 	mem_page_debug_dump();
 
-	task_create(&kmain_idle, idle);
+	task_create("kidle", &kmain_idle, idle);
 	scheduler_task_add(&kmain_idle);
 
-	task_create(&kmain_kshell, kshell);
+	task_create("kshell", &kmain_kshell, kshell);
 	scheduler_task_add(&kmain_kshell);
 
 	schedule();
 }
 
-void idle(void) { yield(); }
+void idle(void) {
+	for(;;) {
+		yield();
+	}
+}

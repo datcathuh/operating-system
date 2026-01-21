@@ -17,13 +17,22 @@ void scheduler_task_add(struct task *task) {
 	}
 }
 
+#include "serial.h"
+
 void schedule(void) {
 	cli();
 
 	int next = (task_current_index + 1) % task_count;
 	struct task *next_task = tasks[next];
 
+	serial_puts("CS Task old: ");
+	serial_puts(task_current->name);
+	serial_puts(" new: ");
+	serial_puts(next_task->name);
+	serial_puts("\n");
+
 	if (next_task != task_current) {
+		task_current_index = next;
 		struct task *prev = task_current;
 		task_current = next_task;
 		context_switch(&prev->ctx, &next_task->ctx);

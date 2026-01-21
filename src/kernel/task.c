@@ -1,7 +1,11 @@
 #include "memory.h"
+#include "string.h"
 #include "task.h"
 
-void task_create(struct task *t, void (*entry)(void)) {
+void task_create(const char *name, struct task *t, void (*entry)(void)) {
+	mem_set(t, 0, sizeof(struct task));
+	str_copy(t->name, TASK_NAME_LEN, name);
+
 	void *page = mem_page_alloc();
 	mem_page_map((uint64_t)page, (uint64_t)page,
 	             MEM_PAGE_PRESENT | MEM_PAGE_WRITABLE | MEM_PAGE_NX);
@@ -14,7 +18,6 @@ void task_create(struct task *t, void (*entry)(void)) {
 	   assumptions done by the compiler to be true. */
 	uint64_t stack_top = (uint64_t)t->kernel_stack + MEM_PAGE_SIZE - 8;
 
-	mem_set(&t->ctx, 0, sizeof(t->ctx));
 	t->ctx.rip = (uint64_t)entry;
 	t->ctx.rsp = stack_top;
 	t->ctx.rflags = 0x202; // IF=1
