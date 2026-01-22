@@ -1,4 +1,3 @@
-
 ;; DH = row
 ;; DL = column
 cursor_pos_set:

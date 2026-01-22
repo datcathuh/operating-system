@@ -1,4 +1,5 @@
-[bits 16]
+bits 16
+
 global disk_load
 
 ; INPUT:

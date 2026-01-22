@@ -1,0 +1,23 @@
+builddir = ../../build
+mbrdir = $builddir/mbr
+
+rule mkdir
+  command = mkdir -p $out
+
+rule nasm_bin
+  command = nasm $in -f bin -MD $out.d -o $out
+  depfile = $out.d
+  deps = gcc
+  description = NASM $out
+
+build $mbrdir: mkdir
+
+build $mbrdir/mbr.bin: nasm_bin main.asm | $mbrdir
+
+default $mbrdir/mbr.bin
+
+rule clean
+  command = rm -f $mbrdir/*.o $mbrdir/mbr.bin
+  description = CLEAN
+
+build clean: clean

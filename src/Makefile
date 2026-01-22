@@ -3,7 +3,7 @@ all: $(BUILD_DIR)/hda.img
 $(BUILD_DIR)/hda.img:
 	$(MAKE) -C kernel
 	$(MAKE) -C stage2
-	$(MAKE) -C mbr
+	ninja -C mbr -d keepdepfile -v
 	cat $(BUILD_DIR)/mbr/mbr.bin $(BUILD_DIR)/stage2/stage2.bin $(BUILD_DIR)/kernel/kernel.bin > $@
 	truncate -s 1M $@
 
@@ -11,7 +11,7 @@ $(BUILD_DIR)/hdb.img:
 	fallocate -l 1M $@
 
 clean:
-	$(MAKE) -C mbr $@
+	ninja -C mbr $@
 	$(MAKE) -C stage2 $@
 	$(MAKE) -C kernel $@
 	$(RM) $(BUILD_DIR)/hda.img $(BUILD_DIR)/hdb.img
