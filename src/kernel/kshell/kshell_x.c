@@ -7,13 +7,18 @@
 static struct task my_task = { 0 };
 
 static void my_task_cb(void) {
+	static int count = 0;
 	for (;;) {
+		count += 1;
 		struct video_device *vd = video_current();
 		if (vd && vd->terminal) {
 			/* TODO This is dangerous. We have no locking around the vd and
 			   the terminal. */
-			vd->terminal->pos_set(vd->terminal, 0, 0);
-			vd->terminal->print(vd->terminal, "Background thread");
+			int x, y;
+			vd->terminal->pos_get(vd->terminal, &x, &y);
+			vd->terminal->pos_set(vd->terminal, 0, 20);
+			vd->terminal->print(vd->terminal, "This is a background thread writing this ");
+			vd->terminal->pos_set(vd->terminal, x, y);
 		}
 
 		yield();

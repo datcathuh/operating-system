@@ -32,11 +32,13 @@ void schedule(void) {
 	int next = (task_current_index + 1) % task_count;
 	struct task *next_task = tasks[next];
 
+	/*
 	serial_puts("CS Task old: ");
 	serial_puts(task_current->name);
 	serial_puts(" new: ");
 	serial_puts(next_task->name);
 	serial_puts("\n");
+	*/
 
 	if (next_task != task_current) {
 		task_current_index = next;

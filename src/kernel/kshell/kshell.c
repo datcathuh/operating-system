@@ -1,6 +1,7 @@
 #include "keyboard.h"
 #include "kshell.h"
 #include "memory.h"
+#include "scheduler.h"
 #include "string.h"
 #include "video/vga.h"
 
@@ -60,7 +61,12 @@ void kshell() {
 	const int command_size = sizeof(command);
 
 	while (1) {
-		char c = keyboard_get_key();
+		char c;
+		if(!keyboard_get_key_if_exists(&c)) {
+			yield();
+			continue;
+		}
+
 		if (c) {
 			if (c == '\n') {
 				terminal->clear(terminal);

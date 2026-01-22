@@ -26,6 +26,7 @@
 #include "panic.h"
 #include "pci.h"
 #include "pic.h"
+#include "pit.h"
 #include "scheduler.h"
 #include "serial.h"
 #include "task.h"
@@ -189,6 +190,7 @@ void kmain(uint64_t magic, void *mb_addr) {
 
 void idle(void) {
 	for(;;) {
+		pit_wait_milliseconds(10);
 		yield();
 	}
 }
