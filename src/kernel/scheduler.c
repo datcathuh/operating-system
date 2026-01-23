@@ -15,7 +15,7 @@ void scheduler_task_add(struct task *task) {
 }
 
 void scheduler_start(void) {
-	if(task_current == NULL) {
+	if (task_current == NULL) {
 		/* Never returning from this call since we
 		   restore a context directly. The first task
 		   entry function will be the new "main"
@@ -53,7 +53,7 @@ void schedule(void) {
 void yield(void) { schedule(); }
 
 void scheduler_task_enumerate(task_enumerate_cb cb) {
-	for(int i=0;i < task_count; i++) {
+	for (int i = 0; i < task_count; i++) {
 		cb(task_tasks[i]);
 	}
 }

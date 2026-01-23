@@ -62,7 +62,7 @@ void kshell() {
 
 	while (1) {
 		char c;
-		if(!keyboard_get_key_if_exists(&c)) {
+		if (!keyboard_get_key_if_exists(&c)) {
 			yield();
 			continue;
 		}

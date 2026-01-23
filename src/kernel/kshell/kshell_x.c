@@ -4,7 +4,7 @@
 #include "task.h"
 #include "video/video.h"
 
-static struct task my_task = { 0 };
+static struct task my_task = {0};
 
 static void my_task_cb(void) {
 	static int count = 0;
@@ -17,7 +17,8 @@ static void my_task_cb(void) {
 			int x, y;
 			vd->terminal->pos_get(vd->terminal, &x, &y);
 			vd->terminal->pos_set(vd->terminal, 0, 20);
-			vd->terminal->print(vd->terminal, "This is a background thread writing this ");
+			vd->terminal->print(vd->terminal,
+			                    "This is a background thread writing this ");
 			vd->terminal->pos_set(vd->terminal, x, y);
 		}
 
@@ -26,7 +27,7 @@ static void my_task_cb(void) {
 }
 
 static void kshell_x_cb() {
-	if(my_task.name[0] == 0) {
+	if (my_task.name[0] == 0) {
 		task_create("display_clock", &my_task, my_task_cb);
 		scheduler_task_add(&my_task);
 	}

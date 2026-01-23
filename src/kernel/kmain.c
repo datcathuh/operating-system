@@ -191,7 +191,7 @@ void kmain(uint64_t magic, void *mb_addr) {
 }
 
 void idle(void) {
-	for(;;) {
+	for (;;) {
 		pit_wait_milliseconds(10);
 		yield();
 	}
