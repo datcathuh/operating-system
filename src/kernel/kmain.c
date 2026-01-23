@@ -20,6 +20,7 @@
 #include "kshell/kshell_shutdown.h"
 #include "kshell/kshell_snake.h"
 #include "kshell/kshell_sysinfo.h"
+#include "kshell/kshell_task.hpp"
 #include "kshell/kshell_tetris.h"
 #include "kshell/kshell_x.h"
 #include "memory.h"
@@ -174,6 +175,7 @@ void kmain(uint64_t magic, void *mb_addr) {
 	kshell_shutdown_register();
 	kshell_snake_register();
 	kshell_sysinfo_register();
+	kshell_task_register();
 	kshell_tetris_register();
 	kshell_x_register();
 

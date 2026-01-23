@@ -4,6 +4,10 @@
 #include "types.h"
 #include "pci.h"
 
+#ifdef __cplusplus
+extern "C" {
+#endif
+
 struct video_resolution {
 	uint16_t width, height;
 
@@ -48,3 +52,7 @@ struct video_buffer *video_buffer_allocate(struct video_device *device,
 
 void video_draw_rect_construction(struct video_buffer *buffer, int x, int y,
                                   int width, int height);
+
+#ifdef __cplusplus
+}
+#endif

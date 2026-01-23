@@ -3,6 +3,10 @@
 #include "cpu_context.h"
 #include "types.h"
 
+#ifdef __cplusplus
+extern "C" {
+#endif
+
 enum task_state { TASK_STATE_RUNNABLE, TASK_STATE_BLOCKED };
 
 #define TASK_NAME_LEN 70
@@ -15,3 +19,7 @@ struct task {
 };
 
 void task_create(const char *name, struct task *t, void (*entry)(void));
+
+#ifdef __cplusplus
+}
+#endif
