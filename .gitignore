@@ -2,6 +2,7 @@
 *.bin
 *.elf
 *.img
+.ninja*
 .vscode
 compile_commands.json
 tools
