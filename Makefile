@@ -5,6 +5,7 @@ export BUILD_DIR
 
 all:
 	@echo "Make targets"
+	@echo " build                 Build without cleaning"
 	@echo " rebuild               Rebuild from scratch"
 	@echo " clean                 Removes all built files"
 	@echo " run                   Starts virtual machine"
@@ -13,6 +14,9 @@ all:
 	@echo " gdb                   Starts debugger"
 	@echo ""
 	@echo "compile_commands.json  Creates file for code analytics"
+
+build:
+	$(MAKE) -C src
 
 rebuild: clean
 	$(MAKE) -C src
@@ -53,4 +57,4 @@ analyze:
 compile_commands.json:
 	bear -- $(MAKE) rebuild
 
-.PHONY: all analyze clean gdb run run_debug run_debug_extra format
+.PHONY: all analyze build clean gdb run run_debug run_debug_extra format

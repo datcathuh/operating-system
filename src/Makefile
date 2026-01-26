@@ -1,7 +1,7 @@
 all: $(BUILD_DIR)/hda.img
 
 $(BUILD_DIR)/hda.img:
-	$(MAKE) -C kernel
+	ninja -C kernel -d keepdepfile -v
 	ninja -C stage2 -d keepdepfile -v
 	ninja -C mbr -d keepdepfile -v
 	cat $(BUILD_DIR)/mbr/mbr.bin $(BUILD_DIR)/stage2/stage2.bin $(BUILD_DIR)/kernel/kernel.bin > $@
@@ -13,7 +13,7 @@ $(BUILD_DIR)/hdb.img:
 clean:
 	ninja -C mbr -t $@
 	ninja -C stage2 -t $@
-	$(MAKE) -C kernel $@
+	ninja -C kernel -t $@
 	$(RM) $(BUILD_DIR)/hda.img $(BUILD_DIR)/hdb.img
 
 gdb:
@@ -68,4 +68,4 @@ run_debug_extra: $(BUILD_DIR)/hda.img $(BUILD_DIR)/hdb.img
 		-S -s -serial stdio \
 		-no-reboot -d int,cpu_reset -no-shutdown
 
-.PHONY: all clean run run_debug
+.PHONY: all clean run run_debug $(BUILD_DIR)/hda.img

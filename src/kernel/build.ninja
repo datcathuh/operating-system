@@ -1,0 +1,237 @@
+kernel_dir = ../../build/kernel
+
+kernel_cflags = -std=c23 $
+  -pedantic $
+  -Wall $
+  -Wextra $
+  -m64 $
+  -ffreestanding $
+  -O3 $
+  -nostdlib $
+  -nostdinc $
+  -g $
+  -mno-red-zone $
+  -fno-omit-frame-pointer $
+  -fno-stack-protector $
+  -mcmodel=kernel $
+  -I.
+
+kernel_cxxflags = -g $
+  -std=c++23 $
+  -pedantic $
+  -Wall -Wextra $
+  -m64 $
+  -mno-red-zone $
+  -fno-omit-frame-pointer $
+  -fno-stack-protector $
+  -mcmodel=kernel $
+  -ffreestanding $
+  -fno-exceptions $
+  -fno-rtti $
+  -fno-unwind-tables $
+  -fno-asynchronous-unwind-tables $
+  -fno-threadsafe-statics $
+  -nostdlib $
+  -nostdinc++ $
+  -I. $
+  -O3
+
+rule kernel_nasm
+  command = nasm $in -g -F dwarf -f elf64 -o $out
+  depfile = $out.d
+  deps = gcc
+  description = Compile $in
+
+rule kernel_c
+  command = gcc $kernel_cflags -c $in -o $out
+  depfile = $out.d
+  deps = gcc
+  description = Compile $in
+
+rule kernel_cxx
+  command = g++ $kernel_cxxflags -c $in -o $out
+  depfile = $out.d
+  deps = gcc
+  description = Compile $in
+
+rule kernel_link
+  command = ld -m elf_x86_64 -o $out -T linker.ld $in
+  description = LINK $out
+
+rule kernel_bin
+  command = ./kernel_bin $in $out
+
+build $kernel_dir/a20.o: kernel_nasm a20.asm
+build $kernel_dir/disk.o: kernel_nasm disk.asm
+build $kernel_dir/gdt.o: kernel_nasm gdt.asm
+build $kernel_dir/gdt64.o: kernel_nasm gdt64.asm
+build $kernel_dir/paging.o: kernel_nasm paging.asm
+build $kernel_dir/print.o: kernel_nasm print.asm
+build $kernel_dir/kernel-entry.o: kernel_nasm kernel-entry.asm
+build $kernel_dir/main.o: kernel_c main.c
+
+build $kernel_dir/kernel/arithmetics.o: kernel_c arithmetics.c
+build $kernel_dir/kernel/apm.o: kernel_c apm.c
+build $kernel_dir/kernel/cpu_context_asm.o: kernel_nasm cpu_context_asm.asm
+build $kernel_dir/kernel/diagnostics.o: kernel_c diagnostics.c
+build $kernel_dir/kernel/panic.o: kernel_c panic.c
+build $kernel_dir/kernel/keyboard.o: kernel_c keyboard.c
+build $kernel_dir/kernel/kmain.o: kernel_c kmain.c
+build $kernel_dir/kernel/memory.o: kernel_c memory.c
+build $kernel_dir/kernel/memory_heap.o: kernel_c memory_heap.c
+build $kernel_dir/kernel/memory_page.o: kernel_c memory_page.c
+build $kernel_dir/kernel/pci.o: kernel_c pci.c
+build $kernel_dir/kernel/pci_blacklist.o: kernel_c pci_blacklist.c
+build $kernel_dir/kernel/pic.o: kernel_c pic.c
+build $kernel_dir/kernel/pit.o: kernel_c pit.c
+build $kernel_dir/kernel/scheduler.o: kernel_c scheduler.c
+build $kernel_dir/kernel/serial.o: kernel_c serial.c
+build $kernel_dir/kernel/stream_simple.o: kernel_cxx stream_simple.cpp
+build $kernel_dir/kernel/string.o: kernel_c string.c
+build $kernel_dir/kernel/task.o: kernel_c task.c
+build $kernel_dir/kernel/terminal_gfx.o: kernel_c terminal_gfx.c
+
+# x86_64 / CPU
+build $kernel_dir/kernel/arch/x86_64/cpu/gdt.o: kernel_c arch/x86_64/cpu/gdt.c
+build $kernel_dir/kernel/arch/x86_64/cpu/idt.o: kernel_c arch/x86_64/cpu/idt.c
+build $kernel_dir/kernel/arch/x86_64/cpu/ioapic.o: kernel_c arch/x86_64/cpu/ioapic.c
+build $kernel_dir/kernel/arch/x86_64/cpu/lapic.o: kernel_c arch/x86_64/cpu/lapic.c
+build $kernel_dir/kernel/arch/x86_64/cpu/nxe.o: kernel_nasm arch/x86_64/cpu/nxe.asm
+
+# x86_64 / entry
+build $kernel_dir/kernel/arch/x86_64/entry/acpi.o: kernel_c arch/x86_64/entry/acpi.c
+build $kernel_dir/kernel/arch/x86_64/entry/legacy_entry.o: kernel_nasm arch/x86_64/entry/legacy_entry.asm
+build $kernel_dir/kernel/arch/x86_64/entry/multiboot2.o: kernel_c arch/x86_64/entry/multiboot2.c
+build $kernel_dir/kernel/arch/x86_64/entry/multiboot2_entry.o: kernel_nasm arch/x86_64/entry/multiboot2_entry.asm
+build $kernel_dir/kernel/arch/x86_64/entry/multiboot2_gdt.o: kernel_nasm arch/x86_64/entry/multiboot2_gdt.asm
+build $kernel_dir/kernel/arch/x86_64/entry/multiboot2_paging.o: kernel_nasm arch/x86_64/entry/multiboot2_paging.asm
+build $kernel_dir/kernel/arch/x86_64/entry/multiboot2_signature.o: kernel_nasm arch/x86_64/entry/multiboot2_signature.asm
+
+# x86_64 / Interrupt service routines
+build $kernel_dir/kernel/arch/x86_64/interrupt/irq_gp_asm.o: kernel_nasm arch/x86_64/interrupt/irq_gp_asm.asm
+build $kernel_dir/kernel/arch/x86_64/interrupt/irq_gp_c.o: kernel_c arch/x86_64/interrupt/irq_gp_c.c
+build $kernel_dir/kernel/arch/x86_64/interrupt/irq_double_fault_asm.o: kernel_nasm arch/x86_64/interrupt/irq_double_fault_asm.asm
+build $kernel_dir/kernel/arch/x86_64/interrupt/irq_double_fault_c.o: kernel_c arch/x86_64/interrupt/irq_double_fault_c.c
+build $kernel_dir/kernel/arch/x86_64/interrupt/irq_keyboard_asm.o: kernel_nasm arch/x86_64/interrupt/irq_keyboard_asm.asm
+build $kernel_dir/kernel/arch/x86_64/interrupt/irq_keyboard_c.o: kernel_c arch/x86_64/interrupt/irq_keyboard_c.c
+build $kernel_dir/kernel/arch/x86_64/interrupt/irq_nm_asm.o: kernel_nasm arch/x86_64/interrupt/irq_nm_asm.asm
+build $kernel_dir/kernel/arch/x86_64/interrupt/irq_nm_c.o: kernel_c arch/x86_64/interrupt/irq_nm_c.c
+build $kernel_dir/kernel/arch/x86_64/interrupt/irq_page_fault_asm.o: kernel_nasm arch/x86_64/interrupt/irq_page_fault_asm.asm
+build $kernel_dir/kernel/arch/x86_64/interrupt/irq_page_fault_c.o: kernel_c arch/x86_64/interrupt/irq_page_fault_c.c
+build $kernel_dir/kernel/arch/x86_64/interrupt/irq_timer_asm.o: kernel_nasm arch/x86_64/interrupt/irq_timer_asm.asm
+build $kernel_dir/kernel/arch/x86_64/interrupt/irq_timer_c.o: kernel_c arch/x86_64/interrupt/irq_timer_c.c
+build $kernel_dir/kernel/arch/x86_64/interrupt/irq_ud_asm.o: kernel_nasm arch/x86_64/interrupt/irq_ud_asm.asm
+build $kernel_dir/kernel/arch/x86_64/interrupt/irq_ud_c.o: kernel_c arch/x86_64/interrupt/irq_ud_c.c
+
+# Devices
+build $kernel_dir/kernel/devices/intel_440fx.o: kernel_c devices/intel_440fx.c
+build $kernel_dir/kernel/devices/intel_82371sb_acpi.o: kernel_c devices/intel_82371sb_acpi.c
+build $kernel_dir/kernel/devices/intel_82371sb_isa.o: kernel_c devices/intel_82371sb_isa.c
+build $kernel_dir/kernel/devices/intel_82371sb_ide.o: kernel_c devices/intel_82371sb_ide.c
+build $kernel_dir/kernel/devices/intel_82540em.o: kernel_c devices/intel_82540em.c
+build $kernel_dir/kernel/devices/redhat_virtio_block_device.o: kernel_c devices/redhat_virtio_block_device.c
+build $kernel_dir/kernel/devices/usb_xhci.o: kernel_c devices/usb_xhci.c
+
+# Kernel shell commands.
+build $kernel_dir/kernel/kshell/kshell.o: kernel_c kshell/kshell.c
+build $kernel_dir/kernel/kshell/kshell_bga.o: kernel_c kshell/kshell_bga.c
+build $kernel_dir/kernel/kshell/kshell_help.o: kernel_c kshell/kshell_help.c
+build $kernel_dir/kernel/kshell/kshell_julia.o: kernel_c kshell/kshell_julia.c
+build $kernel_dir/kernel/kshell/kshell_mandelbrot.o: kernel_c kshell/kshell_mandelbrot.c
+build $kernel_dir/kernel/kshell/kshell_shutdown.o: kernel_c kshell/kshell_shutdown.c
+build $kernel_dir/kernel/kshell/kshell_snake.o: kernel_c kshell/kshell_snake.c
+build $kernel_dir/kernel/kshell/kshell_sysinfo.o: kernel_c kshell/kshell_sysinfo.c
+build $kernel_dir/kernel/kshell/kshell_task.o: kernel_cxx kshell/kshell_task.cpp
+build $kernel_dir/kernel/kshell/kshell_tetris.o: kernel_c kshell/kshell_tetris.c
+build $kernel_dir/kernel/kshell/kshell_x.o: kernel_c kshell/kshell_x.c
+
+# Video drivers
+build $kernel_dir/kernel/video/bga.o: kernel_c video/bga.c
+build $kernel_dir/kernel/video/font.o: kernel_c video/font.c
+build $kernel_dir/kernel/video/gop.o: kernel_c video/gop.c
+build $kernel_dir/kernel/video/vga.o: kernel_c video/vga.c
+build $kernel_dir/kernel/video/video.o: kernel_c video/video.c
+
+build $kernel_dir/kernel.elf: kernel_link $
+  $kernel_dir/kernel/arithmetics.o $
+  $kernel_dir/kernel/apm.o $
+  $kernel_dir/kernel/cpu_context_asm.o $
+  $kernel_dir/kernel/diagnostics.o $
+  $kernel_dir/kernel/panic.o $
+  $kernel_dir/kernel/keyboard.o $
+  $kernel_dir/kernel/kmain.o $
+  $kernel_dir/kernel/memory.o $
+  $kernel_dir/kernel/memory_heap.o $
+  $kernel_dir/kernel/memory_page.o $
+  $kernel_dir/kernel/pci.o $
+  $kernel_dir/kernel/pci_blacklist.o $
+  $kernel_dir/kernel/pic.o $
+  $kernel_dir/kernel/pit.o $
+  $kernel_dir/kernel/scheduler.o $
+  $kernel_dir/kernel/serial.o $
+  $kernel_dir/kernel/stream_simple.o $
+  $kernel_dir/kernel/string.o $
+  $kernel_dir/kernel/task.o $
+  $kernel_dir/kernel/terminal_gfx.o $
+  $
+  $kernel_dir/kernel/arch/x86_64/cpu/gdt.o $
+  $kernel_dir/kernel/arch/x86_64/cpu/idt.o $
+  $kernel_dir/kernel/arch/x86_64/cpu/ioapic.o $
+  $kernel_dir/kernel/arch/x86_64/cpu/lapic.o $
+  $kernel_dir/kernel/arch/x86_64/cpu/nxe.o $
+  $
+  $kernel_dir/kernel/arch/x86_64/entry/acpi.o $
+  $kernel_dir/kernel/arch/x86_64/entry/legacy_entry.o $
+  $kernel_dir/kernel/arch/x86_64/entry/multiboot2.o $
+  $kernel_dir/kernel/arch/x86_64/entry/multiboot2_entry.o $
+  $kernel_dir/kernel/arch/x86_64/entry/multiboot2_gdt.o $
+  $kernel_dir/kernel/arch/x86_64/entry/multiboot2_paging.o $
+  $kernel_dir/kernel/arch/x86_64/entry/multiboot2_signature.o $
+  $
+  $kernel_dir/kernel/arch/x86_64/interrupt/irq_gp_asm.o $
+  $kernel_dir/kernel/arch/x86_64/interrupt/irq_gp_c.o $
+  $kernel_dir/kernel/arch/x86_64/interrupt/irq_double_fault_asm.o $
+  $kernel_dir/kernel/arch/x86_64/interrupt/irq_double_fault_c.o $
+  $kernel_dir/kernel/arch/x86_64/interrupt/irq_keyboard_asm.o $
+  $kernel_dir/kernel/arch/x86_64/interrupt/irq_keyboard_c.o $
+  $kernel_dir/kernel/arch/x86_64/interrupt/irq_nm_asm.o $
+  $kernel_dir/kernel/arch/x86_64/interrupt/irq_nm_c.o $
+  $kernel_dir/kernel/arch/x86_64/interrupt/irq_page_fault_asm.o $
+  $kernel_dir/kernel/arch/x86_64/interrupt/irq_page_fault_c.o $
+  $kernel_dir/kernel/arch/x86_64/interrupt/irq_timer_asm.o $
+  $kernel_dir/kernel/arch/x86_64/interrupt/irq_timer_c.o $
+  $kernel_dir/kernel/arch/x86_64/interrupt/irq_ud_asm.o $
+  $kernel_dir/kernel/arch/x86_64/interrupt/irq_ud_c.o $
+  $
+  $kernel_dir/kernel/devices/intel_440fx.o $
+  $kernel_dir/kernel/devices/intel_82371sb_acpi.o $
+  $kernel_dir/kernel/devices/intel_82371sb_isa.o $
+  $kernel_dir/kernel/devices/intel_82371sb_ide.o $
+  $kernel_dir/kernel/devices/intel_82540em.o $
+  $kernel_dir/kernel/devices/redhat_virtio_block_device.o $
+  $kernel_dir/kernel/devices/usb_xhci.o $
+  $
+  $kernel_dir/kernel/kshell/kshell.o $
+  $kernel_dir/kernel/kshell/kshell_bga.o $
+  $kernel_dir/kernel/kshell/kshell_help.o $
+  $kernel_dir/kernel/kshell/kshell_julia.o $
+  $kernel_dir/kernel/kshell/kshell_mandelbrot.o $
+  $kernel_dir/kernel/kshell/kshell_shutdown.o $
+  $kernel_dir/kernel/kshell/kshell_snake.o $
+  $kernel_dir/kernel/kshell/kshell_sysinfo.o $
+  $kernel_dir/kernel/kshell/kshell_task.o $
+  $kernel_dir/kernel/kshell/kshell_tetris.o $
+  $kernel_dir/kernel/kshell/kshell_x.o $
+  $
+  $kernel_dir/kernel/video/bga.o $
+  $kernel_dir/kernel/video/font.o $
+  $kernel_dir/kernel/video/gop.o $
+  $kernel_dir/kernel/video/vga.o $
+  $kernel_dir/kernel/video/video.o
+
+
+
+
+build $kernel_dir/kernel.bin: kernel_bin $kernel_dir/kernel.elf
+
+default $kernel_dir/kernel.bin
