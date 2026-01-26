@@ -23,5 +23,4 @@ void kshell_task_register() {
 	                             .callback = kshell_task_list_cb};
 	kshell_register_command(&cmd);
 }
-
 }

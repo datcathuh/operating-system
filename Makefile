@@ -46,7 +46,7 @@ run_debug_extra:
 	$(MAKE) -C src $@
 
 format:
-	clang-format -i $(shell find -name "*.c" -or -name "*.h")
+	clang-format -i $(shell find -name "*.c" -or -name "*.h" -or -name "*.cpp" -or -name "*.hpp")
 
 analyze:
 	scan-build -o analyze_result make rebuild

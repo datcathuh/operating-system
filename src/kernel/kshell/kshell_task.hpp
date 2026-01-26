@@ -3,7 +3,7 @@
 extern "C" {
 #endif
 
-	void kshell_task_register();
+void kshell_task_register();
 
 #ifdef __cplusplus
 }
