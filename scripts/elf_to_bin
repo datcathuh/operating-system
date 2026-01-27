@@ -1,0 +1,11 @@
+#!/bin/bash
+if (( $# != 2 )); then
+	echo "Usage: $0 filename.elf filename.bin"
+	exit 1
+fi
+
+in=$1
+out=$2
+
+objcopy -O binary $in $out
+truncate -s $(( ( $(stat -c%s $out) + 511 ) / 512 * 512 )) $out

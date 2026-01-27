@@ -58,6 +58,27 @@ def write_rule_link(prefix, flags):
     print("")
 
 
+def write_rule_bin():
+    print("rule bin")
+    print("  command = scripts/elf_to_bin $in $out")
+    print("  description = Dwarf to bin $out")
+    print("")
+
+
+def write_build_file(prefix, build_subdir, target, src_dir, src_file):
+    known_suffixes = {
+        ".asm": "nasm",
+        ".c": "gcc",
+        ".cpp": "cxx",
+    }
+
+    p = Path(src_file)
+    compiler = known_suffixes[p.suffix]
+    print("build $build_dir/%s/%s: %s_%s %s/%s" % (build_subdir, target, prefix, compiler, src_dir, src_file))
+
+    print("")
+
+
 def write_build_files(prefix, build_subdir, src_dir, src_files):
     known_suffixes = {
         ".asm": "nasm",
@@ -68,7 +89,7 @@ def write_build_files(prefix, build_subdir, src_dir, src_files):
         p = Path(src_file)
         target = p.with_suffix(".o")
         compiler = known_suffixes[p.suffix]
-        print("build $build_dir/%s/%s: %s_%s %s/%s" %(build_subdir, target, prefix, compiler, src_dir, src_file))
+        print("build $build_dir/%s/%s: %s_%s %s/%s" % (build_subdir, target, prefix, compiler, src_dir, src_file))
 
     print("")
 
@@ -86,6 +107,12 @@ def write_build_link(prefix, build_subdir, target, src_files):
 
     print("")
 
+
+def write_build_bin(source, target):
+    print("build %s: bin %s" % (target, source))
+    print("")
+
+
 vars = {
     "build_dir": "build",
 }
@@ -93,15 +120,19 @@ vars = {
 write_header()
 write_variables(vars)
 
+write_rule_bin()
+
 # ================================================================================
 # MBR
 # ================================================================================
+mbr_asm_flags = [
+    "-f bin",
+    "-MD $out.d",
+    "-I src/mbr/",
+]
 
-
-# write_rule_nasm("mbr", "$mbr_asm_flags")
-
-
-
+write_rule_nasm("mbr", " ".join(mbr_asm_flags))
+write_build_file("mbr", "mbr", "mbr.bin", "src/mbr", "main.asm")
 
 
 # ================================================================================
@@ -146,6 +177,7 @@ stage2_files = [
 ]
 write_build_files("stage2", "stage2", "src/stage2", stage2_files)
 write_build_link("stage2", "stage2", "stage2.elf", stage2_files)
+write_build_bin("$build_dir/stage2/stage2.elf", "$build_dir/stage2/stage2.bin")
 
 # ================================================================================
 # kernel
@@ -291,3 +323,4 @@ kernel_files = [
 
 write_build_files("kernel", "kernel", "src/kernel", kernel_files)
 write_build_link("kernel", "kernel", "kernel.elf", kernel_files)
+write_build_bin("$build_dir/kernel/kernel.elf", "$build_dir/kernel/kernel.bin")
