@@ -1,9 +1,7 @@
 all: $(BUILD_DIR)/hda.img
 
 $(BUILD_DIR)/hda.img:
-	ninja -C kernel -d keepdepfile -v
-	ninja -C stage2 -d keepdepfile -v
-	ninja -C mbr -d keepdepfile -v
+	ninja -C .. -d keepdepfile -v
 	cat $(BUILD_DIR)/mbr/mbr.bin $(BUILD_DIR)/stage2/stage2.bin $(BUILD_DIR)/kernel/kernel.bin > $@
 	truncate -s 1M $@
 
@@ -11,9 +9,7 @@ $(BUILD_DIR)/hdb.img:
 	fallocate -l 1M $@
 
 clean:
-	ninja -C mbr -t $@
-	ninja -C stage2 -t $@
-	ninja -C kernel -t $@
+	ninja -C .. -t $@
 	$(RM) $(BUILD_DIR)/hda.img $(BUILD_DIR)/hdb.img
 
 gdb:
