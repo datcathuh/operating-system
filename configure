@@ -65,6 +65,13 @@ def write_rule_bin():
     print("")
 
 
+def write_rule_bin_file_sector_count_to_asm(prefix, varname):
+    print("rule %s_bin_file_sector_count_to_asm" % prefix)
+    print("  command = scripts/bin_file_sector_count_to_asm %s $in $out" % varname)
+    print("  description = Generating $out")
+    print("")
+
+
 def write_build_file(prefix, build_subdir, target, src_dir, src_file):
     known_suffixes = {
         ".asm": "nasm",
@@ -110,6 +117,11 @@ def write_build_link(prefix, build_subdir, target, src_files):
 
 def write_build_bin(source, target):
     print("build %s: bin %s" % (target, source))
+    print("")
+
+
+def write_build_bin_file_sector_count_to_asm(prefix, source, target):
+    print("build %s: %s_bin_file_sector_count_to_asm %s" % (target, prefix, source))
     print("")
 
 
@@ -164,6 +176,7 @@ stage2_link_flags = [
 write_rule_nasm("stage2", " ".join(stage2_asm_flags))
 write_rule_gcc("stage2", " ".join(stage2_c_flags))
 write_rule_link("stage2", " ".join(stage2_link_flags))
+write_rule_bin_file_sector_count_to_asm("stage2", "STAGE2_SECTOR_COUNT")
 
 stage2_files = [
     "a20.asm",
@@ -178,6 +191,7 @@ stage2_files = [
 write_build_files("stage2", "stage2", "src/stage2", stage2_files)
 write_build_link("stage2", "stage2", "stage2.elf", stage2_files)
 write_build_bin("$build_dir/stage2/stage2.elf", "$build_dir/stage2/stage2.bin")
+write_build_bin_file_sector_count_to_asm("stage2", "$build_dir/stage2/stage2.bin", "src/mbr/stage2_sector_count.asm")
 
 # ================================================================================
 # kernel
@@ -236,6 +250,7 @@ write_rule_nasm("kernel", " ".join(kernel_asm_flags))
 write_rule_gcc("kernel", " ".join(kernel_c_flags))
 write_rule_cxx("kernel", " ".join(kernel_cxx_flags))
 write_rule_link("kernel", " ".join(kernel_link_flags))
+write_rule_bin_file_sector_count_to_asm("kernel", "KERNEL_SECTOR_COUNT")
 
 kernel_files = [
     "arithmetics.c",
@@ -324,3 +339,4 @@ kernel_files = [
 write_build_files("kernel", "kernel", "src/kernel", kernel_files)
 write_build_link("kernel", "kernel", "kernel.elf", kernel_files)
 write_build_bin("$build_dir/kernel/kernel.elf", "$build_dir/kernel/kernel.bin")
+write_build_bin_file_sector_count_to_asm("kernel", "$build_dir/kernel/kernel.bin", "src/stage2/kernel_sector_count.asm")
