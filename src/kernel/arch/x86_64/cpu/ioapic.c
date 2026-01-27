@@ -6,13 +6,13 @@
 #define IOAPIC_WINDOW 0x10
 #define IOAPIC_REDTBL 0x10
 
-static inline void ioapic_write(uint32_t ioapic_base, uint32_t reg,
+static inline void ioapic_write(uintptr_t ioapic_base, uint32_t reg,
                                 uint32_t val) {
 	*(volatile uint32_t *)(ioapic_base + IOAPIC_REGSEL) = reg;
 	*(volatile uint32_t *)(ioapic_base + IOAPIC_WINDOW) = val;
 }
 
-static inline uint32_t ioapic_read(uint32_t ioapic_base, uint32_t reg) {
+static inline uint32_t ioapic_read(uintptr_t ioapic_base, uint32_t reg) {
 	*(volatile uint32_t *)(ioapic_base + IOAPIC_REGSEL) = reg;
 	return *(volatile uint32_t *)(ioapic_base + IOAPIC_WINDOW);
 }
