@@ -1,3 +1,6 @@
+bits 64
+default rel
+
 section .data
 
 global gdt64_descriptor
@@ -9,6 +12,7 @@ gdt64:
 
 gdt64_descriptor:
 	dw gdt64_end - gdt64 - 1
-	dq gdt64
+	dd gdt64
+	dd 0
 
 gdt64_end:
