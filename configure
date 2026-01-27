@@ -72,16 +72,19 @@ def write_rule_bin_file_sector_count_to_asm(prefix, varname):
     print("")
 
 
-def write_build_file(prefix, build_subdir, target, src_dir, src_file):
+def write_build_file(prefix, build_subdir, target, src_dir, src_file, deps=[]):
     known_suffixes = {
         ".asm": "nasm",
         ".c": "gcc",
         ".cpp": "cxx",
     }
 
+    str_deps = ""
+    if len(deps) > 0:
+        str_deps = " | " + " ".join(["%s/%s" % (src_dir, x) for x in deps])
     p = Path(src_file)
     compiler = known_suffixes[p.suffix]
-    print("build $build_dir/%s/%s: %s_%s %s/%s" % (build_subdir, target, prefix, compiler, src_dir, src_file))
+    print("build $build_dir/%s/%s: %s_%s %s/%s%s" % (build_subdir, target, prefix, compiler, src_dir, src_file, str_deps))
 
     print("")
 
@@ -93,10 +96,15 @@ def write_build_files(prefix, build_subdir, src_dir, src_files):
         ".cpp": "cxx",
     }
     for src_file in src_files:
-        p = Path(src_file)
+        deps = ""
+        if isinstance(src_file, tuple):
+            p = Path(src_file[0])
+            deps = " | " + " ".join(["%s/%s" % (src_dir, x) for x in src_file[1]])
+        else:
+            p = Path(src_file)
         target = p.with_suffix(".o")
         compiler = known_suffixes[p.suffix]
-        print("build $build_dir/%s/%s: %s_%s %s/%s" % (build_subdir, target, prefix, compiler, src_dir, src_file))
+        print("build $build_dir/%s/%s: %s_%s %s/%s%s" % (build_subdir, target, prefix, compiler, src_dir, str(p), deps))
 
     print("")
 
@@ -104,13 +112,23 @@ def write_build_files(prefix, build_subdir, src_dir, src_files):
 def write_build_link(prefix, build_subdir, target, src_files):
     print("build $build_dir/%s/%s: %s_link $" % (build_subdir, target, prefix))
     for i in range(len(src_files) - 1):
+        v = src_files[i]
+        if isinstance(v, tuple):
+            src_file = v[0]
+        else:
+            src_file = v
         print("  $build_dir/%s/%s $" % (
             build_subdir,
-            Path(src_files[i]).with_suffix(".o")))
+            Path(src_file).with_suffix(".o")))
 
+    v = src_files[len(src_files) - 1]
+    if isinstance(v, tuple):
+        src_file = v[0]
+    else:
+        src_file = v
     print("  $build_dir/%s/%s" % (
         build_subdir,
-        Path(src_files[len(src_files) - 1]).with_suffix(".o")))
+        Path(src_file).with_suffix(".o")))
 
     print("")
 
@@ -144,7 +162,7 @@ mbr_asm_flags = [
 ]
 
 write_rule_nasm("mbr", " ".join(mbr_asm_flags))
-write_build_file("mbr", "mbr", "mbr.bin", "src/mbr", "main.asm")
+write_build_file("mbr", "mbr", "mbr.bin", "src/mbr", "main.asm", ["stage2_sector_count.asm"])
 
 
 # ================================================================================
@@ -185,7 +203,7 @@ stage2_files = [
     "gdt64.asm",
     "paging.asm",
     "print.asm",
-    "stage2-entry.asm",
+    ("stage2-entry.asm", ["kernel_sector_count.asm"]),
     "main.c",
 ]
 write_build_files("stage2", "stage2", "src/stage2", stage2_files)
@@ -209,6 +227,7 @@ kernel_c_flags = [
     "-pedantic",
     "-Wall",
     "-Wextra",
+    "-Wno-unused-parameter",
     "-m64",
     "-ffreestanding",
     "-O3",

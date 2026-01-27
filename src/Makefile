@@ -1,7 +1,7 @@
 all: $(BUILD_DIR)/hda.img
 
 $(BUILD_DIR)/hda.img:
-	ninja -C .. -d keepdepfile -v
+	ninja -C ..
 	cat $(BUILD_DIR)/mbr/mbr.bin $(BUILD_DIR)/stage2/stage2.bin $(BUILD_DIR)/kernel/kernel.bin > $@
 	truncate -s 1M $@
 
