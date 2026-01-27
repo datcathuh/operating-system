@@ -1,0 +1,293 @@
+#!/usr/bin/env python3
+from pathlib import Path
+
+
+def write_header():
+    print("# ======================================")
+    print("# This is a generated file. DO NOT EDIT")
+    print("# ======================================")
+    print("")
+
+
+def write_variables(variables):
+    for key in sorted(variables):
+        value = variables[key]
+
+        if isinstance(value, list):
+            print("%s = $" % key)
+            for i in range(len(value) - 1):
+                print("  %s $" % value[i])
+            print("  %s" % value[len(value)-1])
+        else:
+            print("%s = %s" % (key, value))
+
+    print("")
+
+
+def write_rule_nasm(prefix, flags):
+    print("rule %s_nasm" % prefix)
+    print("  command = nasm $in %s -o $out" % flags)
+    print("  depfile = $out.d")
+    print("  deps = gcc")
+    print("  description = Compiling $in")
+    print("")
+
+
+def write_rule_gcc(prefix, flags):
+    print("rule %s_gcc" % prefix)
+    print("  command = gcc -c $in %s -o $out" % flags)
+    print("  depfile = $out.d")
+    print("  deps = gcc")
+    print("  description = Compiling $in")
+    print("")
+
+
+def write_rule_cxx(prefix, flags):
+    print("rule %s_cxx" % prefix)
+    print("  command = g++ -c $in %s -o $out" % flags)
+    print("  depfile = $out.d")
+    print("  deps = gcc")
+    print("  description = Compiling $in")
+    print("")
+
+
+def write_rule_link(prefix, flags):
+    print("rule %s_link" % prefix)
+    print("  command = ld %s -o $out $in" % flags)
+    print("  description = Linking $out")
+    print("")
+
+
+def write_build_files(prefix, build_subdir, src_dir, src_files):
+    known_suffixes = {
+        ".asm": "nasm",
+        ".c": "gcc",
+        ".cpp": "cxx",
+    }
+    for src_file in src_files:
+        p = Path(src_file)
+        target = p.with_suffix(".o")
+        compiler = known_suffixes[p.suffix]
+        print("build $build_dir/%s/%s: %s_%s %s/%s" %(build_subdir, target, prefix, compiler, src_dir, src_file))
+
+    print("")
+
+
+def write_build_link(prefix, build_subdir, target, src_files):
+    print("build $build_dir/%s/%s: %s_link $" % (build_subdir, target, prefix))
+    for i in range(len(src_files) - 1):
+        print("  $build_dir/%s/%s $" % (
+            build_subdir,
+            Path(src_files[i]).with_suffix(".o")))
+
+    print("  $build_dir/%s/%s" % (
+        build_subdir,
+        Path(src_files[len(src_files) - 1]).with_suffix(".o")))
+
+    print("")
+
+vars = {
+    "build_dir": "build",
+}
+
+write_header()
+write_variables(vars)
+
+# ================================================================================
+# MBR
+# ================================================================================
+
+
+# write_rule_nasm("mbr", "$mbr_asm_flags")
+
+
+
+
+
+# ================================================================================
+# stage2
+# ================================================================================
+
+stage2_asm_flags = [
+    "-f elf32",
+    "-F dwarf",
+    "-MD $out.d",
+    "-I src/stage2/",
+]
+stage2_c_flags = [
+    "-std=c23",
+    "-pedantic",
+    "-Wall",
+    "-Wextra",
+    "-m32",
+    "-ffreestanding",
+    "-O2",
+    "-nostdlib",
+    "-g",
+]
+stage2_link_flags = [
+    "-m elf_i386",
+    "-T src/stage2/linker.ld",
+]
+
+write_rule_nasm("stage2", " ".join(stage2_asm_flags))
+write_rule_gcc("stage2", " ".join(stage2_c_flags))
+write_rule_link("stage2", " ".join(stage2_link_flags))
+
+stage2_files = [
+    "a20.asm",
+    "disk.asm",
+    "gdt.asm",
+    "gdt64.asm",
+    "paging.asm",
+    "print.asm",
+    "stage2-entry.asm",
+    "main.c",
+]
+write_build_files("stage2", "stage2", "src/stage2", stage2_files)
+write_build_link("stage2", "stage2", "stage2.elf", stage2_files)
+
+# ================================================================================
+# kernel
+# ================================================================================
+
+kernel_asm_flags = [
+    "-f elf64",
+    "-F dwarf",
+    "-MD $out.d",
+    "-g",
+    "-I src/kernel/",
+]
+kernel_c_flags = [
+    "-std=c23",
+    "-pedantic",
+    "-Wall",
+    "-Wextra",
+    "-m64",
+    "-ffreestanding",
+    "-O3",
+    "-nostdlib",
+    "-nostdinc",
+    "-g",
+    "-mno-red-zone",
+    "-fno-omit-frame-pointer",
+    "-fno-stack-protector",
+    "-mcmodel=kernel",
+    "-Isrc/kernel/",
+]
+kernel_cxx_flags = [
+    "-std=c++23",
+    "-pedantic",
+    "-Wall -Wextra",
+    "-m64",
+    "-mno-red-zone",
+    "-fno-omit-frame-pointer",
+    "-fno-stack-protector",
+    "-mcmodel=kernel",
+    "-ffreestanding",
+    "-fno-exceptions",
+    "-fno-rtti",
+    "-fno-unwind-tables",
+    "-fno-asynchronous-unwind-tables",
+    "-fno-threadsafe-statics",
+    "-nostdlib",
+    "-nostdinc++",
+    "-Isrc/kernel/",
+    "-O3",
+]
+kernel_link_flags = [
+    "-m elf_x86_64",
+    "-T src/kernel/linker.ld",
+]
+
+write_rule_nasm("kernel", " ".join(kernel_asm_flags))
+write_rule_gcc("kernel", " ".join(kernel_c_flags))
+write_rule_cxx("kernel", " ".join(kernel_cxx_flags))
+write_rule_link("kernel", " ".join(kernel_link_flags))
+
+kernel_files = [
+    "arithmetics.c",
+    "apm.c",
+    "cpu_context_asm.asm",
+    "diagnostics.c",
+    "panic.c",
+    "keyboard.c",
+    "kmain.c",
+    "memory.c",
+    "memory_heap.c",
+    "memory_page.c",
+    "pci.c",
+    "pci_blacklist.c",
+    "pic.c",
+    "pit.c",
+    "scheduler.c",
+    "serial.c",
+    "stream_simple.cpp",
+    "string.c",
+    "task.c",
+    "terminal_gfx.c",
+
+    # x86_64 / CPU
+    "arch/x86_64/cpu/gdt.c",
+    "arch/x86_64/cpu/idt.c",
+    "arch/x86_64/cpu/ioapic.c",
+    "arch/x86_64/cpu/lapic.c",
+    "arch/x86_64/cpu/nxe.asm",
+
+    # x86_64 / entry
+    "arch/x86_64/entry/acpi.c",
+    "arch/x86_64/entry/legacy_entry.asm",
+    "arch/x86_64/entry/multiboot2.c",
+    "arch/x86_64/entry/multiboot2_entry.asm",
+    "arch/x86_64/entry/multiboot2_gdt.asm",
+    "arch/x86_64/entry/multiboot2_paging.asm",
+    "arch/x86_64/entry/multiboot2_signature.asm",
+
+    # x86_64 / Interrupt service routines
+    "arch/x86_64/interrupt/irq_gp_asm.asm",
+    "arch/x86_64/interrupt/irq_gp_c.c",
+    "arch/x86_64/interrupt/irq_double_fault_asm.asm",
+    "arch/x86_64/interrupt/irq_double_fault_c.c",
+    "arch/x86_64/interrupt/irq_keyboard_asm.asm",
+    "arch/x86_64/interrupt/irq_keyboard_c.c",
+    "arch/x86_64/interrupt/irq_nm_asm.asm",
+    "arch/x86_64/interrupt/irq_nm_c.c",
+    "arch/x86_64/interrupt/irq_page_fault_asm.asm",
+    "arch/x86_64/interrupt/irq_page_fault_c.c",
+    "arch/x86_64/interrupt/irq_timer_asm.asm",
+    "arch/x86_64/interrupt/irq_timer_c.c",
+    "arch/x86_64/interrupt/irq_ud_asm.asm",
+    "arch/x86_64/interrupt/irq_ud_c.c",
+
+    # Devices
+    "devices/intel_440fx.c",
+    "devices/intel_82371sb_acpi.c",
+    "devices/intel_82371sb_isa.c",
+    "devices/intel_82371sb_ide.c",
+    "devices/intel_82540em.c",
+    "devices/redhat_virtio_block_device.c",
+    "devices/usb_xhci.c",
+
+    # Kernel shell commands.
+    "kshell/kshell.c",
+    "kshell/kshell_bga.c",
+    "kshell/kshell_help.c",
+    "kshell/kshell_julia.c",
+    "kshell/kshell_mandelbrot.c",
+    "kshell/kshell_shutdown.c",
+    "kshell/kshell_snake.c",
+    "kshell/kshell_sysinfo.c",
+    "kshell/kshell_task.cpp",
+    "kshell/kshell_tetris.c",
+    "kshell/kshell_x.c",
+
+    # Video drivers
+    "video/bga.c",
+    "video/font.c",
+    "video/gop.c",
+    "video/vga.c",
+    "video/video.c",
+]
+
+write_build_files("kernel", "kernel", "src/kernel", kernel_files)
+write_build_link("kernel", "kernel", "kernel.elf", kernel_files)
