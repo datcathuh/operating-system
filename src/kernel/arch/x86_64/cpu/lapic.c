@@ -10,6 +10,9 @@
 #define LAPIC_REG_SVR 0xF0
 #define LAPIC_REG_LVT_TIMER 0x320
 #define LAPIC_REG_LVT_ERROR 0x370
+#define LAPIC_REG_TIMER_INITCNT 0x380
+#define LAPIC_REG_TIMER_CURRCNT 0x390
+#define LAPIC_REG_TIMER_DIV 0x3E0
 
 static inline uint64_t rdmsr(uint32_t msr) {
 	uint32_t lo, hi;

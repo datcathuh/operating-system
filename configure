@@ -275,6 +275,7 @@ kernel_files = [
     "arithmetics.c",
     "apm.c",
     "cpu_context_asm.asm",
+    "cpu_tick.c",
     "diagnostics.c",
     "panic.c",
     "keyboard.c",
@@ -298,6 +299,7 @@ kernel_files = [
     "arch/x86_64/cpu/idt.c",
     "arch/x86_64/cpu/ioapic.c",
     "arch/x86_64/cpu/lapic.c",
+    "arch/x86_64/cpu/lapic_timer.asm",
     "arch/x86_64/cpu/nxe.asm",
 
     # x86_64 / entry
