@@ -24,7 +24,7 @@
 #include "video/vga.h"
 
 void arch_x86_64_setup(uint64_t magic, void *mb_addr) {
-    /* No interrupts please. */
+	/* No interrupts please. */
 	__asm__ volatile("cli");
 
 	/* We have no idea what stage2 or grub has configured for
@@ -138,5 +138,5 @@ void arch_x86_64_setup(uint64_t magic, void *mb_addr) {
 	                          IOAPIC_UNMASKED;
 	ioapic_set_irq(1, 0x21, lapic_get_id(), keyboard_flags);
 
-    kmain(magic, mb_addr);
+	kmain(magic, mb_addr);
 }
