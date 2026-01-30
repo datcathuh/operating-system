@@ -12,7 +12,7 @@ global multiboot2_64bit_entry
 extern multiboot2_paging_setup
 extern multiboot2_gdt64_descriptor
 extern nxe_enable
-extern kmain
+extern arch_x86_64_setup
 
 multiboot2_entry:
     cli
@@ -50,6 +50,6 @@ bits 64
 multiboot2_64bit_entry:
 	mov edi, [mb_magic]   ; 1st arg
     mov rsi, [mb_addr]    ; 2nd arg
-	call kmain
+	call arch_x86_64_setup
 
 	jmp $

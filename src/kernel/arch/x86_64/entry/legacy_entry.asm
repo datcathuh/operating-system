@@ -4,7 +4,7 @@ global legacy_entry
 extern __bss_start
 extern __bss_end
 extern stack_top
-extern kmain
+extern arch_x86_64_setup
 extern nxe_enable
 
 legacy_entry:
@@ -25,7 +25,7 @@ legacy_entry:
 
 	mov edi, 0   ; 1st arg
     mov rsi, 0   ; 2nd arg
-	call kmain
+	call arch_x86_64_setup
 	jmp $
 
 sse_enable:

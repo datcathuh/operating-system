@@ -304,6 +304,7 @@ kernel_files = [
 
     # x86_64 / entry
     "arch/x86_64/entry/acpi.c",
+    "arch/x86_64/arch_setup.c",
     "arch/x86_64/entry/legacy_entry.asm",
     "arch/x86_64/entry/multiboot2.c",
     "arch/x86_64/entry/multiboot2_entry.asm",
