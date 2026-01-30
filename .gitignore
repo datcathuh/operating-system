@@ -2,9 +2,17 @@
 *.bin
 *.elf
 *.img
+
+# Ignore files from text editors and other tools
+.cache
 .ninja*
 .vscode
+.zed
+
+# Ignore generated files
+build.ninja
 compile_commands.json
+
 tools
 build
 kernel_sector_count.asm
