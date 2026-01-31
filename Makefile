@@ -3,7 +3,7 @@ KERNEL_DIR := src/kernel
 
 export BUILD_DIR
 
-all:
+introduction:
 	@echo "Make targets"
 	@echo " build                 Build without cleaning"
 	@echo " rebuild               Rebuild from scratch"
@@ -14,6 +14,8 @@ all:
 	@echo " gdb                   Starts debugger"
 	@echo ""
 	@echo "compile_commands.json  Creates file for code analytics"
+
+all: build
 
 build:
 	$(MAKE) -C src
@@ -57,4 +59,4 @@ analyze:
 compile_commands.json:
 	bear -- $(MAKE) rebuild
 
-.PHONY: all analyze build clean gdb run run_debug run_debug_extra format
+.PHONY: all analyze build clean gdb run run_debug run_debug_extra format introduction
