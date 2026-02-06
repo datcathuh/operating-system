@@ -1,7 +1,7 @@
 #include "keyboard.h"
 #include "kshell.h"
 #include "kshell_snake.h"
-#include "pit.h"
+#include "sleep.h"
 #include "string.h"
 #include "types.h"
 #include "video/video.h"
@@ -39,7 +39,7 @@ void kshell_snake_cb(void) {
 		if (key_pressed && k == 'q') {
 			break;
 		}
-		pit_wait_milliseconds(100);
+		sleep_ms(100);
 	}
 
 	video_draw_rect_filled(buffer, 0, 0, buffer->resolution.width,

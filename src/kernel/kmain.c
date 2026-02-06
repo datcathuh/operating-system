@@ -12,7 +12,7 @@
 #include "kshell/kshell_x.h"
 #include "memory.h"
 #include "pci.h"
-#include "pit.h"
+#include "sleep.h"
 #include "scheduler.h"
 #include "task.h"
 
@@ -58,7 +58,7 @@ void kmain(uint64_t magic, void *mb_addr) {
 
 void idle(void) {
 	for (;;) {
-		pit_wait_milliseconds(10);
+		sleep_ms(10);
 		yield();
 	}
 }

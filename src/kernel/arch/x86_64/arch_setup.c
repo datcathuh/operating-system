@@ -1,4 +1,5 @@
 #include "arch/x86_64/arch_setup.h"
+#include "arch/x86_64/pit.h"
 #include "arch/x86_64/cpu/gdt.h"
 #include "arch/x86_64/cpu/idt.h"
 #include "arch/x86_64/cpu/ioapic.h"
@@ -18,6 +19,7 @@
 #include "pic.h"
 #include "pit.h"
 #include "serial.h"
+#include "sleep.h"
 #include "video/gop.h"
 #include "video/video.h"
 #include "video/bga.h"
@@ -53,6 +55,8 @@ void arch_x86_64_setup(uint64_t magic, void *mb_addr) {
 	irq_nm_register();
 	irq_timer_register();
 	irq_ud_register();
+
+	sleep_ms = pit_wait_milliseconds;
 
 	if (magic == 0) {
 		/* We have come to this point using MBR -> stage2 -> kernel.

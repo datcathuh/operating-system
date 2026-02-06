@@ -283,16 +283,19 @@ kernel_files = [
     "memory.c",
     "memory_heap.c",
     "memory_page.c",
+    "pic.c",
     "pci.c",
     "pci_blacklist.c",
-    "pic.c",
-    "pit.c",
     "scheduler.c",
     "serial.c",
+    "sleep.c",
     "stream_simple.cpp",
     "string.c",
     "task.c",
     "terminal_gfx.c",
+
+    # x86_64 / CPU
+    "arch/x86_64/pit.c",
 
     # x86_64 / CPU
     "arch/x86_64/cpu/gdt.c",

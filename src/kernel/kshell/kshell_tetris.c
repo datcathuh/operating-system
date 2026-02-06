@@ -2,7 +2,7 @@
 #include "kshell.h"
 #include "kshell_tetris.h"
 #include "memory.h"
-#include "pit.h"
+#include "sleep.h"
 #include "string.h"
 #include "types.h"
 #include "video/video.h"
@@ -449,7 +449,7 @@ void kshell_tetris_cb(void) {
 		}
 
 		if (running) {
-			pit_wait_milliseconds(300);
+			sleep_ms(300);
 		}
 
 		/* gravity: move down 1 cell if possible, else lock */
