@@ -1,8 +1,10 @@
+#include "cpu.h"
+#include "interrupt.h"
 #include "panic.h"
 #include "serial.h"
 
 __attribute__((noreturn)) void panic(const char *msg) {
-	__asm__ volatile("cli"); // Disable interrupts
+	interrupt_stop();
 
 	serial_puts("\n\n*** KERNEL PANIC ***\n");
 	serial_puts(msg);
@@ -10,6 +12,6 @@ __attribute__((noreturn)) void panic(const char *msg) {
 
 	/* Halt forever */
 	for (;;) {
-		__asm__ volatile("hlt");
+		cpu_halt();
 	}
 }

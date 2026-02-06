@@ -1,5 +1,5 @@
 
-#include "arch/x86_64/cpu/interrupt.h"
+#include "interrupt.h"
 #include "scheduler.h"
 
 #define TASK_MAX 64
@@ -26,7 +26,7 @@ void scheduler_start(void) {
 }
 
 void schedule(void) {
-	cli();
+    interrupt_stop();
 
 	int next = (task_current_index + 1) % task_count;
 	struct task *next_task = task_tasks[next];
@@ -47,7 +47,7 @@ void schedule(void) {
 		context_switch(&prev->ctx, &next_task->ctx);
 	}
 
-	sti();
+	interrupt_resume();
 }
 
 void yield(void) { schedule(); }

@@ -1,4 +1,5 @@
 #include "arch/x86_64/interrupt/irq_keyboard.h"
+#include "cpu.h"
 #include "keyboard.h"
 #include "types.h"
 
@@ -25,7 +26,7 @@ char keyboard_get_key(void) {
 	bool key_fetched = false;
 	while (!key_fetched) {
 		if (irq_keyboard_count() == 0) {
-			__asm__ volatile("hlt");
+			cpu_halt();
 		}
 		key_fetched = irq_keyboard_consume_key(&sc);
 		if (key_fetched) {

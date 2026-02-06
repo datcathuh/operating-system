@@ -1,4 +1,5 @@
 #include "diagnostics.h"
+#include "interrupt.h"
 #include "kshell/kshell.h"
 #include "kshell/kshell_bga.h"
 #include "kshell/kshell_help.h"
@@ -29,7 +30,7 @@ void kmain(uint64_t magic, void *mb_addr) {
 	pci_debug_dump();
 
 	/* Allow interrupts again. */
-	__asm__ volatile("sti");
+	interrupt_resume();
 
 	print_diagnostics();
 

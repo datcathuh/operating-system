@@ -1,4 +1,5 @@
 #include "arch/x86_64/cpu/idt.h"
+#include "cpu.h"
 #include "irq_page_fault.h"
 #include "memory.h"
 #include "serial.h"
@@ -56,7 +57,7 @@ void irq_page_fault_c(struct page_fault_frame *frame, uint64_t error) {
 	mem_page_debug_dump();
 
 	for (;;) {
-		__asm__ volatile("hlt");
+		cpu_halt();
 	}
 }
 

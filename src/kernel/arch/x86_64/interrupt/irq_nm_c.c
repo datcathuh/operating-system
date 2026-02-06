@@ -1,4 +1,5 @@
 #include "arch/x86_64/cpu/idt.h"
+#include "cpu.h"
 #include "irq_nm.h"
 #include "serial.h"
 
@@ -7,7 +8,7 @@ void irq_nm_asm(void);
 void irq_nm_c(void) {
 	serial_puts("PANIC: No Math / Device not found fault\n");
 	for (;;) {
-		__asm__ volatile("hlt");
+		cpu_halt();
 	}
 }
 

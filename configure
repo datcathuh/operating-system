@@ -299,7 +299,9 @@ kernel_files = [
 
     # x86_64 / CPU
     "arch/x86_64/cpu/gdt.c",
+    "arch/x86_64/cpu/cpu.c",
     "arch/x86_64/cpu/idt.c",
+    "arch/x86_64/cpu/interrupt.c",
     "arch/x86_64/cpu/ioapic.c",
     "arch/x86_64/cpu/lapic.c",
     "arch/x86_64/cpu/lapic_timer.asm",
