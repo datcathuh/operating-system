@@ -287,7 +287,6 @@ kernel_files = [
     "pci_blacklist.c",
     "scheduler.c",
     "serial.c",
-    "sleep.c",
     "stream_simple.cpp",
     "string.c",
     "task.c",

@@ -39,3 +39,7 @@ void pit_wait_milliseconds(uint32_t milliseconds) {
 		last = now;
 	}
 }
+
+void sleep_ms(uint32_t ms) {
+	pit_wait_milliseconds(ms);
+}

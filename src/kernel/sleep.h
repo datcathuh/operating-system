@@ -2,4 +2,4 @@
 
 #include "types.h"
 
-extern void (*sleep_ms)(uint32_t ms);
+void sleep_ms(uint32_t ms);

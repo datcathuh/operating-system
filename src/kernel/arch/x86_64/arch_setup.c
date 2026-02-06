@@ -56,8 +56,6 @@ void arch_x86_64_setup(uint64_t magic, void *mb_addr) {
 	irq_timer_register();
 	irq_ud_register();
 
-	sleep_ms = pit_wait_milliseconds;
-
 	if (magic == 0) {
 		/* We have come to this point using MBR -> stage2 -> kernel.
 		   No UEFI involved in this boot. We need to find ACPI in
