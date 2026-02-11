@@ -1,6 +1,7 @@
 #pragma once
 
 #include "types.h"
+#include "arch/x86_64/cpu/interrupt.h"
 
 #ifdef __cplusplus
 extern "C" {
@@ -10,9 +11,9 @@ struct cpu_context {
 	uint64_t r15, r14, r13, r12;
 	uint64_t r11, r10, r9, r8;
 	uint64_t rsi, rdi, rbp, rdx, rcx, rbx, rax;
-	uint64_t rsp;
-	uint64_t rip;
-	uint64_t rflags;
+
+	/* Hardware saved registers */
+	struct interrupt_frame frame;
 	uint8_t fxsave_area[512] __attribute__((aligned(16)));
 };
 
