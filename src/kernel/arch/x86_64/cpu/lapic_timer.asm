@@ -3,6 +3,7 @@ bits 64
 global lapic_timer
 
 extern cpu_tick
+extern lapic_eoi
 
 lapic_timer:
     push    r15
@@ -21,7 +22,12 @@ lapic_timer:
     push    rcx
     push    rax
 
+    mov     rdi, rsp
+    sub     rsp, 8        ; stack align
+
 	call cpu_tick
+
+	call lapic_eoi
 
     add     rsp, 8
 

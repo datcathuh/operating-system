@@ -26,7 +26,7 @@ void scheduler_start(void) {
 }
 
 void schedule(void) {
-    interrupt_stop();
+	interrupt_stop();
 
 	int next = (task_current_index + 1) % task_count;
 	struct task *next_task = task_tasks[next];

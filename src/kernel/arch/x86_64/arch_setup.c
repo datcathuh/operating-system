@@ -129,6 +129,7 @@ void arch_x86_64_setup(uint64_t magic, void *mb_addr) {
 	/* Initialize the LAPIC (there is one for each logical CPU in a system.
 	 */
 	lapic_init();
+	lapic_timer_setup(32, 10);
 
 	/* Route keyboard interrupt through the IOAPIC into the
 	   LAPIC for the running CPU */
