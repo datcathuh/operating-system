@@ -21,8 +21,6 @@ static void my_task_cb(void) {
 			                    "This is a background thread writing this ");
 			vd->terminal->pos_set(vd->terminal, x, y);
 		}
-
-		yield();
 	}
 }
 
@@ -31,7 +29,6 @@ static void kshell_x_cb() {
 		task_create("display_clock", &my_task, my_task_cb);
 		scheduler_task_add(&my_task);
 	}
-	yield();
 }
 
 void kshell_x_register() {

@@ -3,9 +3,9 @@ bits 64
 global lapic_timer
 
 extern cpu_tick
-extern lapic_eoi
 
 lapic_timer:
+	; CPU has already pushed: SS, RSP, RFLAGS, CS, RIP
     push    r15
     push    r14
     push    r13
@@ -14,30 +14,29 @@ lapic_timer:
     push    r10
     push    r9
     push    r8
-    push    rdi
     push    rsi
+    push    rdi
     push    rbp
-    push    rbx
+
     push    rdx
     push    rcx
+    push    rbx
     push    rax
 
-    mov     rdi, rsp
     sub     rsp, 8        ; stack align
 
 	call cpu_tick
 
-	call lapic_eoi
-
     add     rsp, 8
 
     pop     rax
+    pop     rbx
     pop     rcx
     pop     rdx
-    pop     rbx
+
     pop     rbp
-    pop     rsi
     pop     rdi
+    pop     rsi
     pop     r8
     pop     r9
     pop     r10

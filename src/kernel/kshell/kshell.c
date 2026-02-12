@@ -14,7 +14,7 @@ static char *_welcome =
 	"       \\/      /_____/                  \\/        \\/\n";
 
 static const char *_prompt = " > ";
-#define _commands_size 10
+#define _commands_size 20
 static struct kshell_command _commands[_commands_size];
 
 static void prompt(struct terminal *terminal) {
@@ -63,7 +63,6 @@ void kshell() {
 	while (1) {
 		char c;
 		if (!keyboard_get_key_if_exists(&c)) {
-			yield();
 			continue;
 		}
 

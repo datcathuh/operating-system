@@ -1,4 +1,3 @@
-
 #include "interrupt.h"
 #include "scheduler.h"
 
@@ -25,9 +24,9 @@ void scheduler_start(void) {
 	}
 }
 
-void schedule(void) {
-	interrupt_stop();
+#include "serial.h"
 
+void schedule(void) {
 	int next = (task_current_index + 1) % task_count;
 	struct task *next_task = task_tasks[next];
 
@@ -45,9 +44,9 @@ void schedule(void) {
 		task_current = next_task;
 
 		context_switch(&prev->ctx, &next_task->ctx);
+		/* Code execution past the above line is never happening.
+		   So this function never returns. */
 	}
-
-	interrupt_resume();
 }
 
 void yield(void) { schedule(); }
