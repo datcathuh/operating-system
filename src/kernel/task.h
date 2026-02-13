@@ -13,7 +13,7 @@ enum task_state { TASK_STATE_RUNNABLE, TASK_STATE_BLOCKED };
 
 struct task {
 	char name[TASK_NAME_LEN];
-	struct cpu_context ctx;
+	struct cpu_context_full ctx;
 	uint8_t *kernel_stack;
 	enum task_state state; // RUNNABLE, BLOCKED, etc.
 };

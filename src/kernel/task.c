@@ -18,8 +18,10 @@ void task_create(const char *name, struct task *t, void (*entry)(void)) {
 	   assumptions done by the compiler to be true. */
 	uint64_t stack_top = (uint64_t)t->kernel_stack + MEM_PAGE_SIZE - 8;
 
-	t->ctx.frame.rip = (uint64_t)entry;
-	t->ctx.frame.rsp = stack_top;
-	t->ctx.frame.rflags = 0x202; // IF=1
+	t->ctx.cpu.frame.rip = (uint64_t)entry;
+	t->ctx.cpu.frame.rsp = stack_top;
+	t->ctx.cpu.frame.rflags = 0x202; // IF=1
+    __asm__ volatile("mov %%cs, %0" : "=r"(t->ctx.cpu.frame.cs));
+    __asm__ volatile("mov %%ss, %0" : "=r"(t->ctx.cpu.frame.ss));
 	context_fpu_save(t->ctx.fxsave_area);
 }

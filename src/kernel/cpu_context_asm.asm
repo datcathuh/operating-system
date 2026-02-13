@@ -3,11 +3,17 @@ bits 64
 global context_restore
 global context_switch
 global context_fpu_save
+global context_fpu_restore
 
 context_fpu_save:
 	fninit
     fxsave [rdi]
     ret
+
+context_fpu_restore:
+	fxrstor [rdi]
+	ret
+
 
 ; void context_capture(struct cpu_context *x);
 ;
@@ -166,8 +172,8 @@ context_switch:
 
 	; Push RIP and return to it
     push qword [rsi + 0x78]
-    mov rsi, [rsi + 0x40]
     mov rdi, [rsi + 0x48]
+    mov rsi, [rsi + 0x40]
 
     clts
 

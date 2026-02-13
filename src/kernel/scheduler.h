@@ -7,6 +7,7 @@ extern "C" {
 #endif
 
 void schedule(void);
+void schedule_from_interrupt(struct cpu_context *interrupted_context);
 void scheduler_start(void);
 void yield(void);
 

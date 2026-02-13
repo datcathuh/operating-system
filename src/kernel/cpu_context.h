@@ -14,13 +14,18 @@ struct cpu_context {
 
 	/* Hardware saved registers */
 	struct interrupt_frame frame;
+};
+
+struct cpu_context_full {
+	struct cpu_context cpu;
 	uint8_t fxsave_area[512] __attribute__((aligned(16)));
 };
 
 void context_fpu_save(uint8_t *fxsave_area);
-void context_capture(struct cpu_context *old);
-void context_restore(struct cpu_context *newctx);
-void context_switch(struct cpu_context *oldctx, struct cpu_context *newctx);
+void context_fpu_restore(uint8_t *fxsave_area);
+void context_capture(struct cpu_context_full *old);
+void context_restore(struct cpu_context_full *newctx);
+void context_switch(struct cpu_context_full *oldctx, struct cpu_context_full *newctx);
 
 #ifdef __cplusplus
 }
