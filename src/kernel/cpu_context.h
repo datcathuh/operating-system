@@ -25,7 +25,8 @@ void context_fpu_save(uint8_t *fxsave_area);
 void context_fpu_restore(uint8_t *fxsave_area);
 void context_capture(struct cpu_context_full *old);
 void context_restore(struct cpu_context_full *newctx);
-void context_switch(struct cpu_context_full *oldctx, struct cpu_context_full *newctx);
+void context_switch(struct cpu_context_full *oldctx,
+                    struct cpu_context_full *newctx);
 
 #ifdef __cplusplus
 }

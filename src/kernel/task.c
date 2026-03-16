@@ -21,7 +21,7 @@ void task_create(const char *name, struct task *t, void (*entry)(void)) {
 	t->ctx.cpu.frame.rip = (uint64_t)entry;
 	t->ctx.cpu.frame.rsp = stack_top;
 	t->ctx.cpu.frame.rflags = 0x202; // IF=1
-    __asm__ volatile("mov %%cs, %0" : "=r"(t->ctx.cpu.frame.cs));
-    __asm__ volatile("mov %%ss, %0" : "=r"(t->ctx.cpu.frame.ss));
+	__asm__ volatile("mov %%cs, %0" : "=r"(t->ctx.cpu.frame.cs));
+	__asm__ volatile("mov %%ss, %0" : "=r"(t->ctx.cpu.frame.ss));
 	context_fpu_save(t->ctx.fxsave_area);
 }

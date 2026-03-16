@@ -7,7 +7,12 @@
 extern "C" {
 #endif
 
-enum task_state { TASK_STATE_RUNNABLE, TASK_STATE_BLOCKED };
+enum task_state {
+	TASK_READY,    // Ready to run, waiting for CPU
+	TASK_RUNNING,  // Currently on CPU
+	TASK_SLEEPING, // Waiting until a specific time
+	TASK_BLOCKED,  // Waiting for I/O or event
+};
 
 #define TASK_NAME_LEN 70
 
