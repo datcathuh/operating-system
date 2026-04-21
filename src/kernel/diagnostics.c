@@ -60,7 +60,7 @@ void print_diagnostics(void) {
 	__asm__ volatile("sgdt %0" : "=m"(gdtr));
 	__asm__ volatile("sidt %0" : "=m"(idtr));
 
-	serial_puts("Diagnostics:\r\n");
+	serial_puts("Diagnostics:\n");
 	serial_puts("  ESP = ");
 	serial_put_hex32(esp);
 	serial_puts("\n");
