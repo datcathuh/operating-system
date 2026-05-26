@@ -8,11 +8,15 @@ Having fun implementing my own OS.
 
 Install the following:
 
-dnf install nasm gcc make qemu
+dnf install nasm gcc gcc-c++ make qemu ninja-build
 dnf install bochs bochs-gdb bochs-debugger
 dnf install grub2-efi-x64-modules grub2-tools-extra
 
 # Compiling and running
+
+First time:
+
+  ./configure > build.ninja
 
 Use the following:
 
