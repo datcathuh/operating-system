@@ -7,9 +7,9 @@
 static struct task my_task = {0};
 
 static void my_task_cb(void) {
-	static int count = 0;
+
 	for (;;) {
-		count += 1;
+
 		struct video_device *vd = video_current();
 		if (vd && vd->terminal) {
 			/* TODO This is dangerous. We have no locking around the vd and
